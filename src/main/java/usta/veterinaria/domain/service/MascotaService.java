@@ -28,8 +28,8 @@ public class MascotaService {
         if (mascota == null) {
             throw new BusinessRuleException("La mascota es obligatoria");
         }
-        if (mascota.getUsuario() == null) {
-            throw new BusinessRuleException("La mascota debe tener un propietario");
+        if (mascota.getUsuario() == null || mascota.getUsuario().getId() == null) {
+            throw new IllegalStateException("La mascota debe tener un propietario");
         }
         if (mascota.getNombre() == null || mascota.getNombre().isBlank()) {
             throw new BusinessRuleException("El nombre de la mascota es obligatorio");

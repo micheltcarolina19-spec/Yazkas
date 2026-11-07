@@ -17,10 +17,8 @@ import java.math.BigDecimal;
 @Builder
 @ToString
 public class DetalleVenta {
-
-    // Venta a la que pertenece el detalle
+    private Long id;
     private Venta venta;
-    // Producto vendido
     private Producto producto;
     private BigDecimal subtotal;
     private Integer cantidad;
