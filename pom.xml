@@ -98,6 +98,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Documentacion OpenAPI/Swagger -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-openapi</artifactId>
+        </dependency>
+
         <!-- Pruebas -->
         <dependency>
             <groupId>io.quarkus</groupId>
