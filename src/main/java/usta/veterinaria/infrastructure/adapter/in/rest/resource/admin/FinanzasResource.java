@@ -2,20 +2,19 @@ package usta.veterinaria.infrastructure.adapter.in.rest.resource.admin;
 
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import usta.veterinaria.application.port.in.admin.ConsultarFinanzasUseCase;
+import usta.veterinaria.domain.service.admin.FinanzasService;
 import usta.veterinaria.infrastructure.adapter.in.rest.dto.admin.DetalleVentaRequest;
 import usta.veterinaria.infrastructure.adapter.in.rest.mapper.admin.FinanzasRestMapper;
 
 // import jakarta.annotation.security.RolesAllowed;   // <- descomentar cuando exista seguridad (login)
 
 import java.time.LocalDate;
+import java.util.List;
 
 // Adaptador de entrada REST para el panel de finanzas (todo en pesos colombianos)
 @Path("/api/finanzas")
@@ -47,5 +46,16 @@ public class FinanzasResource {
                 finanzas.gananciaProductos(inicio, fin),
                 finanzas.gastosPorCategoria(inicio, fin),
                 finanzas.ventasPorCategoriaProducto(inicio, fin));
+    }
+
+    // Ranking: /api/finanzas/productos-mas-vendidos?inicio=2026-11-01&fin=2026-11-30&limite=3
+    @GET
+    @Path("/productos-mas-vendidos")
+    @Operation(summary = "Consultar los productos más vendidos de un rango de fechas")
+    public List<FinanzasService.ProductoVendido> productosMasVendidos(
+            @QueryParam("inicio") @NotNull(message = "La fecha inicial es obligatoria") LocalDate inicio,
+            @QueryParam("fin") @NotNull(message = "La fecha final es obligatoria") LocalDate fin,
+            @QueryParam("limite") @DefaultValue("3") int limite) {
+        return finanzas.productosMasVendidos(inicio, fin, limite);
     }
 }

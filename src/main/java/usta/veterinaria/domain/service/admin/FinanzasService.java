@@ -15,6 +15,7 @@ import usta.veterinaria.domain.service.MonedaColombiana;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -105,7 +106,7 @@ public class FinanzasService {
 
     // Ventas agrupadas por categoría de producto (todas las categorías aparecen, aunque estén en $0)
     public Map<CategoriaProducto, BigDecimal> ventasPorCategoriaProducto(List<DetalleVenta> detalles,
-                                                                        LocalDate inicio, LocalDate fin) {
+                                                                         LocalDate inicio, LocalDate fin) {
         validarRango(inicio, fin);
         Map<CategoriaProducto, BigDecimal> resultado = new EnumMap<>(CategoriaProducto.class);
         for (CategoriaProducto categoria : CategoriaProducto.values()) {
@@ -140,6 +141,58 @@ public class FinanzasService {
             }
         }
         return ganancia;
+    }
+
+    // Resumen de ventas de un producto en el periodo (resultado del ranking de más vendidos)
+    public record ProductoVendido(Long productoId, String nombre, String fotoProducto,
+                                  CategoriaProducto categoria, long unidadesVendidas,
+                                  BigDecimal totalVendido) {
+    }
+
+    // Productos más vendidos del rango, ordenados por unidades vendidas (de mayor a menor).
+    // Si hay empate en unidades gana el que más dinero generó, y luego el orden alfabético.
+    public List<ProductoVendido> productosMasVendidos(List<DetalleVenta> detalles, LocalDate inicio,
+                                                      LocalDate fin, int limite) {
+        validarRango(inicio, fin);
+        if (limite <= 0) {
+            throw new BusinessRuleException("El límite de productos debe ser mayor a cero");
+        }
+
+        // Se agrupa por producto (id); si el producto no tiene id se agrupa por la instancia
+        Map<Object, Acumulado> acumulados = new LinkedHashMap<>();
+        if (detalles != null) {
+            for (DetalleVenta detalle : detalles) {
+                if (!detalleEnRango(detalle, inicio, fin)) {
+                    continue;
+                }
+                Producto producto = detalle.getProducto();
+                Object clave = producto.getId() != null ? producto.getId() : producto;
+                Acumulado acumulado = acumulados.computeIfAbsent(clave, k -> new Acumulado(producto));
+                acumulado.unidades += detalle.getCantidad() == null ? 0 : detalle.getCantidad();
+                acumulado.total = acumulado.total.add(MonedaColombiana.normalizar(detalle.getSubtotal()));
+            }
+        }
+
+        return acumulados.values().stream()
+                .filter(a -> a.unidades > 0)
+                .map(a -> new ProductoVendido(a.producto.getId(), a.producto.getNombre(),
+                        a.producto.getFotoProducto(), a.producto.getCategoria(), a.unidades, a.total))
+                .sorted(Comparator.comparingLong(ProductoVendido::unidadesVendidas).reversed()
+                        .thenComparing(ProductoVendido::totalVendido, Comparator.reverseOrder())
+                        .thenComparing(ProductoVendido::nombre, Comparator.nullsLast(String::compareToIgnoreCase)))
+                .limit(limite)
+                .toList();
+    }
+
+    // Acumulador interno para sumar unidades y dinero por producto
+    private static final class Acumulado {
+        private final Producto producto;
+        private long unidades;
+        private BigDecimal total = BigDecimal.ZERO;
+
+        private Acumulado(Producto producto) {
+            this.producto = producto;
+        }
     }
 
     // Porcentaje de utilidad sobre los ingresos (ej: 25.50 = 25,5 %). Si no hay ingresos devuelve 0.
