@@ -11,7 +11,7 @@ release.properties
 .classpath
 .settings/
 bin/
-
+.env
 # IntelliJ
 .idea
 *.ipr

@@ -1,0 +1,245 @@
+/* ==========================================================
+   PetCare · Navbar flotante "glass"
+   Prefijo pc- para no chocar con Bootstrap.
+   ========================================================== */
+
+:root {
+    --pc-navy:      #0b3a63;
+    --pc-navy-700:  #0a2f52;
+    --pc-ink:       #0f2d4a;
+    --pc-sky:       #2f95e0;
+    --pc-sky-600:   #1f7fc8;
+    --pc-sky-100:   #e6f3fe;
+    --pc-sky-200:   #cfe7fa;
+    --pc-glass:     rgba(255, 255, 255, .74);
+    --pc-ease:      cubic-bezier(.22, .8, .3, 1);
+    --pc-font:      "Poppins", "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+/* Sprite de iconos: oculto, pero SIN display:none (rompería los degradados) */
+.pc-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* ---------- Contenedor flotante ---------- */
+.pc-header {
+    position: sticky;
+    top: 14px;
+    z-index: 100;
+    padding-inline: 1rem;
+    font-family: var(--pc-font);
+}
+
+.pc-nav {
+    max-width: 1180px;
+    margin-inline: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem 1rem;
+    padding: .55rem .6rem .55rem 1rem;
+    background: var(--pc-glass);
+    -webkit-backdrop-filter: blur(16px) saturate(170%);
+    backdrop-filter: blur(16px) saturate(170%);
+    border: 1px solid rgba(255, 255, 255, .9);
+    border-radius: 28px;
+    box-shadow:
+            0 14px 34px -14px rgba(31, 100, 170, .35),
+            0 2px 6px rgba(31, 100, 170, .08),
+            inset 0 1px 0 rgba(255, 255, 255, .9);
+    transition: background .3s, box-shadow .3s;
+}
+
+.pc-header.is-scrolled .pc-nav {
+    background: rgba(255, 255, 255, .9);
+    box-shadow:
+            0 18px 40px -14px rgba(31, 100, 170, .45),
+            0 2px 8px rgba(31, 100, 170, .12),
+            inset 0 1px 0 #fff;
+}
+
+/* ---------- Marca ---------- */
+.pc-brand {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    color: var(--pc-ink);
+    text-decoration: none;
+}
+.pc-brand__logo { display: grid; place-items: center; width: 44px; height: 44px; flex: none; }
+.pc-brand__logo svg,
+.pc-brand__logo img { width: 100%; height: 100%; object-fit: contain; }
+
+.pc-brand__text { display: flex; flex-direction: column; line-height: 1; }
+.pc-brand__text strong {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    color: var(--pc-navy);
+}
+.pc-brand__text small {
+    margin-top: .22rem;
+    font-size: .62rem;
+    font-weight: 500;
+    letter-spacing: .01em;
+    color: var(--pc-sky-600);
+}
+
+/* ---------- Iconos ---------- */
+.pc-ico {
+    width: 1.15em;
+    height: 1.15em;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ---------- Botón hamburguesa (solo móvil) ---------- */
+.pc-toggle {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--pc-sky-100);
+    cursor: pointer;
+}
+.pc-toggle span {
+    grid-area: 1 / 1;
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--pc-navy);
+    transition: transform .3s var(--pc-ease), opacity .2s;
+}
+.pc-toggle span:nth-child(1) { transform: translateY(-6px); }
+.pc-toggle span:nth-child(3) { transform: translateY(6px); }
+.pc-toggle[aria-expanded="true"] span:nth-child(1) { transform: rotate(45deg); }
+.pc-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.pc-toggle[aria-expanded="true"] span:nth-child(3) { transform: rotate(-45deg); }
+
+/* ---------- Menú (móvil: panel desplegable) ---------- */
+.pc-menu {
+    flex-basis: 100%;
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition: grid-template-rows .35s var(--pc-ease), visibility 0s .35s;
+}
+.pc-menu.is-open {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition-delay: 0s;
+}
+.pc-menu__inner {
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+/* ---------- Enlaces ---------- */
+.pc-links {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    margin: 0;
+    padding: .5rem 0 0;
+    list-style: none;
+}
+.pc-link {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .6rem 1.05rem;
+    border: 1.5px solid transparent;
+    border-radius: 999px;
+    font-size: .9rem;
+    font-weight: 500;
+    color: var(--pc-ink);
+    text-decoration: none;
+    transition: background .2s, color .2s, border-color .2s, box-shadow .2s;
+}
+.pc-link .pc-ico { display: none; color: var(--pc-sky); }
+.pc-link:hover { background: rgba(47, 149, 224, .1); color: var(--pc-navy); }
+
+/* Página activa: píldora blanca con borde azul */
+.pc-link[aria-current="page"] {
+    background: #fff;
+    border-color: var(--pc-sky);
+    color: var(--pc-navy);
+    font-weight: 600;
+    box-shadow: 0 6px 14px -6px rgba(47, 149, 224, .45);
+}
+.pc-link[aria-current="page"] .pc-ico { display: block; }
+
+/* ---------- Acción principal: agendar cita ---------- */
+.pc-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding-bottom: .4rem;
+}
+
+.pc-cta {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .72rem 1.25rem;
+    border-radius: 99px;
+    background: linear-gradient(180deg, #0f4678, var(--pc-navy-700));
+    color: #fff;
+    font-size: .88rem;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none;
+    box-shadow: 0 10px 20px -8px rgba(11, 58, 99, .7), inset 0 1px 0 rgba(255, 255, 255, .18);
+    transition: transform .2s var(--pc-ease), box-shadow .2s, filter .2s;
+}
+.pc-cta:hover { transform: translateY(-2px); filter: brightness(1.12); box-shadow: 0 14px 24px -8px rgba(11, 58, 99, .75), inset 0 1px 0 rgba(255, 255, 255, .22); }
+.pc-cta:active { transform: translateY(0); }
+
+/* ---------- Accesibilidad ---------- */
+.pc-nav a:focus-visible,
+.pc-toggle:focus-visible {
+    outline: 3px solid rgba(47, 149, 224, .55);
+    outline-offset: 2px;
+}
+
+/* ---------- Escritorio ---------- */
+@media (min-width: 901px) {
+    .pc-nav {
+        flex-wrap: nowrap;
+        border-radius: 999px;
+        padding: .55rem .6rem .55rem 1.1rem;
+    }
+    .pc-toggle { display: none; }
+
+    .pc-menu {
+        flex: 1;
+        display: flex;
+        visibility: visible;
+        transition: none;
+    }
+    .pc-menu__inner {
+        flex: 1;
+        flex-direction: row;
+        align-items: center;
+        overflow: visible;
+    }
+    .pc-links { flex-direction: row; margin-inline: auto; padding: 0; }
+    .pc-link { display: inline-flex; }
+    .pc-actions { padding: 0; }
+    .pc-cta { flex: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pc-nav, .pc-menu, .pc-toggle span, .pc-cta, .pc-link { transition: none; }
+}

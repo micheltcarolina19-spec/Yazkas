@@ -5,7 +5,7 @@ import java.time.ZoneId;
 
 // Reloj del negocio en la zona horaria de Colombia.
 // Los servicios reciben un Clock para que las fechas se puedan controlar en las pruebas unitarias.
-final class RelojColombia {
+public final class RelojColombia {
 
     static final ZoneId ZONA_COLOMBIA = ZoneId.of("America/Bogota");
 
@@ -13,7 +13,7 @@ final class RelojColombia {
         // Clase utilitaria: no se instancia
     }
 
-    static Clock reloj() {
+    public static Clock reloj() {
         return Clock.system(ZONA_COLOMBIA);
     }
 }
