@@ -1,10 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Dashboard | YAZKAS Admin</title>
+    <link rel="stylesheet" href="/css/admin/admin-sidebar.css">
 </head>
 <body>
 
+<div class="adm-layout">
+
+    {! Sidebar: cambia 'dashboard' según la página (ventas, citas, productos...) !}
+        {#include admin/components/sidebar active='dashboard' /}
+
+    <main class="adm-main">
+        <h1>Dashboard</h1>
+        <p>Aquí va el contenido del administrador.</p>
+    </main>
+
+</div>
+
+<script src="/js/admin/admin-sidebar.js"></script>
 </body>
 </html>

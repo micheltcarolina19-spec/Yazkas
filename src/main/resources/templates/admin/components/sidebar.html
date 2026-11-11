@@ -1,0 +1,124 @@
+{! ===== Sidebar Admin PetCare =====
+   Uso:  {#include admin/components/sidebar active='dashboard' /}
+   Valores de "active": dashboard | ventas | citas | productos | clientes | reportes | configuracion
+   LOGO: guarda tu imagen en META-INF/resources/img/logo.png (si no existe, se muestra la huellita) !}
+{#let activo=active.or('')}
+
+    {! Sprite de iconos (ids con prefijo adm- para no chocar con el navbar público) !}
+    <svg class="adm-sprite" aria-hidden="true" focusable="false">
+        <symbol id="adm-i-paw" viewBox="0 0 48 48">
+            <ellipse cx="24" cy="31" rx="10.5" ry="8.5"/>
+            <ellipse cx="9.5" cy="22" rx="4.2" ry="5.6" transform="rotate(-18 9.5 22)"/>
+            <ellipse cx="18" cy="12.5" rx="4.4" ry="6" transform="rotate(-6 18 12.5)"/>
+            <ellipse cx="30" cy="12.5" rx="4.4" ry="6" transform="rotate(6 30 12.5)"/>
+            <ellipse cx="38.5" cy="22" rx="4.2" ry="5.6" transform="rotate(18 38.5 22)"/>
+        </symbol>
+        <symbol id="adm-i-dashboard" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7.5" height="9" rx="2"/><rect x="13.5" y="3" width="7.5" height="5" rx="2"/>
+            <rect x="13.5" y="11" width="7.5" height="10" rx="2"/><rect x="3" y="15" width="7.5" height="6" rx="2"/>
+        </symbol>
+        <symbol id="adm-i-cart" viewBox="0 0 24 24">
+            <circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/>
+            <path d="M2.5 3.5h2.7l2.3 11.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8l1.3-6.7H6.1"/>
+        </symbol>
+        <symbol id="adm-i-calendar" viewBox="0 0 24 24">
+            <rect x="3.5" y="5" width="17" height="15.5" rx="3"/>
+            <path d="M8 3v4M16 3v4M3.5 10h17M9.5 15l2 2 3.5-3.5"/>
+        </symbol>
+        <symbol id="adm-i-box" viewBox="0 0 24 24">
+            <path d="M12 3 20.5 7.5v9L12 21l-8.5-4.5v-9Z"/><path d="m3.5 7.5 8.5 4.5 8.5-4.5M12 12v9"/>
+        </symbol>
+        <symbol id="adm-i-users" viewBox="0 0 24 24">
+            <circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/>
+            <circle cx="17" cy="9" r="2.5"/><path d="M17 14.5c2.4 0 4 1.7 4 4.5"/>
+        </symbol>
+        <symbol id="adm-i-chart" viewBox="0 0 24 24">
+            <path d="M5 20v-7M12 20V5M19 20V10"/>
+        </symbol>
+        <symbol id="adm-i-settings" viewBox="0 0 24 24">
+            <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/>
+            <circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>
+        </symbol>
+        <symbol id="adm-i-logout" viewBox="0 0 24 24">
+            <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 8l4 4-4 4M20 12H9"/>
+        </symbol>
+        <symbol id="adm-i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+        <symbol id="adm-i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+        <symbol id="adm-i-chevron" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+    </svg>
+
+    {! Barra superior: solo se ve en móvil !}
+    <header class="adm-topbar">
+        <button class="adm-burger" type="button" data-adm-open
+                aria-controls="adm-sidebar" aria-expanded="false" aria-label="Abrir menú">
+            <svg class="adm-ico" aria-hidden="true"><use href="#adm-i-menu"/></svg>
+        </button>
+        <span class="adm-topbar__title">YAZKAS <small>Admin</small></span>
+    </header>
+
+    <div class="adm-overlay" data-adm-overlay></div>
+
+    <aside class="adm-sidebar" id="adm-sidebar" aria-label="Navegación del administrador">
+
+        <button class="adm-close" type="button" data-adm-close aria-label="Cerrar menú">
+            <svg class="adm-ico" aria-hidden="true"><use href="#adm-i-close"/></svg>
+        </button>
+
+        {! ---- LOGO / MARCA ---- !}
+        <a class="adm-brand" href="/admin" aria-label="PetCare, ir al dashboard">
+            <span class="adm-brand__logo">
+                <img src="/img/usuario/logo.png" alt="" width="64" height="64">
+                <svg class="adm-paw" viewBox="0 0 48 48" aria-hidden="true"><use href="#adm-i-paw"/></svg>
+            </span>
+            <span class="adm-brand__text">
+                <strong>YAZKAS</strong>
+                <small>Peluquería Canina</small>
+            </span>
+        </a>
+
+        {! ---- NAVEGACIÓN ---- !}
+        <nav class="adm-nav" aria-label="Menú principal">
+            <ul class="adm-nav__list">
+                <li><a class="adm-link" href="/admin" title="Dashboard" {#if activo == 'dashboard'}aria-current="page"{/if}>
+                        <svg class="adm-ico" aria-hidden="true"><use href="#adm-i-dashboard"/></svg>
+                        <span class="adm-label">Dashboard</span></a></li>
+                <li><a class="adm-link" href="/admin/ventas" title="Ventas" {#if activo == 'ventas'}aria-current="page"{/if}>
+                        <svg class="adm-ico" aria-hidden="true"><use href="#adm-i-cart"/></svg>
+                        <span class="adm-label">Ventas</span></a></li>
+                <li><a class="adm-link" href="/admin/citas" title="Citas" {#if activo == 'citas'}aria-current="page"{/if}>
+                        <svg class="adm-ico" aria-hidden="true"><use href="#adm-i-calendar"/></svg>
+                        <span class="adm-label">Citas</span></a></li>
+                <li><a class="adm-link" href="/admin/productos" title="Productos" {#if activo == 'productos'}aria-current="page"{/if}>
+                        <svg class="adm-ico" aria-hidden="true"><use href="#adm-i-box"/></svg>
+                        <span class="adm-label">Productos</span></a></li>
+                <li><a class="adm-link" href="/admin/clientes" title="Clientes" {#if activo == 'clientes'}aria-current="page"{/if}>
+                        <svg class="adm-ico" aria-hidden="true"><use href="#adm-i-users"/></svg>
+                        <span class="adm-label">Clientes</span></a></li>
+                <li><a class="adm-link" href="/admin/reportes" title="Reportes" {#if activo == 'reportes'}aria-current="page"{/if}>
+                        <svg class="adm-ico" aria-hidden="true"><use href="#adm-i-chart"/></svg>
+                        <span class="adm-label">Reportes</span></a></li>
+                <li><a class="adm-link" href="/admin/configuracion" title="Configuración" {#if activo == 'configuracion'}aria-current="page"{/if}>
+                        <svg class="adm-ico" aria-hidden="true"><use href="#adm-i-settings"/></svg>
+                        <span class="adm-label">Configuración</span></a></li>
+            </ul>
+        </nav>
+
+        {! ---- PIE ---- !}
+        <div class="adm-footer">
+            <div class="adm-tagline">
+                <svg class="adm-paw" viewBox="0 0 48 48" aria-hidden="true"><use href="#adm-i-paw"/></svg>
+                <span class="adm-label">Cuidamos con amor</span>
+            </div>
+            <a class="adm-link adm-link--ghost" href="/logout" title="Cerrar sesión">
+                <svg class="adm-ico" aria-hidden="true"><use href="#adm-i-logout"/></svg>
+                <span class="adm-label">Cerrar sesión</span>
+            </a>
+            <button class="adm-link adm-link--ghost adm-collapse" type="button" data-adm-collapse
+                    aria-pressed="false" aria-label="Contraer menú" title="Contraer menú">
+                <svg class="adm-ico" aria-hidden="true"><use href="#adm-i-chevron"/></svg>
+                <span class="adm-label">Contraer</span>
+            </button>
+        </div>
+    </aside>
+
+{/let}

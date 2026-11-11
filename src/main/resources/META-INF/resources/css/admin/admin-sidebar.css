@@ -1,0 +1,198 @@
+:root {
+    --adm-sb-w: 264px;
+    --adm-sb-w-rail: 76px;
+    --adm-topbar-h: 56px;
+    --adm-sb-bg: linear-gradient(180deg, #1a5c82 0%, #103f5d 100%);
+    --adm-accent: linear-gradient(135deg, #5cbdf8, #2f9be0);
+    --adm-text: rgba(255, 255, 255, .82);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0%; padding: 0% }
+
+/* ---------- Layout ---------- */
+.adm-layout {
+    display: grid;
+    grid-template-columns: var(--adm-sb-w) minmax(0, 1fr);
+    min-height: 100dvh;
+    background: linear-gradient(180deg, #d8eeff 0%, #f4faff 60%);
+    transition: grid-template-columns .25s ease;
+}
+.adm-main { min-width: 0; padding: 1.5rem; }   /* min-width:0 evita desbordes */
+.adm-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* ---------- Sidebar ---------- */
+.adm-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem .75rem 1rem;
+    color: #fff;
+    background: var(--adm-sb-bg);
+    z-index: 1040;
+    overflow: hidden;
+}
+
+/* Marca */
+.adm-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    padding-bottom: 1rem;
+    color: inherit;
+    text-decoration: none;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+}
+.adm-brand__logo {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .08);
+    overflow: hidden;
+    transition: width .25s, height .25s;
+}
+.adm-brand__logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+.adm-brand__logo img ~ svg { display: none; }       /* si hay imagen, oculta la huella */
+.adm-brand__logo svg { width: 62%; height: 62%; color: #5cbdf8; }
+.adm-brand__text { display: flex; flex-direction: column; line-height: 1.15; }
+.adm-brand__text strong { font-size: 1.3rem; letter-spacing: .2px; }
+.adm-brand__text small { font-size: .72rem; opacity: .75; }
+
+/* Navegación */
+.adm-nav { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.adm-nav__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .3rem; }
+
+.adm-link {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    width: 100%;
+    padding: .72rem .9rem;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--adm-text);
+    font: 500 .95rem/1.2 inherit;
+    font-family: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .2s, color .2s, box-shadow .2s;
+}
+.adm-link:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+.adm-link:focus-visible,
+.adm-burger:focus-visible,
+.adm-close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.adm-link[aria-current="page"] {
+    background: var(--adm-accent);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(47, 155, 224, .35);
+}
+.adm-label { overflow: hidden; text-overflow: ellipsis; }
+
+.adm-ico {
+    width: 22px; height: 22px; flex: none;
+    fill: none; stroke: currentColor; stroke-width: 1.8;
+    stroke-linecap: round; stroke-linejoin: round;
+}
+.adm-paw { fill: currentColor; }
+
+/* Pie */
+.adm-footer {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    padding-top: .75rem;
+    border-top: 1px solid rgba(255, 255, 255, .12);
+}
+.adm-tagline {
+    display: flex; align-items: center; justify-content: center; gap: .5rem;
+    padding: .25rem 0 .5rem;
+    font-size: .85rem; font-weight: 600; color: #fff;
+}
+.adm-tagline .adm-paw { width: 22px; height: 22px; color: #5cbdf8; flex: none; }
+.adm-link--ghost { font-size: .88rem; }
+.adm-collapse { display: none; }
+
+/* ---------- Móvil: barra superior, cajón y overlay ---------- */
+.adm-topbar, .adm-overlay, .adm-close { display: none; }
+
+/* ---------- Desktop ---------- */
+@media (min-width: 1025px) {
+    .adm-collapse { display: flex; }
+}
+
+/* ---------- Modo contraído (desktop manual / tablet automático) ---------- */
+@media (min-width: 769px) {
+    .adm-layout.is-collapsed { grid-template-columns: var(--adm-sb-w-rail) minmax(0, 1fr); }
+    .is-collapsed .adm-sidebar { padding-inline: .6rem; }
+    .is-collapsed .adm-brand__text,
+    .is-collapsed .adm-label { display: none; }
+    .is-collapsed .adm-brand__logo { width: 46px; height: 46px; border-radius: 14px; }
+    .is-collapsed .adm-link { justify-content: center; padding: .8rem; }
+    .is-collapsed .adm-tagline { padding-bottom: .25rem; }
+    .is-collapsed .adm-collapse .adm-ico { transform: rotate(180deg); }
+}
+
+/* ---------- Móvil (<= 768px) ---------- */
+@media (max-width: 768px) {
+    .adm-layout { grid-template-columns: minmax(0, 1fr); }
+    .adm-main { padding: calc(var(--adm-topbar-h) + 1rem) 1rem 1rem; }
+
+    .adm-topbar {
+        position: fixed; inset: 0 0 auto 0;
+        height: calc(var(--adm-topbar-h) + env(safe-area-inset-top, 0px));
+        padding: env(safe-area-inset-top, 0px) .75rem 0;
+        display: flex; align-items: center; gap: .75rem;
+        background: var(--adm-sb-bg); color: #fff;
+        z-index: 1030;
+        box-shadow: 0 2px 12px rgba(16, 63, 93, .25);
+    }
+    .adm-topbar__title { font-weight: 700; font-size: 1.05rem; }
+    .adm-topbar__title small { font-weight: 500; opacity: .75; margin-left: .25rem; }
+
+    .adm-burger, .adm-close {
+        display: grid; place-items: center;
+        width: 40px; height: 40px;
+        border: 0; border-radius: 10px;
+        background: rgba(255, 255, 255, .12); color: #fff; cursor: pointer;
+    }
+    .adm-close { position: absolute; top: .75rem; right: .75rem; }
+
+    .adm-sidebar {
+        position: fixed; inset: 0 auto 0 0;
+        width: min(84vw, 300px);
+        padding-top: calc(1.25rem + env(safe-area-inset-top, 0px));
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+        transform: translateX(-100%);
+        visibility: hidden;
+        transition: transform .28s ease, visibility 0s linear .28s;
+        box-shadow: 8px 0 30px rgba(0, 0, 0, .25);
+    }
+    .adm-sidebar.is-open {
+        transform: none;
+        visibility: visible;
+        transition: transform .28s ease, visibility 0s;
+    }
+
+    .adm-overlay {
+        display: block; position: fixed; inset: 0;
+        background: rgba(10, 30, 45, .55);
+        opacity: 0; visibility: hidden;
+        transition: opacity .28s ease, visibility 0s linear .28s;
+        z-index: 1035;
+    }
+    .adm-overlay.is-open { opacity: 1; visibility: visible; transition: opacity .28s ease, visibility 0s; }
+
+    body.adm-lock { overflow: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .adm-layout, .adm-sidebar, .adm-overlay, .adm-brand__logo, .adm-link { transition: none !important; }
+}
