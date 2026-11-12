@@ -25,4 +25,5 @@ public class PlanillaSanidad {
     private Herramienta herramienta;
     private Boolean limpiezaRealizada;
     private Boolean desinfeccion;
+    private String observaciones;
 }

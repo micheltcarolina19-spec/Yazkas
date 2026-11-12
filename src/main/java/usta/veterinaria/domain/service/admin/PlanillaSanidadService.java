@@ -16,6 +16,8 @@ import java.util.Objects;
 // Servicio que valida la planilla de limpieza y desinfección (de lunes a viernes)
 public class PlanillaSanidadService {
 
+    public static final int MAX_OBSERVACIONES = 255;
+
     private final Clock clock;
 
     public PlanillaSanidadService() {
@@ -26,7 +28,8 @@ public class PlanillaSanidadService {
         this.clock = Objects.requireNonNull(clock, "El reloj es obligatorio");
     }
 
-    // Registra una fila de la planilla. El día se calcula a partir de la fecha.
+    // Valida y normaliza una fila de la planilla (sirve para crear y para editar).
+    // El día se calcula a partir de la fecha.
     public PlanillaSanidad registrar(PlanillaSanidad planilla, List<PlanillaSanidad> registrosExistentes) {
         if (planilla == null) {
             throw new BusinessRuleException("El registro de sanidad es obligatorio");
@@ -52,9 +55,11 @@ public class PlanillaSanidadService {
         planilla.setLimpiezaRealizada(limpieza);
         planilla.setDesinfeccion(desinfeccion);
 
+        planilla.setObservaciones(normalizarObservaciones(planilla.getObservaciones()));
+
         if (registrosExistentes != null) {
             for (PlanillaSanidad otro : registrosExistentes) {
-                if (otro != null && otro != planilla
+                if (otro != null && !esElMismoRegistro(planilla, otro)
                         && planilla.getFechaPlanilla().equals(otro.getFechaPlanilla())
                         && planilla.getAreaLimpieza() == otro.getAreaLimpieza()
                         && planilla.getHerramienta() == otro.getHerramienta()) {
@@ -64,6 +69,25 @@ public class PlanillaSanidadService {
             }
         }
         return planilla;
+    }
+
+    // Al editar, el registro que viene de la base de datos es otro objeto con el mismo id:
+    // no debe contarse como duplicado de sí mismo
+    private boolean esElMismoRegistro(PlanillaSanidad planilla, PlanillaSanidad otro) {
+        return otro == planilla
+                || (planilla.getId() != null && planilla.getId().equals(otro.getId()));
+    }
+
+    private String normalizarObservaciones(String observaciones) {
+        if (observaciones == null || observaciones.isBlank()) {
+            return null;
+        }
+        String limpio = observaciones.trim();
+        if (limpio.length() > MAX_OBSERVACIONES) {
+            throw new BusinessRuleException("Las observaciones no pueden superar los "
+                    + MAX_OBSERVACIONES + " caracteres");
+        }
+        return limpio;
     }
 
     // Porcentaje de registros con limpieza y desinfección completas (ej: 80.00 = 80 %)

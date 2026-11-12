@@ -3,18 +3,13 @@ package usta.veterinaria.infrastructure.adapter.out.persistence.mapper.admin;
 import usta.veterinaria.domain.model.admin.PlanillaSanidad;
 import usta.veterinaria.infrastructure.adapter.out.persistence.entity.admin.PlanillaSanidadEntity;
 
-// Convierte entre PlanillaSanidad y PlanillaSanidadEntity
+// Convierte entre el modelo de dominio PlanillaSanidad y la entidad JPA PlanillaSanidadEntity
 public final class PlanillaSanidadEntityMapper {
 
     private PlanillaSanidadEntityMapper() {
     }
 
-    // Dominio -> entidad
     public static PlanillaSanidadEntity toEntity(PlanillaSanidad planilla) {
-        if (planilla == null) {
-            return null;
-        }
-
         PlanillaSanidadEntity entity = new PlanillaSanidadEntity();
         entity.setId(planilla.getId());
         entity.setFechaPlanilla(planilla.getFechaPlanilla());
@@ -23,15 +18,11 @@ public final class PlanillaSanidadEntityMapper {
         entity.setHerramienta(planilla.getHerramienta());
         entity.setLimpiezaRealizada(planilla.getLimpiezaRealizada());
         entity.setDesinfeccion(planilla.getDesinfeccion());
+        entity.setObservaciones(planilla.getObservaciones());
         return entity;
     }
 
-    // Entidad -> dominio
     public static PlanillaSanidad toDomain(PlanillaSanidadEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-
         return PlanillaSanidad.builder()
                 .id(entity.getId())
                 .fechaPlanilla(entity.getFechaPlanilla())
@@ -40,6 +31,7 @@ public final class PlanillaSanidadEntityMapper {
                 .herramienta(entity.getHerramienta())
                 .limpiezaRealizada(entity.getLimpiezaRealizada())
                 .desinfeccion(entity.getDesinfeccion())
+                .observaciones(entity.getObservaciones())
                 .build();
     }
 }

@@ -18,4 +18,7 @@ public interface RegistrarVentaUseCase {
     List<DetalleVenta> listarDetalles(Long ventaId);
 
     List<Venta> listarPorRango(LocalDate inicio, LocalDate fin);
+
+    /** Arma el ticket del punto de venta sin guardar: precio y stock reales, subtotal con la regla del dominio. */
+    List<DetalleVenta> armarTicket(List<Long> productoIds, List<Integer> cantidades);
 }

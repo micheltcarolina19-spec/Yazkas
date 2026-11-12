@@ -59,6 +59,44 @@ public class RegistrarVentaService implements RegistrarVentaUseCase {
         return guardada;
     }
 
+    // Arma el ticket del punto de venta SIN guardar nada: toma el precio y el stock reales de cada producto
+    // y calcula el subtotal con la misma regla del dominio. Lo que no se puede vender se ajusta:
+    //  - el producto que ya no existe, no tiene precio o está agotado no entra en el ticket
+    //  - si piden más unidades de las que hay, se deja solo el stock disponible
+    @Override
+    public List<DetalleVenta> armarTicket(List<Long> productoIds, List<Integer> cantidades) {
+        List<DetalleVenta> ticket = new ArrayList<>();
+        if (productoIds == null || cantidades == null) {
+            return ticket;
+        }
+        if (productoIds.size() != cantidades.size()) {
+            throw new BusinessRuleException("Cada producto del ticket debe tener su cantidad");
+        }
+        for (int i = 0; i < productoIds.size(); i++) {
+            Long id = productoIds.get(i);
+            Integer cantidad = cantidades.get(i);
+            if (id == null || cantidad == null || cantidad <= 0) {
+                continue;
+            }
+            Producto producto = productoRepository.findById(id).orElse(null);
+            if (producto == null || producto.getPrecioVenta() == null) {
+                continue;
+            }
+            int stock = producto.getStock() == null ? 0 : producto.getStock();
+            int vendible = Math.min(cantidad, stock);
+            if (vendible <= 0) {
+                continue;
+            }
+            DetalleVenta detalle = DetalleVenta.builder()
+                    .producto(producto)
+                    .cantidad(vendible)
+                    .build();
+            detalle.setSubtotal(ventaService.calcularSubtotal(producto, vendible));
+            ticket.add(detalle);
+        }
+        return ticket;
+    }
+
     @Override
     public Venta buscarPorId(Long ventaId) {
         return ventaRepository.findById(Validaciones.requerirId(ventaId, "id de la venta"))

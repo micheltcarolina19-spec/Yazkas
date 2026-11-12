@@ -8,12 +8,18 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-// Puerto primario: planilla de limpieza y desinfección
+// Puerto de entrada: CRUD de la planilla de limpieza y desinfección
 public interface GestionarPlanillaSanidadUseCase {
 
-    // Si fecha es null se usa la fecha de hoy
     PlanillaSanidad registrar(LocalDate fecha, AreaLimpieza areaLimpieza, Herramienta herramienta,
-                              Boolean limpiezaRealizada, Boolean desinfeccion);
+                              Boolean limpiezaRealizada, Boolean desinfeccion, String observaciones);
+
+    PlanillaSanidad actualizar(Long id, LocalDate fecha, AreaLimpieza areaLimpieza, Herramienta herramienta,
+                               Boolean limpiezaRealizada, Boolean desinfeccion, String observaciones);
+
+    void eliminar(Long id);
+
+    PlanillaSanidad buscarPorId(Long id);
 
     List<PlanillaSanidad> listarPorFecha(LocalDate fecha);
 

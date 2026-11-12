@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Punto de venta | YAZKAS Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin/admin-ventas.css">
+    <link rel="stylesheet" href="/css/admin/admin-sidebar.css">
+
+</head>
+<body class="app-shell">
+
+{! Iconos reutilizables (se usan con <svg class="i"><use href="#i-nombre"/></svg>) !}
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol>
+    <symbol id="i-paw" viewBox="0 0 24 24"><g fill="currentColor" stroke="none"><ellipse cx="5.2" cy="11.2" rx="2.1" ry="2.8"/><ellipse cx="9.6" cy="6.2" rx="2.1" ry="2.9"/><ellipse cx="14.4" cy="6.2" rx="2.1" ry="2.9"/><ellipse cx="18.8" cy="11.2" rx="2.1" ry="2.8"/><path d="M12 11c-3 0-6 3.2-6 6 0 2 1.6 3 3.3 3 1 0 1.8-.5 2.7-.5s1.7.5 2.7.5c1.7 0 3.3-1 3.3-3 0-2.8-3-6-6-6z"/></g></symbol>
+</svg>
+
+{! Sidebar: cambia 'dashboard' según la página (ventas, citas, productos...) !}
+    {#include admin/components/sidebar active='ventas' /}
+
+<main class="pos">
+
+    {! ====================== Encabezado ====================== !}
+    <header class="hero">
+        <div class="hero__text">
+            <span class="pill-label">
+                <svg class="i"><use href="#i-cart"/></svg>
+                Punto de Venta
+            </span>
+            <h1>Registrar nueva venta</h1>
+            <p>Selecciona los productos, agrega las cantidades y genera el ticket de venta.</p>
+        </div>
+
+        <img class="hero__mascot" src="/img/mascota-principal-dash.png" alt="" aria-hidden="true">
+
+        <div class="hero__actions">
+            {! Ajusta esta ruta a la de tu historial de ventas !}
+            <a class="btn btn--white" href="/admin/ventas">
+                <svg class="i"><use href="#i-history"/></svg>
+                Historial de ventas
+            </a>
+            <button type="button" class="btn btn--navy" id="btn-nueva-venta">
+                <svg class="i"><use href="#i-plus"/></svg>
+                Nueva venta
+            </button>
+        </div>
+    </header>
+
+    <div class="pos__grid">
+
+        {! ====================== Catálogo ====================== !}
+        <section class="panel catalog" aria-label="Catálogo de productos">
+
+            <div class="search">
+                <svg class="i search__icon"><use href="#i-search"/></svg>
+                <input id="buscador" type="search" placeholder="Buscar producto por nombre…"
+                       autocomplete="off" aria-label="Buscar producto por nombre">
+                <button type="button" class="search__clear" id="buscador-limpiar" aria-label="Borrar búsqueda" hidden>
+                    <svg class="i"><use href="#i-x"/></svg>
+                </button>
+            </div>
+
+            <div class="chips" id="chips" role="group" aria-label="Filtrar por categoría">
+                <button type="button" class="chip is-active" data-cat="">
+                    <svg class="i"><use href="#i-paw"/></svg> Todos
+                </button>
+                {#for c in categorias}
+                    <button type="button" class="chip" data-cat="{c.name}"><span class="cat-label">{c.name}</span></button>
+                {/for}
+                <div class="more" id="more" hidden>
+                    <button type="button" class="chip" id="more-btn" aria-haspopup="true" aria-expanded="false">
+                        <span id="more-label">Más</span>
+                        <svg class="i i--sm"><use href="#i-chevron"/></svg>
+                    </button>
+                    <div class="more__menu" id="more-menu" role="menu" hidden></div>
+                </div>
+            </div>
+
+            <div class="products" id="productos">
+                {#for p in productos}
+                    {#let stock=p.stock.or(0)}
+                        <article class="card {#if stock <= 0}is-out{/if}"
+                                 data-id="{p.id}"
+                                 data-name="{p.nombre}"
+                                 data-cat="{p.categoria.name.or('')}"
+                                 data-stock="{stock}">
+
+                    <span class="badge {#if stock <= 0}badge--out{#else if stock <= stockBajo}badge--low{#else}badge--ok{/if}">
+                        {#if stock <= 0}Agotado{#else if stock <= stockBajo}Pocas unidades{#else}Disponible{/if}
+                    </span>
+
+                            <button type="button" class="fav" data-fav="{p.id}" aria-label="Marcar como favorito" aria-pressed="false">
+                                <svg class="i"><use href="#i-heart"/></svg>
+                            </button>
+
+                            <span class="in-ticket" hidden></span>
+
+                            {#if p.fotoProducto}
+                                <img class="thumb-img" src="{p.fotoProducto}" alt="{p.nombre}" loading="lazy">
+                            {#else}
+                                <div class="thumb" data-seed="{p.nombre}">
+                                    <svg class="i"><use href="#i-paw"/></svg>
+                                </div>
+                            {/if}
+
+                            <h3 class="card__name">{p.nombre}</h3>
+                            <p class="card__cat cat-label">{p.categoria.name.or('')}</p>
+                            <p class="card__price money" data-v="{p.precioVenta}"></p>
+                            <p class="card__stock">
+                                <svg class="i i--sm"><use href="#i-box"/></svg>
+                                {#if stock <= 0}Sin stock{#else}Stock: {stock}{/if}
+                            </p>
+
+                            {#if stock <= 0}
+                                <button type="button" class="btn-add" disabled>Sin stock</button>
+                            {#else}
+                                <button type="button" class="btn-add" data-add="{p.id}">
+                                    <svg class="i"><use href="#i-plus"/></svg> Agregar
+                                </button>
+                            {/if}
+                        </article>
+                    {/let}
+                {/for}
+            </div>
+
+            <div class="empty empty--search" id="sin-resultados" hidden>
+                <svg class="i"><use href="#i-search"/></svg>
+                <p><strong>No encontramos productos</strong></p>
+                <p>Prueba con otro nombre o cambia de categoría.</p>
+            </div>
+
+            <footer class="catalog__foot">
+                <span class="pill-label pill-label--soft">
+                    <svg class="i"><use href="#i-shield"/></svg>
+                    Compra segura y atención de calidad
+                </span>
+            </footer>
+        </section>
+
+        {! ====================== Ticket ====================== !}
+        {! Todo lo que hay dentro del fragment 'ticket' lo devuelve el backend en cada acción y reemplaza el panel !}
+        <aside class="panel ticket" id="ticket-panel" aria-label="Ticket de venta" aria-live="polite">
+            {#fragment id=ticket}
+                <header class="ticket__head">
+                    <h2>
+                        <span class="ticket__icon"><svg class="i"><use href="#i-receipt"/></svg></span>
+                        Ticket de venta
+                    </h2>
+                    <button type="button" class="link-danger" data-action="vaciar" {#if lineas.isEmpty}disabled{/if}>
+                        <svg class="i"><use href="#i-trash"/></svg> Limpiar
+                    </button>
+                </header>
+
+                <div class="ticket__body">
+                    {#if lineas.isEmpty}
+                        <div class="empty">
+                            <div class="empty__icon"><svg class="i"><use href="#i-cart"/></svg></div>
+                            <p><strong>Tu ticket está vacío</strong></p>
+                            <p>Toca “Agregar” en un producto para empezar la venta.</p>
+                        </div>
+                    {#else}
+                        <ul class="lines">
+                            {#for l in lineas}
+                                <li class="line" data-id="{l.producto.id}" data-cant="{l.cantidad}" data-stock="{l.producto.stock.or(0)}">
+                                    {#if l.producto.fotoProducto}
+                                        <img class="thumb-img thumb-img--sm" src="{l.producto.fotoProducto}" alt="{l.producto.nombre}" loading="lazy">
+                                    {#else}
+                                        <div class="thumb thumb--sm" data-seed="{l.producto.nombre}"><svg class="i"><use href="#i-paw"/></svg></div>
+                                    {/if}
+                                    <div class="line__info">
+                                        <p class="line__name">{l.producto.nombre}</p>
+                                        <p class="line__unit"><span class="money" data-v="{l.producto.precioVenta}"></span> c/u</p>
+                                    </div>
+                                    <div class="qty">
+                                        <button type="button" class="qty__btn" data-action="menos" aria-label="Quitar una unidad">
+                                            <svg class="i"><use href="#i-minus"/></svg>
+                                        </button>
+                                        <input class="qty__input" type="number" min="1" inputmode="numeric" value="{l.cantidad}"
+                                               data-action="cantidad" aria-label="Cantidad de {l.producto.nombre}">
+                                        <button type="button" class="qty__btn" data-action="mas" aria-label="Agregar una unidad">
+                                            <svg class="i"><use href="#i-plus"/></svg>
+                                        </button>
+                                    </div>
+                                    <strong class="line__sub money" data-v="{l.subtotal}"></strong>
+                                    <button type="button" class="icon-danger" data-action="quitar" aria-label="Quitar {l.producto.nombre} del ticket">
+                                        <svg class="i"><use href="#i-trash"/></svg>
+                                    </button>
+                                </li>
+                            {/for}
+                        </ul>
+                    {/if}
+                </div>
+
+                <footer class="ticket__foot">
+                    <div class="sum">
+                        <span>{#if unidades == 1}Producto{#else}Productos{/if}: <b id="ticket-unidades">{unidades}</b></span>
+                        <span class="money" data-v="{total}"></span>
+                    </div>
+                    <div class="total">
+                        <span class="total__label"><svg class="i"><use href="#i-paw"/></svg> Total:</span>
+                        <span class="total__value money" id="ticket-total" data-v="{total}"></span>
+                    </div>
+                    <div class="ticket__secondary">
+                        <button type="button" class="btn btn--outline" data-action="deshacer" {#if !hayPrevio}disabled{/if}>
+                            <svg class="i"><use href="#i-undo"/></svg> Deshacer
+                        </button>
+                        <button type="button" class="btn btn--outline" data-action="vaciar" {#if lineas.isEmpty}disabled{/if}>
+                            <svg class="i"><use href="#i-trash"/></svg> Vaciar
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn--primary btn--block" data-action="finalizar" {#if lineas.isEmpty}disabled{/if}>
+                        <svg class="i"><use href="#i-check"/></svg> Finalizar venta
+                    </button>
+                </footer>
+            {/fragment}
+        </aside>
+    </div>
+</main>
+
+{! Confirmación y resultado de la venta !}
+<dialog class="dlg" id="dlg" aria-labelledby="dlg-title">
+    <div class="dlg__body" id="dlg-body"></div>
+</dialog>
+
+<div class="toasts" id="toasts" aria-live="assertive"></div>
+
+<script src="/js/admin/admin-sidebar.js"></script>
+<script src="/js/admin/admin-ventas.js" defer></script>
+</body>
+</html>

@@ -1,9 +1,12 @@
 (() => {
     'use strict';
 
-    const layout = document.querySelector('.adm-layout');
     const sidebar = document.getElementById('adm-sidebar');
-    if (!layout || !sidebar) return;
+    if (!sidebar) return;
+
+    // El layout correcto es el ancestro más cercano del sidebar, no el primero de la página
+    const layout = sidebar.closest('.adm-layout') || sidebar.parentElement;
+    if (!layout) return;
 
     const burger = document.querySelector('[data-adm-open]');
     const overlay = document.querySelector('[data-adm-overlay]');

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inventario de productos | YAZKAS Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin/admin-productos.css">
+    <link rel="stylesheet" href="/css/admin/admin-sidebar.css">
+
+</head>
+<body class="app-shell">
+
+{! Iconos reutilizables (se usan con <svg class="i"><use href="#i-nombre"/></svg>) !}
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M21.2 5.9 18.1 2.8a1.5 1.5 0 0 0-2.1 0L3 15.8V21h5.2L21.2 8a1.5 1.5 0 0 0 0-2.1z"/><path d="m15 5 4 4"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".6"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-sort" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></symbol>
+    <symbol id="i-paw" viewBox="0 0 24 24"><g fill="currentColor" stroke="none"><ellipse cx="5.2" cy="11.2" rx="2.1" ry="2.8"/><ellipse cx="9.6" cy="6.2" rx="2.1" ry="2.9"/><ellipse cx="14.4" cy="6.2" rx="2.1" ry="2.9"/><ellipse cx="18.8" cy="11.2" rx="2.1" ry="2.8"/><path d="M12 11c-3 0-6 3.2-6 6 0 2 1.6 3 3.3 3 1 0 1.8-.5 2.7-.5s1.7.5 2.7.5c1.7 0 3.3-1 3.3-3 0-2.8-3-6-6-6z"/></g></symbol>
+    <symbol id="i-bowl" viewBox="0 0 24 24"><path d="M3 12h18c0 5-4 8-9 8s-9-3-9-8z"/><path d="M8 8h8"/></symbol>
+    <symbol id="i-ball" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.6 8.5C8 9 12 12 13 20.5"/><path d="M20.4 8.5C16 9 12 12 11 20.5"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+</svg>
+
+{! Sidebar: cambia 'dashboard' según la página (ventas, citas, productos...) !}
+    {#include admin/components/sidebar active='productos' /}
+
+<main class="inv" id="inv">
+
+    <header class="inv__head">
+        <div class="inv__title">
+            <span class="inv__icon"><svg class="i"><use href="#i-box"/></svg></span>
+            <div>
+                <h1>Inventario de productos</h1>
+                <p>Gestiona el inventario y los productos de la tienda.</p>
+            </div>
+        </div>
+        <button type="button" class="btn btn--primary" id="btn-nuevo">
+            <svg class="i"><use href="#i-plus"/></svg>
+            Nuevo producto
+        </button>
+    </header>
+
+    <section class="panel inv__panel" aria-label="Lista de productos">
+
+        <div class="toolbar">
+            <label class="search">
+                <svg class="i search__icon"><use href="#i-search"/></svg>
+                <input id="buscador" type="search" placeholder="Buscar por nombre o marca…" autocomplete="off"
+                       aria-label="Buscar productos por nombre o marca">
+                <button type="button" class="search__clear" id="buscador-limpiar" aria-label="Borrar búsqueda" hidden>
+                    <svg class="i"><use href="#i-x"/></svg>
+                </button>
+            </label>
+
+            <label class="select">
+                <svg class="i select__icon"><use href="#i-tag"/></svg>
+                <select id="filtro-categoria" aria-label="Filtrar por categoría">
+                    <option value="">Categoría: todas</option>
+                    {#for c in categorias}
+                        <option value="{c.name}" data-pretty>{c.name}</option>
+                    {/for}
+                </select>
+                <svg class="i i--sm select__chev"><use href="#i-chevron"/></svg>
+            </label>
+
+            <label class="select">
+                <svg class="i select__icon"><use href="#i-star"/></svg>
+                <select id="filtro-tipo" aria-label="Filtrar por tipo">
+                    <option value="">Tipo: todos</option>
+                    {#for t in tipos}
+                        <option value="{t.name}" data-pretty>{t.name}</option>
+                    {/for}
+                </select>
+                <svg class="i i--sm select__chev"><use href="#i-chevron"/></svg>
+            </label>
+
+            <button type="button" class="link-clear" id="limpiar-filtros" hidden>
+                <svg class="i i--sm"><use href="#i-x"/></svg> Quitar filtros
+            </button>
+        </div>
+
+        <div class="table-wrap" id="tabla-wrap">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th class="c-img">Imagen</th>
+                    <th data-sort="nombre" aria-sort="ascending"><button type="button">Nombre <svg class="i i--sm"><use href="#i-sort"/></svg></button></th>
+                    <th>Marca</th>
+                    <th>Categoría</th>
+                    <th>Tipo</th>
+                    <th data-sort="stock"><button type="button">Stock <svg class="i i--sm"><use href="#i-sort"/></svg></button></th>
+                    <th data-sort="base" class="num"><button type="button">Precio base <svg class="i i--sm"><use href="#i-sort"/></svg></button></th>
+                    <th data-sort="venta" class="num"><button type="button">Precio venta <svg class="i i--sm"><use href="#i-sort"/></svg></button></th>
+                    <th class="c-act">Acciones</th>
+                </tr>
+                </thead>
+                <tbody id="filas">
+                {#fragment id=filas}
+                    {#for p in productos}
+                        {#let stock=p.stock.or(0)}
+                            <tr class="row" tabindex="0"
+                                data-id="{p.id}"
+                                data-nombre="{p.nombre}"
+                                data-marca="{p.marca.or('')}"
+                                data-cat="{p.categoria.name.or('')}"
+                                data-tipo="{p.tipo.name.or('')}"
+                                data-base="{p.precioBase}"
+                                data-venta="{p.precioVenta}"
+                                data-stock="{stock}"
+                                data-foto="{p.fotoProducto.or('')}"
+                                data-desc="{p.descripcion.or('')}">
+                                <td class="c-img">
+                                    {#if p.fotoProducto}
+                                        <img class="pimg" src="{p.fotoProducto}" alt="" loading="lazy">
+                                    {#else}
+                                        <div class="ph"><svg class="i"><use href="#i-image"/></svg></div>
+                                    {/if}
+                                </td>
+                                <td class="c-name">{p.nombre}</td>
+                                <td class="c-muted">{p.marca.or('—')}</td>
+                                <td>
+                                    {#if p.categoria}
+                                        <span class="tag tag--cat" data-v="{p.categoria.name}"><svg class="i i--sm"><use href="#i-tag"/></svg><span class="tag__t">{p.categoria.name}</span></span>
+                                    {#else}—{/if}
+                                </td>
+                                <td>
+                                    {#if p.tipo}
+                                        <span class="tag tag--tipo" data-v="{p.tipo.name}"><svg class="i i--sm"><use href="#i-star"/></svg><span class="tag__t">{p.tipo.name}</span></span>
+                                    {#else}—{/if}
+                                </td>
+                                <td>
+                        <span class="stock {#if stock <= stockBajo}stock--crit{#else if stock <= stockMedio}stock--warn{#else}stock--ok{/if}"
+                              title="{#if stock <= 0}Sin stock{#else if stock <= stockBajo}Stock bajo{#else}{stock} unidades{/if}">{stock}</span>
+                                </td>
+                                <td class="num money" data-v="{p.precioBase}"></td>
+                                <td class="num money money--strong" data-v="{p.precioVenta}"></td>
+                                <td class="c-act">
+                                    <button type="button" class="act act--edit" data-accion="editar" aria-label="Editar {p.nombre}" title="Editar">
+                                        <svg class="i"><use href="#i-edit"/></svg>
+                                    </button>
+                                    <button type="button" class="act act--del" data-accion="eliminar" aria-label="Eliminar {p.nombre}" title="Eliminar">
+                                        <svg class="i"><use href="#i-trash"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        {/let}
+                    {/for}
+                {/fragment}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty" id="vacio-total" hidden>
+            <div class="empty__icon"><svg class="i"><use href="#i-box"/></svg></div>
+            <p><strong>Aún no hay productos</strong></p>
+            <p>Crea el primero para empezar a vender.</p>
+            <button type="button" class="btn btn--primary" data-nuevo>
+                <svg class="i"><use href="#i-plus"/></svg> Nuevo producto
+            </button>
+        </div>
+
+        <div class="empty" id="vacio-filtro" hidden>
+            <div class="empty__icon"><svg class="i"><use href="#i-search"/></svg></div>
+            <p><strong>No encontramos productos</strong></p>
+            <p>Prueba con otro nombre o quita los filtros.</p>
+        </div>
+
+        <footer class="pager">
+            <span class="pager__info" id="info">&nbsp;</span>
+            <nav class="pager__nav" id="paginas" aria-label="Paginación"></nav>
+        </footer>
+    </section>
+</main>
+
+{! ====================== Panel lateral: crear / editar ====================== !}
+<div class="scrim" id="scrim" hidden></div>
+
+<aside class="drawer" id="drawer" role="dialog" aria-labelledby="drawer-title" aria-hidden="true">
+    <form id="form" novalidate autocomplete="off">
+        <header class="drawer__head">
+            <span class="inv__icon inv__icon--sm"><svg class="i"><use href="#i-box"/></svg></span>
+            <h2 id="drawer-title">Agregar producto</h2>
+            <button type="button" class="icon-btn" id="drawer-cerrar" aria-label="Cerrar panel">
+                <svg class="i"><use href="#i-x"/></svg>
+            </button>
+        </header>
+
+        <div class="drawer__body">
+            <div class="form-error" id="form-error" role="alert" hidden></div>
+
+            <div class="drawer__main">
+                {! Foto: se sube como archivo y en el producto solo queda la URL !}
+                <div class="field drop-field" data-f="foto">
+                    <div class="drop" id="drop" role="button" tabindex="0" aria-label="Subir imagen del producto">
+                        <div class="drop__empty">
+                            <svg class="i"><use href="#i-image"/></svg>
+                            <strong>Arrastra una imagen</strong>
+                            <span>o selecciona un archivo</span>
+                            <small>JPG, PNG o WebP · Máx. 2 MB</small>
+                        </div>
+                        <div class="drop__loading"><span class="spinner"></span><span>Subiendo…</span></div>
+                        <div class="drop__preview">
+                            <img id="drop-img" alt="Vista previa del producto">
+                            <button type="button" class="drop__remove" id="drop-quitar" aria-label="Quitar imagen">
+                                <svg class="i i--sm"><use href="#i-x"/></svg>
+                            </button>
+                            <span class="drop__change">Cambiar imagen</span>
+                        </div>
+                    </div>
+                    <input type="file" id="file" accept="image/jpeg,image/png,image/webp" hidden>
+                    <input type="hidden" id="f-foto" name="fotoProducto">
+                    <p class="field__err" data-err="foto" hidden></p>
+                </div>
+
+                <div class="drawer__fields">
+                    <section class="sec">
+                        <h3><svg class="i"><use href="#i-paw"/></svg> Información básica</h3>
+                        <div class="field" data-f="nombre">
+                            <label for="f-nombre">Nombre del producto <b>*</b></label>
+                            <input id="f-nombre" name="nombre" type="text" maxlength="255" placeholder="Ej. Shampoo canino">
+                            <p class="field__err" data-err="nombre" hidden></p>
+                        </div>
+                        <div class="field" data-f="marca">
+                            <label for="f-marca">Marca</label>
+                            <input id="f-marca" name="marca" type="text" maxlength="255" placeholder="Ej. PetClean">
+                            <p class="field__err" data-err="marca" hidden></p>
+                        </div>
+                    </section>
+
+                    <section class="sec">
+                        <h3><svg class="i"><use href="#i-tag"/></svg> Clasificación</h3>
+                        <div class="cols">
+                            <div class="field" data-f="categoria">
+                                <label for="f-categoria">Categoría <b>*</b></label>
+                                <div class="select select--form">
+                                    <select id="f-categoria" name="categoria">
+                                        <option value="">Selecciona…</option>
+                                        {#for c in categorias}
+                                            <option value="{c.name}" data-pretty>{c.name}</option>
+                                        {/for}
+                                    </select>
+                                    <svg class="i i--sm select__chev"><use href="#i-chevron"/></svg>
+                                </div>
+                                <p class="field__err" data-err="categoria" hidden></p>
+                            </div>
+                            <div class="field" data-f="tipo">
+                                <label for="f-tipo">Tipo de producto <b>*</b></label>
+                                <div class="select select--form">
+                                    <select id="f-tipo" name="tipo">
+                                        <option value="">Selecciona…</option>
+                                        {#for t in tipos}
+                                            <option value="{t.name}" data-pretty>{t.name}</option>
+                                        {/for}
+                                    </select>
+                                    <svg class="i i--sm select__chev"><use href="#i-chevron"/></svg>
+                                </div>
+                                <p class="field__err" data-err="tipo" hidden></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="sec">
+                        <h3><svg class="i"><use href="#i-tag"/></svg> Precios</h3>
+                        <div class="cols">
+                            <div class="field" data-f="precioBase">
+                                <label for="f-base">Precio base <b>*</b></label>
+                                <div class="money-input"><span>$</span><input id="f-base" name="precioBase" type="text" inputmode="numeric" placeholder="0"></div>
+                                <p class="field__err" data-err="precioBase" hidden></p>
+                            </div>
+                            <div class="field" data-f="precioVenta">
+                                <label for="f-venta">Precio de venta <b>*</b></label>
+                                <div class="money-input"><span>$</span><input id="f-venta" name="precioVenta" type="text" inputmode="numeric" placeholder="0"></div>
+                                <p class="field__err" data-err="precioVenta" hidden></p>
+                            </div>
+                        </div>
+                        <p class="margin" id="margen" hidden></p>
+                    </section>
+                </div>
+            </div>
+
+            <div class="drawer__bottom">
+                <section class="sec">
+                    <h3><svg class="i"><use href="#i-box"/></svg> Inventario</h3>
+                    <div class="field" data-f="stock">
+                        <label for="f-stock">Stock <b>*</b></label>
+                        <input id="f-stock" name="stock" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+                        <p class="field__err" data-err="stock" hidden></p>
+                    </div>
+                </section>
+                <section class="sec">
+                    <h3><svg class="i"><use href="#i-file"/></svg> Descripción</h3>
+                    <div class="field" data-f="descripcion">
+                        <textarea id="f-desc" name="descripcion" rows="4" maxlength="1000" placeholder="Describe el producto en pocas palabras" aria-label="Descripción"></textarea>
+                        <span class="counter" id="desc-count">0 / 1000</span>
+                        <p class="field__err" data-err="descripcion" hidden></p>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <footer class="drawer__foot">
+            <button type="button" class="btn btn--danger-ghost" id="btn-eliminar" hidden>
+                <svg class="i"><use href="#i-trash"/></svg> Eliminar
+            </button>
+            <span class="spacer"></span>
+            <button type="button" class="btn btn--outline" id="btn-cancelar">
+                <svg class="i"><use href="#i-x"/></svg> Cancelar
+            </button>
+            <button type="submit" class="btn btn--primary" id="btn-guardar">
+                <svg class="i"><use href="#i-check"/></svg> <span>Guardar producto</span>
+            </button>
+        </footer>
+    </form>
+</aside>
+
+<dialog class="dlg" id="dlg"><div class="dlg__body" id="dlg-body"></div></dialog>
+<div class="toasts" id="toasts" aria-live="assertive"></div>
+
+<script src="/js/admin/admin-sidebar.js"></script>
+<script src="/js/admin/admin-productos.js" defer></script>
+</body>
+</html>

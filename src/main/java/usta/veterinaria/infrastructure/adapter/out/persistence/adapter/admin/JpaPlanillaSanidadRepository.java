@@ -11,6 +11,7 @@ import usta.veterinaria.infrastructure.adapter.out.persistence.repository.admin.
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 // Adaptador JPA del puerto PlanillaSanidadRepository: guarda/lee las planillas en MySQL
 @ApplicationScoped
@@ -19,7 +20,7 @@ public class JpaPlanillaSanidadRepository implements PlanillaSanidadRepository {
     @Inject
     PlanillaSanidadJpaRepository repository;
 
-    // Guarda la planilla (inserta o actualiza)
+    // Guarda la planilla: sin id inserta; con id actualiza la fila existente (merge)
     @Override
     @Transactional
     public PlanillaSanidad save(PlanillaSanidad planilla) {
@@ -42,5 +43,18 @@ public class JpaPlanillaSanidadRepository implements PlanillaSanidadRepository {
         return repository.findByFechaPlanillaBetween(inicio, fin).stream()
                 .map(PlanillaSanidadEntityMapper::toDomain)
                 .toList();
+    }
+
+    // Busca una planilla por su id
+    @Override
+    public Optional<PlanillaSanidad> findById(Long id) {
+        return repository.findByIdOptional(id).map(PlanillaSanidadEntityMapper::toDomain);
+    }
+
+    // Elimina la planilla con ese id (si no existe no hace nada)
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        repository.deleteById(id);
     }
 }

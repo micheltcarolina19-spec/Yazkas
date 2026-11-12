@@ -47,4 +47,8 @@ public class PlanillaSanidadEntity {
 
     @Column(nullable = false)
     private Boolean desinfeccion;
+
+    // Opcional: puede quedar en null (el dominio guarda null si llega vacío)
+    @Column(length = 255)
+    private String observaciones;
 }
