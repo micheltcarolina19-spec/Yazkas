@@ -3,6 +3,7 @@ package usta.veterinaria.application.port.in.admin;
 import usta.veterinaria.domain.model.admin.CategoriaGasto;
 import usta.veterinaria.domain.model.admin.CategoriaProducto;
 import usta.veterinaria.domain.service.admin.FinanzasService.ProductoVendido;
+import usta.veterinaria.domain.service.admin.FinanzasService.PuntoSerie;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -33,4 +34,7 @@ public interface ConsultarFinanzasUseCase {
 
     // Ranking de productos por unidades vendidas (de mayor a menor). 'limite' = cuántos devolver (ej: 3 o 5)
     List<ProductoVendido> productosMasVendidos(LocalDate inicio, LocalDate fin, int limite);
+
+    // Ingresos, gastos, utilidad y ventas por tramo para las gráficas. agrupacion: DIA, SEMANA o MES
+    List<PuntoSerie> serieFinanciera(LocalDate inicio, LocalDate fin, String agrupacion);
 }

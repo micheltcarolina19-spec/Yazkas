@@ -1,4 +1,4 @@
-package usta.veterinaria.infrastructure.adapter.in.web.usuario;
+package usta.veterinaria.infrastructure.adapter.in.web.admin;
 
 import io.quarkus.qute.Location;
 import io.quarkus.qute.Template;
@@ -28,6 +28,7 @@ public class AdminPaginaResource {
         LocalDate fin = LocalDate.now();
         LocalDate inicio = fin.withDayOfMonth(1);
         return index
+                .instance()
                 .data("ingresos", finanzas.ingresosTotales(inicio, fin))
                 .data("topProductos", finanzas.productosMasVendidos(inicio, fin, 5));
     }

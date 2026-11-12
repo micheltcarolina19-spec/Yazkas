@@ -20,14 +20,18 @@ public record DesparasitacionResponse(
         String tipo,
         String numeroLote,
         String observaciones) {
-    // Datos que se devuelven de la cita de una mascota (vista del cliente: SIN precio).
-    // duracionCita es ALTA, MEDIA o BAJA según lo que estimó la IA
+    // Datos que se devuelven de la cita de una mascota (SIN precio).
+    // duracionCita es ALTA, MEDIA o BAJA según lo que estimó la IA.
+    // fotoMascota es la URL de la foto (puede ser null); nombrePropietario sirve para la agenda del dashboard
     public static record MascotaCitaResponse(
             Long id,
             Long agendamientoId,
             String estado,
             Long mascotaId,
             String nombreMascota,
+            String razaMascota,
+            String fotoMascota,
+            String nombrePropietario,
             LocalDate fechaCreacion,
             LocalDate fechaAgendamiento,
             LocalTime horaAgendamiento,

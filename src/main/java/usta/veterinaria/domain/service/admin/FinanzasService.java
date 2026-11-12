@@ -14,7 +14,10 @@ import usta.veterinaria.domain.service.MonedaColombiana;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
@@ -26,6 +29,9 @@ import java.util.Map;
 //   Ingresos = ventas de productos + citas completadas
 //   Utilidad = ingresos - gastos
 public class FinanzasService {
+
+    // Tope de tramos por consulta para que un rango enorme no sature el servidor
+    private static final int MAX_TRAMOS_SERIE = 400;
 
     // Total vendido en productos dentro del rango
     public BigDecimal ingresosPorVentas(List<Venta> ventas, LocalDate inicio, LocalDate fin) {
@@ -201,6 +207,53 @@ public class FinanzasService {
             return BigDecimal.ZERO;
         }
         return utilidad.multiply(BigDecimal.valueOf(100)).divide(ingresos, 2, RoundingMode.HALF_UP);
+    }
+
+    // Un tramo de la gráfica: el rango [inicio, fin] y sus totales.
+    // cantidadVentas y valorVentas son solo de productos (sin citas), para la gráfica de ventas.
+    public record PuntoSerie(LocalDate inicio, LocalDate fin, BigDecimal ingresos, BigDecimal gastos,
+                             BigDecimal utilidad, long cantidadVentas, BigDecimal valorVentas) {
+    }
+
+    // Serie para las gráficas: parte el rango en tramos por DIA, SEMANA (lunes a domingo) o MES
+    // y calcula los totales de cada tramo con las mismas reglas del resumen (ingresos, gastos y utilidad).
+    // El primer y el último tramo se recortan al rango pedido.
+    public List<PuntoSerie> serie(List<Venta> ventas, List<MascotaCita> citas, List<Gasto> gastos,
+                                  LocalDate inicio, LocalDate fin, String agrupacion) {
+        validarRango(inicio, fin);
+        List<PuntoSerie> puntos = new ArrayList<>();
+        LocalDate desde = inicio;
+        while (!desde.isAfter(fin)) {
+            if (puntos.size() >= MAX_TRAMOS_SERIE) {
+                throw new BusinessRuleException("El rango es demasiado largo para esa agrupación; use semanas o meses");
+            }
+            final LocalDate tramoInicio = desde;
+            final LocalDate tramoFin = finDelTramo(desde, fin, agrupacion);
+
+            BigDecimal valorVentas = ingresosPorVentas(ventas, tramoInicio, tramoFin);
+            BigDecimal ingresos = valorVentas.add(ingresosPorCitas(citas, tramoInicio, tramoFin));
+            BigDecimal totalGastos = totalGastos(gastos, tramoInicio, tramoFin);
+            long cantidadVentas = ventas == null ? 0 : ventas.stream()
+                    .filter(v -> v != null && enRango(v.getFechaVenta(), tramoInicio, tramoFin))
+                    .count();
+
+            puntos.add(new PuntoSerie(tramoInicio, tramoFin, ingresos, totalGastos,
+                    ingresos.subtract(totalGastos), cantidadVentas, valorVentas));
+            desde = tramoFin.plusDays(1);
+        }
+        return puntos;
+    }
+
+    // Último día del tramo que empieza en 'desde' (sin pasarse de 'fin')
+    private LocalDate finDelTramo(LocalDate desde, LocalDate fin, String agrupacion) {
+        String tipo = agrupacion == null || agrupacion.isBlank() ? "DIA" : agrupacion.trim().toUpperCase();
+        LocalDate finTramo = switch (tipo) {
+            case "DIA" -> desde;
+            case "SEMANA" -> desde.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+            case "MES" -> desde.with(TemporalAdjusters.lastDayOfMonth());
+            default -> throw new BusinessRuleException("La agrupación debe ser DIA, SEMANA o MES");
+        };
+        return finTramo.isAfter(fin) ? fin : finTramo;
     }
 
     private boolean detalleEnRango(DetalleVenta detalle, LocalDate inicio, LocalDate fin) {

@@ -9,12 +9,87 @@
 </head>
 <body>
 
+{! ===== Iconos del dashboard (propios de esta página, no dependen del sidebar) ===== !}
+<svg xmlns="http://www.w3.org/2000/svg" class="dash-sprite" aria-hidden="true" focusable="false">
+    <symbol id="dash-i-wallet" viewBox="0 0 24 24">
+        <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
+        <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+    </symbol>
+    <symbol id="dash-i-receipt" viewBox="0 0 24 24">
+        <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/>
+        <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
+        <path d="M12 17.5v-11"/>
+    </symbol>
+    <symbol id="dash-i-trophy" viewBox="0 0 24 24">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+        <path d="M4 22h16"/>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+    </symbol>
+    <symbol id="dash-i-box" viewBox="0 0 24 24">
+        <path d="m7.5 4.27 9 5.15"/>
+        <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+        <path d="m3.3 7 8.7 5 8.7-5"/>
+        <path d="M12 22V12"/>
+    </symbol>
+    <symbol id="dash-i-users" viewBox="0 0 24 24">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </symbol>
+    <symbol id="dash-i-trending" viewBox="0 0 24 24">
+        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+        <polyline points="16 7 22 7 22 13"/>
+    </symbol>
+    <symbol id="dash-i-cart" viewBox="0 0 24 24">
+        <circle cx="8" cy="21" r="1"/>
+        <circle cx="19" cy="21" r="1"/>
+        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+    </symbol>
+    <symbol id="dash-i-calendar" viewBox="0 0 24 24">
+        <rect width="18" height="18" x="3" y="4" rx="2"/>
+        <path d="M16 2v4M8 2v4M3 10h18"/>
+    </symbol>
+    <symbol id="dash-i-bell" viewBox="0 0 24 24">
+        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+    </symbol>
+    <symbol id="dash-i-star" viewBox="0 0 24 24">
+        <path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21 7 14.2 2 9.3l6.9-1Z"/>
+    </symbol>
+    <symbol id="dash-i-pie" viewBox="0 0 24 24">
+        <path d="M21 12c.55 0 1.01-.45.94-1A10 10 0 0 0 13 2.06c-.55-.07-1 .39-1 .94v8a1 1 0 0 0 1 1z"/>
+        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+    </symbol>
+    <symbol id="dash-i-bag" viewBox="0 0 24 24">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+        <path d="M3 6h18"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+    </symbol>
+    <symbol id="dash-i-ticket" viewBox="0 0 24 24">
+        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
+        <path d="M13 5v2"/>
+        <path d="M13 17v2"/>
+        <path d="M13 11v2"/>
+    </symbol>
+    <symbol id="dash-i-paw" viewBox="0 0 24 24">
+        <circle cx="5" cy="11" r="1.8" fill="#2f9be0" stroke="none"/>
+        <circle cx="9" cy="6" r="1.8" fill="#2f9be0" stroke="none"/>
+        <circle cx="15" cy="6" r="1.8" fill="#2f9be0" stroke="none"/>
+        <circle cx="19" cy="11" r="1.8" fill="#2f9be0" stroke="none"/>
+        <path d="M12 11c-3 0-6 3.4-6 6 0 2 1.7 2.7 3.3 2.3 1-.3 1.7-.6 2.7-.6s1.7.3 2.7.6c1.6.4 3.3-.3 3.3-2.3 0-2.6-3-6-6-6z" fill="#2f9be0" stroke="none"/>
+    </symbol>
+</svg>
+
 <div class="adm-layout">
 
     {! Sidebar: cambia 'dashboard' según la página (ventas, citas, productos...) !}
         {#include admin/components/sidebar active='dashboard' /}
 
-    <main class="adm-main">
+    <main class="adm-main adm-main--dash">
         <div class="dash" id="dash">
 
             {! ===== Encabezado + filtro de periodo ===== !}
@@ -27,6 +102,7 @@
                 <div class="dash-hero__tools">
                     <label class="dash-select">
                         <span class="visually-hidden">Periodo</span>
+                        <svg class="dash-select__ico" aria-hidden="true"><use href="#dash-i-calendar"/></svg>
                         <select id="dash-periodo">
                             <option value="mes" selected>Este mes</option>
                             <option value="mes-anterior">Mes anterior</option>
@@ -41,44 +117,134 @@
 
             <p class="dash-alert" id="dash-error" role="alert" hidden></p>
 
-            {! ===== Tarjetas de indicadores ===== !}
+            {! ===== Tarjetas de indicadores (la mascota apoya las patas sobre la tarjeta de Utilidad) ===== !}
             <section class="dash-kpis" aria-label="Indicadores del periodo" aria-busy="true" id="dash-kpis">
+                <img class="dash-mascota" src="/img/admin/mascota-principal-dash.png" alt="" width="1909" height="1967" decoding="async">
+
                 <article class="kpi" data-kpi="ingresosTotales">
-                    <svg class="kpi__ico" aria-hidden="true"><use href="#adm-i-chart"/></svg>
+                    <svg class="kpi__ico" aria-hidden="true"><use href="#dash-i-wallet"/></svg>
                     <h2 class="kpi__label">Ingresos</h2>
                     <p class="kpi__value" data-value>—</p>
                     <p class="kpi__foot"><span class="kpi__note">Productos + Servicios</span>
                         <span class="kpi__delta" data-delta></span></p>
                 </article>
                 <article class="kpi" data-kpi="totalGastos" data-invert="true">
-                    <svg class="kpi__ico" aria-hidden="true"><use href="#adm-i-cart"/></svg>
+                    <svg class="kpi__ico" aria-hidden="true"><use href="#dash-i-receipt"/></svg>
                     <h2 class="kpi__label">Gastos</h2>
                     <p class="kpi__value" data-value>—</p>
                     <p class="kpi__foot"><span class="kpi__note">Todas las categorías</span>
                         <span class="kpi__delta" data-delta></span></p>
                 </article>
                 <article class="kpi kpi--accent" data-kpi="utilidad">
-                    <svg class="kpi__ico" aria-hidden="true"><use href="#adm-i-dashboard"/></svg>
+                    <svg class="kpi__ico" aria-hidden="true"><use href="#dash-i-trophy"/></svg>
                     <h2 class="kpi__label">Utilidad</h2>
                     <p class="kpi__value" data-value>—</p>
                     <p class="kpi__foot"><span class="kpi__note" id="dash-margen">Margen —</span>
                         <span class="kpi__delta" data-delta></span></p>
                 </article>
                 <article class="kpi" data-kpi="gananciaProductos">
-                    <svg class="kpi__ico" aria-hidden="true"><use href="#adm-i-box"/></svg>
+                    <svg class="kpi__ico" aria-hidden="true"><use href="#dash-i-box"/></svg>
                     <h2 class="kpi__label">Ganancia en productos</h2>
                     <p class="kpi__value" data-value>—</p>
                     <p class="kpi__foot"><span class="kpi__note">Venta menos costo</span>
                         <span class="kpi__delta" data-delta></span></p>
                 </article>
+                <article class="kpi" id="kpi-clientes">
+                    <svg class="kpi__ico" aria-hidden="true"><use href="#dash-i-users"/></svg>
+                    <h2 class="kpi__label">Clientes</h2>
+                    <p class="kpi__value" id="dash-clientes">—</p>
+                    <p class="kpi__foot"><span class="kpi__note">Registrados</span></p>
+                </article>
+            </section>
+
+            {! ===== Gráficas: rendimiento financiero + comportamiento de ventas ===== !}
+            <section class="dash-charts" aria-label="Gráficas del periodo">
+
+                <article class="card card--chart" aria-labelledby="t-rend">
+                    <header class="card__head">
+                        <svg class="card__ico" aria-hidden="true"><use href="#dash-i-trending"/></svg>
+                        <h2 id="t-rend">Rendimiento financiero</h2>
+                        <div class="seg" id="dash-agrupar" role="group" aria-label="Agrupar por">
+                            <button type="button" class="seg__btn is-active" data-agrupar="DIA" aria-pressed="true">Días</button>
+                            <button type="button" class="seg__btn" data-agrupar="SEMANA" aria-pressed="false">Semanas</button>
+                            <button type="button" class="seg__btn" data-agrupar="MES" aria-pressed="false">Meses</button>
+                        </div>
+                    </header>
+                    <ul class="chart-legend" aria-label="Series de la gráfica">
+                        <li><button type="button" class="chart-legend__item" data-serie="0"><i style="--c:#2f9be0"></i>Ingresos</button></li>
+                        <li><button type="button" class="chart-legend__item" data-serie="1"><i style="--c:#f59f2b"></i>Gastos</button></li>
+                        <li><button type="button" class="chart-legend__item" data-serie="2"><i style="--c:#1e9e5a"></i>Utilidad</button></li>
+                    </ul>
+                    <div class="chart-box" id="chart-finanzas-box">
+                        <canvas id="chart-finanzas" role="img" aria-label="Ingresos, gastos y utilidad del periodo"></canvas>
+                    </div>
+                    <p class="empty" id="chart-finanzas-empty" hidden>Sin movimientos en este periodo.</p>
+                </article>
+
+                <article class="card card--chart" aria-labelledby="t-ventas">
+                    <header class="card__head">
+                        <svg class="card__ico" aria-hidden="true"><use href="#dash-i-cart"/></svg>
+                        <h2 id="t-ventas">Comportamiento de ventas</h2>
+                    </header>
+
+                    <div class="ventas__top">
+                        <div class="ventas__big">
+                            <strong id="ventas-total">—</strong>
+                            <span class="ventas__label">Ventas totales</span>
+                        </div>
+                        <div class="ventas__cmp">
+                            <span class="kpi__delta" id="ventas-delta"></span>
+                            <small class="ventas__vs" id="ventas-vs" hidden>vs periodo anterior</small>
+                        </div>
+                    </div>
+
+                    <div class="chart-box chart-box--bars" id="chart-ventas-box">
+                        <canvas id="chart-ventas" role="img" aria-label="Cantidad de ventas por tramo del periodo"></canvas>
+                    </div>
+                    <p class="empty" id="chart-ventas-empty" hidden>Sin ventas en este periodo.</p>
+
+                    <div class="ventas__tiles">
+                        <div class="tile">
+                            <svg aria-hidden="true"><use href="#dash-i-bag"/></svg>
+                            <div><strong id="ventas-valor">—</strong><span>Valor vendido</span></div>
+                        </div>
+                        <div class="tile">
+                            <svg aria-hidden="true"><use href="#dash-i-ticket"/></svg>
+                            <div><strong id="ventas-ticket">—</strong><span>Ticket promedio</span></div>
+                        </div>
+                    </div>
+                </article>
+
             </section>
 
             <div class="dash-grid">
 
+                {! ===== Agenda de hoy ===== !}
+                <section class="card card--agenda" aria-labelledby="t-agenda">
+                    <header class="card__head">
+                        <svg class="card__ico" aria-hidden="true"><use href="#dash-i-calendar"/></svg>
+                        <h2 id="t-agenda">Agenda de hoy</h2>
+                        <span class="agenda__count" id="dash-agenda-count" hidden></span>
+                    </header>
+                    <ul class="agenda" id="dash-agenda"></ul>
+                    <p class="empty" id="dash-agenda-empty" hidden>No hay citas para hoy.</p>
+                </section>
+
+                {! ===== Alertas importantes ===== !}
+                <section class="card" aria-labelledby="t-alertas">
+                    <header class="card__head">
+                        <svg class="card__ico" aria-hidden="true"><use href="#dash-i-bell"/></svg>
+                        <h2 id="t-alertas">Alertas importantes</h2>
+                        <span class="alertas__count" id="dash-alertas-count" hidden></span>
+                    </header>
+                    <ul class="alertas" id="dash-alertas"></ul>
+                    <p class="empty" id="dash-alertas-empty" hidden>Sin alertas por ahora.</p>
+                </section>
+
                 {! ===== Productos más vendidos ===== !}
                 <section class="card" aria-labelledby="t-top">
                     <header class="card__head">
-                        <svg class="card__ico" aria-hidden="true"><use href="#adm-i-cart"/></svg>
+                        <svg class="card__ico" aria-hidden="true"><use href="#dash-i-star"/></svg>
                         <h2 id="t-top">Productos más vendidos</h2>
                     </header>
                     <ol class="top" id="dash-top"></ol>
@@ -88,7 +254,7 @@
                 {! ===== Resumen de gastos ===== !}
                 <section class="card" aria-labelledby="t-gastos">
                     <header class="card__head">
-                        <svg class="card__ico" aria-hidden="true"><use href="#adm-i-box"/></svg>
+                        <svg class="card__ico" aria-hidden="true"><use href="#dash-i-pie"/></svg>
                         <h2 id="t-gastos">Resumen de gastos</h2>
                     </header>
                     <div class="gastos">
@@ -110,6 +276,7 @@
 </div>
 
 <script src="/js/admin/admin-sidebar.js"></script>
+<script src="/js/vendor/chart.umd.js"></script>
 <script src="/js/admin/admin-dashboard.js"></script>
 </body>
 </html>

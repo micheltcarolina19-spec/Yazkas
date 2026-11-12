@@ -31,9 +31,9 @@ public class FinanzasResource {
     @Path("/resumen")
     @Operation(summary = "Consultar el resumen financiero de un rango de fechas")
     public DetalleVentaRequest.ResumenFinancieroResponse resumen(@QueryParam("inicio")
-                                             @NotNull(message = "La fecha inicial es obligatoria") LocalDate inicio,
+                                                                 @NotNull(message = "La fecha inicial es obligatoria") LocalDate inicio,
                                                                  @QueryParam("fin")
-                                             @NotNull(message = "La fecha final es obligatoria") LocalDate fin) {
+                                                                 @NotNull(message = "La fecha final es obligatoria") LocalDate fin) {
         return FinanzasRestMapper.toResumenResponse(
                 inicio,
                 fin,
@@ -57,5 +57,16 @@ public class FinanzasResource {
             @QueryParam("fin") @NotNull(message = "La fecha final es obligatoria") LocalDate fin,
             @QueryParam("limite") @DefaultValue("3") int limite) {
         return finanzas.productosMasVendidos(inicio, fin, limite);
+    }
+
+    // Para las gráficas: /api/finanzas/serie?inicio=2026-11-01&fin=2026-11-30&agrupar=DIA   (DIA, SEMANA o MES)
+    @GET
+    @Path("/serie")
+    @Operation(summary = "Consultar ingresos, gastos y ventas por día, semana o mes")
+    public List<FinanzasService.PuntoSerie> serie(
+            @QueryParam("inicio") @NotNull(message = "La fecha inicial es obligatoria") LocalDate inicio,
+            @QueryParam("fin") @NotNull(message = "La fecha final es obligatoria") LocalDate fin,
+            @QueryParam("agrupar") @DefaultValue("DIA") String agrupar) {
+        return finanzas.serieFinanciera(inicio, fin, agrupar);
     }
 }

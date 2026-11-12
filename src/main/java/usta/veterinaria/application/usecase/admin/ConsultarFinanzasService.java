@@ -12,6 +12,7 @@ import usta.veterinaria.domain.model.admin.CategoriaGasto;
 import usta.veterinaria.domain.model.admin.CategoriaProducto;
 import usta.veterinaria.domain.model.admin.Gasto;
 import usta.veterinaria.domain.service.admin.FinanzasService.ProductoVendido;
+import usta.veterinaria.domain.service.admin.FinanzasService.PuntoSerie;
 import usta.veterinaria.domain.model.usuario.MascotaCita;
 import usta.veterinaria.domain.model.admin.Venta;
 import usta.veterinaria.domain.service.admin.FinanzasService;
@@ -105,6 +106,13 @@ public class ConsultarFinanzasService implements ConsultarFinanzasUseCase {
         Validaciones.rangoFechas(inicio, fin);
         return finanzasService.productosMasVendidos(
                 detalleVentaRepository.findByVentaFechaVentaBetween(inicio, fin), inicio, fin, limite);
+    }
+
+    // Se cargan ventas, citas y gastos una sola vez y el dominio los reparte por tramo
+    @Override
+    public List<PuntoSerie> serieFinanciera(LocalDate inicio, LocalDate fin, String agrupacion) {
+        return finanzasService.serie(ventas(inicio, fin), citas(inicio, fin), gastos(inicio, fin),
+                inicio, fin, agrupacion);
     }
 
     private List<Venta> ventas(LocalDate inicio, LocalDate fin) {
