@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gastos | YAZKAS Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/admin/admin-gastos.css">
+    <link rel="stylesheet" href="/css/admin/admin-sidebar.css">
+</head>
+<body class="gastos-page">
+    {#include admin/components/sidebar active='gastos' /}
+
+<main class="g-main">
+
+    <header class="g-head">
+        <div class="g-head__titulo">
+            <span class="g-head__icono"><i class="bi bi-wallet2"></i></span>
+            <div>
+                <h1>Gestión de Gastos y Egresos</h1>
+                <p>Controla y administra los egresos de tu peluquería</p>
+            </div>
+        </div>
+        <a class="g-btn g-btn--primario" href="{hrefNuevo}">
+            <i class="bi bi-plus-lg"></i> Registrar gasto
+        </a>
+    </header>
+
+    {#if ok}
+        <div class="g-toast g-toast--ok" role="status"><i class="bi bi-check-circle-fill"></i> {ok}</div>
+    {/if}
+    {#if error}
+        <div class="g-alerta" role="alert"><i class="bi bi-exclamation-triangle-fill"></i> {error}</div>
+    {/if}
+
+    <section class="g-kpis">
+        <article class="g-kpi">
+            <span class="g-kpi__icono"><i class="bi bi-cash-coin"></i></span>
+            <div>
+                <small>Total del período</small>
+                <strong>{resumen.total} <em>COP</em></strong>
+            </div>
+        </article>
+        <article class="g-kpi">
+            <span class="g-kpi__icono"><i class="bi bi-bar-chart-line-fill"></i></span>
+            <div>
+                <small>Gasto promedio</small>
+                <strong>{resumen.promedio} <em>COP</em></strong>
+            </div>
+        </article>
+        <article class="g-kpi">
+            <span class="g-kpi__icono"><i class="bi bi-calendar-check"></i></span>
+            <div>
+                <small>Registros</small>
+                <strong>{resumen.registros}</strong>
+                <span class="g-kpi__nota">{resumen.periodo}</span>
+            </div>
+        </article>
+    </section>
+
+    <section class="g-filtros">
+        <div class="g-atajos">
+            {#for a in atajos}
+                <a class="g-atajo {#if a.activo}g-atajo--activo{/if}" href="{a.href}">{a.texto}</a>
+            {/for}
+        </div>
+
+        <form class="g-filtros__form" method="get" action="/admin/gastos">
+            <label class="g-campo">
+                <span>Desde</span>
+                <input type="date" name="desde" value="{filtro.desde}" required>
+            </label>
+            <label class="g-campo">
+                <span>Hasta</span>
+                <input type="date" name="hasta" value="{filtro.hasta}" required>
+            </label>
+            <label class="g-campo g-campo--grande">
+                <span>Categoría</span>
+                <select name="categoria">
+                    <option value="">Todas las categorías</option>
+                    {#for c in categoriasFiltro}
+                        <option value="{c.codigo}" {#if c.seleccionada}selected{/if}>{c.etiqueta}</option>
+                    {/for}
+                </select>
+            </label>
+            <button class="g-btn g-btn--oscuro" type="submit"><i class="bi bi-search"></i> Buscar</button>
+            <a class="g-btn g-btn--fantasma" href="{hrefLimpiar}"><i class="bi bi-arrow-counterclockwise"></i> Limpiar</a>
+        </form>
+    </section>
+
+    <div class="g-cuerpo">
+        <section class="g-tarjeta g-listado">
+            <div class="g-tarjeta__titulo">
+                <h2><i class="bi bi-journal-text"></i> Listado de gastos</h2>
+                <span class="g-chip-total">{paginacion.total} {#if paginacion.total == 1}registro{#else}registros{/if}</span>
+            </div>
+
+            {#if filas.size > 0}
+                <div class="g-tabla-wrap">
+                    <table class="g-tabla">
+                        <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Concepto</th>
+                            <th>Categoría</th>
+                            <th class="g-der">Monto</th>
+                            <th class="g-centro">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {#for g in filas}
+                            <tr>
+                                <td class="g-fecha">{g.fecha}</td>
+                                <td class="g-concepto">{g.nombre}</td>
+                                <td><span class="g-pill {g.tono}"><i class="bi {g.icono}"></i> {g.categoria}</span></td>
+                                <td class="g-der g-monto">{g.monto}</td>
+                                <td class="g-centro">
+                                    <a class="g-icono g-icono--editar" href="{g.hrefEditar}" title="Editar" aria-label="Editar {g.nombre}"><i class="bi bi-pencil-square"></i></a>
+                                    <a class="g-icono g-icono--borrar" href="{g.hrefEliminar}" title="Eliminar" aria-label="Eliminar {g.nombre}"><i class="bi bi-trash3"></i></a>
+                                </td>
+                            </tr>
+                        {/for}
+                        </tbody>
+                    </table>
+                </div>
+
+                <footer class="g-pie">
+                    <span>Mostrando {paginacion.desde} – {paginacion.hasta} de {paginacion.total} registros</span>
+                    <nav class="g-paginas" aria-label="Paginación">
+                        {#if paginacion.hayAnterior}
+                            <a class="g-pag" href="{paginacion.hrefAnterior}" aria-label="Página anterior"><i class="bi bi-chevron-left"></i></a>
+                        {#else}
+                            <span class="g-pag g-pag--off"><i class="bi bi-chevron-left"></i></span>
+                        {/if}
+                        {#for p in paginacion.items}
+                            <a class="g-pag {#if p.activa}g-pag--activa{/if}" href="{p.href}">{p.numero}</a>
+                        {/for}
+                        {#if paginacion.haySiguiente}
+                            <a class="g-pag" href="{paginacion.hrefSiguiente}" aria-label="Página siguiente"><i class="bi bi-chevron-right"></i></a>
+                        {#else}
+                            <span class="g-pag g-pag--off"><i class="bi bi-chevron-right"></i></span>
+                        {/if}
+                    </nav>
+                </footer>
+            {#else}
+                <div class="g-vacio">
+                    <i class="bi bi-inbox"></i>
+                    <h3>No hay gastos en este período</h3>
+                    <p>Prueba con otro rango de fechas o registra tu primer gasto.</p>
+                    <a class="g-btn g-btn--primario" href="{hrefNuevo}"><i class="bi bi-plus-lg"></i> Registrar gasto</a>
+                </div>
+            {/if}
+        </section>
+
+        <aside class="g-tarjeta g-desglose">
+            <div class="g-tarjeta__titulo"><h2><i class="bi bi-pie-chart"></i> ¿En qué se va el dinero?</h2></div>
+            {#if desglose.size > 0}
+                <ul>
+                    {#for d in desglose}
+                        <li class="{d.tono}">
+                            <div class="g-desglose__fila">
+                                <span><i class="bi {d.icono}"></i> {d.etiqueta}</span>
+                                <strong>{d.monto}</strong>
+                            </div>
+                            <div class="g-barra"><i style="width: {d.porcentaje}%"></i></div>
+                            <small>{d.porcentaje}% del total</small>
+                        </li>
+                    {/for}
+                </ul>
+            {#else}
+                <p class="g-desglose__vacio">Aquí verás qué categorías pesan más en tus gastos.</p>
+            {/if}
+        </aside>
+    </div>
+</main>
+
+{#if dialogo}
+    <div class="g-modal" role="dialog" aria-modal="true" aria-label="{dialogo.titulo}">
+        <a class="g-modal__fondo" href="{dialogo.hrefCerrar}" aria-label="Cerrar"></a>
+        <div class="g-modal__caja">
+            <header class="g-modal__cab">
+                <h2><i class="bi {#if dialogo.edicion}bi-pencil-square{#else}bi-plus-circle{/if}"></i> {dialogo.titulo}</h2>
+                <a class="g-modal__x" href="{dialogo.hrefCerrar}" aria-label="Cerrar"><i class="bi bi-x-lg"></i></a>
+            </header>
+
+            <form method="post" action="/admin/gastos/guardar" class="g-modal__cuerpo">
+                {#if dialogo.id}<input type="hidden" name="id" value="{dialogo.id}">{/if}
+                <input type="hidden" name="desde" value="{filtro.desde}">
+                <input type="hidden" name="hasta" value="{filtro.hasta}">
+                <input type="hidden" name="filtroCategoria" value="{filtro.categoria}">
+                <input type="hidden" name="pagina" value="{filtro.pagina}">
+
+                {#if dialogo.error}
+                    <div class="g-alerta g-alerta--dentro" role="alert"><i class="bi bi-exclamation-triangle-fill"></i> {dialogo.error}</div>
+                {/if}
+
+                <label class="g-etiqueta" for="g-nombre">Concepto <b>*</b></label>
+                <input class="g-input" id="g-nombre" type="text" name="nombre" maxlength="120" required autofocus
+                       placeholder="Ej. Shampoo hipoalergénico x 5 L" value="{dialogo.nombre}">
+
+                <span class="g-etiqueta">Categoría <b>*</b></span>
+                <div class="g-cats">
+                    {#for c in dialogo.categorias}
+                        <label class="g-cat {c.tono}" title="{c.descripcion}">
+                            <input type="radio" name="categoria" value="{c.codigo}" {#if c.seleccionada}checked{/if} required>
+                            <span><i class="bi {c.icono}"></i>{c.etiqueta}</span>
+                        </label>
+                    {/for}
+                </div>
+
+                <div class="g-fila2">
+                    <div>
+                        <label class="g-etiqueta" for="g-monto">Monto (COP) <b>*</b></label>
+                        <div class="g-input-con">
+                            <span>$</span>
+                            <input class="g-input" id="g-monto" type="number" name="monto" min="1" step="1"
+                                   inputmode="numeric" required placeholder="0" value="{dialogo.monto}">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="g-etiqueta" for="g-fecha">Fecha del gasto <b>*</b></label>
+                        <input class="g-input" id="g-fecha" type="date" name="fechaGasto" max="{hoyIso}"
+                               required value="{dialogo.fecha}">
+                    </div>
+                </div>
+
+                <footer class="g-modal__pie">
+                    <a class="g-btn g-btn--fantasma" href="{dialogo.hrefCerrar}"><i class="bi bi-x-lg"></i> Cancelar</a>
+                    <button class="g-btn g-btn--primario" type="submit"><i class="bi bi-check-lg"></i> Guardar gasto</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+{/if}
+
+{#if eliminar}
+    <div class="g-modal" role="alertdialog" aria-modal="true" aria-label="Eliminar gasto">
+        <a class="g-modal__fondo" href="{eliminar.hrefCerrar}" aria-label="Cerrar"></a>
+        <div class="g-modal__caja g-modal__caja--chica">
+            <div class="g-borrar">
+                <span class="g-borrar__icono"><i class="bi bi-trash3"></i></span>
+                <h2>¿Eliminar este gasto?</h2>
+                <p><strong>{eliminar.nombre}</strong></p>
+                <p class="g-borrar__detalle">{eliminar.detalle}</p>
+                <p class="g-borrar__aviso">Esta acción no se puede deshacer.</p>
+
+                <form method="post" action="/admin/gastos/eliminar" class="g-modal__pie g-modal__pie--centro">
+                    <input type="hidden" name="id" value="{eliminar.id}">
+                    <input type="hidden" name="desde" value="{filtro.desde}">
+                    <input type="hidden" name="hasta" value="{filtro.hasta}">
+                    <input type="hidden" name="filtroCategoria" value="{filtro.categoria}">
+                    <input type="hidden" name="pagina" value="{filtro.pagina}">
+                    <a class="g-btn g-btn--fantasma" href="{eliminar.hrefCerrar}">Cancelar</a>
+                    <button class="g-btn g-btn--peligro" type="submit"><i class="bi bi-trash3"></i> Sí, eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{/if}
+
+<script src="/js/admin/admin-sidebar.js"></script>
+</body>
+</html>

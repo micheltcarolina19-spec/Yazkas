@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Citas | YAZKAS Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin/admin-sidebar.css">
+    <link rel="stylesheet" href="/css/admin/admin-citas.css">
+</head>
+<body class="citas-page">
+    {#include admin/components/sidebar active='citas' /}
+
+<main class="citas-main">
+
+    <header class="citas-header">
+        <div class="citas-titulo-icono" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+        </div>
+        <div>
+            <h1>Citas Agendadas</h1>
+            <p>Gestiona y organiza las citas de tu peluquería</p>
+        </div>
+    </header>
+
+    {#if ok}<div class="aviso ok" role="status">{ok}</div>{/if}
+    {#if error && !reprogramar && !cancelar}<div class="aviso error" role="alert">{error}</div>{/if}
+
+    <div class="citas-toolbar">
+        <div class="citas-nav">
+            <a class="btn-icono" href="{hrefAnterior}" aria-label="Anterior">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </a>
+            <div class="periodo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                <span>{periodo}</span>
+            </div>
+            <a class="btn-icono" href="{hrefSiguiente}" aria-label="Siguiente">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </a>
+            <a class="btn-hoy" href="{hrefHoy}">Hoy</a>
+
+            <form class="ir-fecha" method="get" action="/admin/citas">
+                <input type="hidden" name="vista" value="{vista}">
+                <input type="date" name="fecha" value="{fechaIso}" aria-label="Ir a una fecha" required>
+                <button type="submit">Ir</button>
+            </form>
+        </div>
+
+        <div class="citas-acciones">
+            <nav class="segmentado" aria-label="Vista del calendario">
+                <a href="{hrefDia}" class="{#if vista == 'dia'}activo{/if}">Día</a>
+                <a href="{hrefSemana}" class="{#if vista == 'semana'}activo{/if}">Semana</a>
+                <a href="{hrefMes}" class="{#if vista == 'mes'}activo{/if}">Mes</a>
+            </nav>
+            <button class="btn-crear" type="button" title="Disponible en el siguiente paso">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                Crear Cita
+            </button>
+        </div>
+    </div>
+
+    <section class="resumen" aria-label="Resumen del periodo">
+        <div class="resumen-item"><b>{resumen.total}</b><span>Citas</span></div>
+        <div class="resumen-item est-programada"><i></i><b>{resumen.programadas}</b><span>Programadas</span></div>
+        <div class="resumen-item est-reprogramada"><i></i><b>{resumen.reprogramadas}</b><span>Reprogramadas</span></div>
+        <div class="resumen-item est-completada"><i></i><b>{resumen.completadas}</b><span>Completadas</span></div>
+    </section>
+
+    {#if vista == 'mes'}
+        <section class="cal-card">
+            <div class="mes">
+                <div class="mes-cab"><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div></div>
+                <div class="mes-grid">
+                    {#for c in celdas}
+                        <div class="mes-celda {#if c.fuera}fuera{/if} {#if c.hoy}es-hoy{/if}">
+                            <a class="mes-num" href="{c.href}">{c.numero}</a>
+                            {#for ch in c.chips}
+                                <a class="mes-chip cat-{ch.categoria}" href="{ch.href}" title="{ch.titulo}">
+                                    <i class="est-punto est-{ch.estadoClase}"></i>{ch.hora} · {ch.titulo}
+                                </a>
+                            {/for}
+                            {#if c.extra > 0}<a class="mes-mas" href="{c.href}">+{c.extra} más</a>{/if}
+                        </div>
+                    {/for}
+                </div>
+            </div>
+        </section>
+    {#else}
+        <section class="cal-card">
+            <div class="cal-tiempo" style="--cols:{dias.size};--alto-hora:{altoHora}px;--n-horas:{horas.size}">
+                <div class="cal-cabecera">
+                    <div class="cal-hora-cab">Hora</div>
+                    {#for d in dias}
+                        <a class="cal-dia-cab {#if d.hoy}es-hoy{/if}" href="{d.href}">
+                            <span>{d.dia}</span><small>{d.fechaCorta}</small>
+                        </a>
+                    {/for}
+                </div>
+
+                <div class="cal-cuerpo">
+                    <div class="cal-horas">
+                        {#for h in horas}<div class="cal-hora">{h}</div>{/for}
+                    </div>
+
+                    {#for d in dias}
+                        <div class="cal-col {#if d.hoy}es-hoy{/if}">
+                            {#for b in d.bloques}
+                                <div class="evento cat-{b.categoria} est-{b.estadoClase} lado-{b.lado} vert-{b.vertical}" tabindex="0"
+                                     style="top:{b.top}px;height:{b.alto}px;left:calc({b.izquierda}% + 4px);width:calc({b.ancho}% - 8px)">
+
+                                    <div class="evento-cuerpo">
+                                        <div class="evento-contenido">
+                                            <div class="avatares">
+                                                {#for m in b.mascotas}{#if m_index < 2}
+                                                    {#if m.foto}<img class="avatar" src="{m.foto}" alt="{m.nombre}" loading="lazy">{#else}<span class="avatar">{m.inicial}</span>{/if}
+                                                {/if}{/for}
+                                            </div>
+                                            <div class="evento-texto">
+                                                <b>{b.titulo}</b>
+                                                <span class="evento-servicio">{b.servicio}</span>
+                                                <small>{b.rango}</small>
+                                                <span class="evento-pill">{b.estadoTexto}</span>
+                                            </div>
+                                        </div>
+                                        <i class="evento-estado" title="{b.estadoTexto}"></i>
+                                    </div>
+
+                                    <div class="tarjeta-wrap">
+                                        <div class="tarjeta">
+                                            <div class="tarjeta-cab">
+                                                <span class="chip-servicio">{b.servicio}</span>
+                                                <span class="chip-estado"><i></i>{b.estadoTexto}</span>
+                                            </div>
+
+                                            {#for m in b.mascotas}
+                                                <div class="tarjeta-mascota">
+                                                    {#if m.foto}<img class="tarjeta-foto" src="{m.foto}" alt="{m.nombre}" loading="lazy">{#else}<span class="tarjeta-foto">{m.inicial}</span>{/if}
+                                                    <div class="tarjeta-datos">
+                                                        <strong>{m.nombre}</strong>
+                                                        {#if m.raza}<p>{m.raza}{#if m.edad} • {m.edad}{/if}</p>{/if}
+                                                        {#if m.duenio}<p class="suave">Dueño: {m.duenio}</p>{/if}
+                                                        {#if m.celular}<p class="suave">Cel. {m.celular}</p>{/if}
+                                                        <p class="suave">{m.duracion}</p>
+                                                    </div>
+                                                </div>
+                                            {/for}
+
+                                            <div class="tarjeta-fila">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                                                <span>{b.fechaLarga} • {b.rango}</span>
+                                            </div>
+
+                                            {#if b.modificable}
+                                                <div class="tarjeta-botones">
+                                                    <a class="rep" href="{b.hrefReprogramar}">Reprogramar</a>
+                                                    <a class="can" href="{b.hrefCancelar}">Cancelar</a>
+                                                </div>
+                                            {/if}
+                                        </div>
+                                    </div>
+                                </div>
+                            {/for}
+
+                            {#if d.ahoraTop >= 0}<div class="linea-ahora" style="top:{d.ahoraTop}px"></div>{/if}
+                        </div>
+                    {/for}
+                </div>
+            </div>
+        </section>
+    {/if}
+
+    <footer class="cal-leyenda">
+        <div class="leyenda-grupo">
+            <strong>Servicio</strong>
+            <span><i class="punto cat-bano"></i>Baño</span>
+            <span><i class="punto cat-pelu"></i>Peluquería</span>
+            <span><i class="punto cat-otros"></i>Otros servicios</span>
+        </div>
+        <div class="leyenda-grupo">
+            <strong>Estado</strong>
+            <span class="est-programada"><i class="punto-estado"></i>Programada</span>
+            <span class="est-reprogramada"><i class="punto-estado"></i>Reprogramada</span>
+            <span class="est-completada"><i class="punto-estado"></i>Completada</span>
+        </div>
+    </footer>
+</main>
+
+{#if reprogramar}
+    <div class="overlay">
+        <a class="overlay-fondo" href="{reprogramar.hrefCerrar}" aria-label="Cerrar"></a>
+        <form class="modal" method="post" action="/admin/citas/reprogramar">
+            <input type="hidden" name="agendamientoId" value="{reprogramar.agendamientoId}">
+            <input type="hidden" name="vista" value="{vista}">
+            <input type="hidden" name="fecha" value="{fechaIso}">
+            <h2>Reprogramar cita</h2>
+            <p class="modal-sub">{reprogramar.resumen}</p>
+            <div class="campos">
+                <label>Nueva fecha
+                    <input type="date" name="nuevaFecha" value="{reprogramar.fecha}" required>
+                </label>
+                <label>Nueva hora
+                    <input type="time" name="nuevaHora" value="{reprogramar.hora}" step="900" required>
+                </label>
+            </div>
+            {#if error}<p class="modal-error">{error}</p>{/if}
+            <div class="modal-botones">
+                <a class="btn-sec" href="{reprogramar.hrefCerrar}">Volver</a>
+                <button class="btn-pri" type="submit">Guardar cambios</button>
+            </div>
+        </form>
+    </div>
+{/if}
+
+{#if cancelar}
+    <div class="overlay">
+        <a class="overlay-fondo" href="{cancelar.hrefCerrar}" aria-label="Cerrar"></a>
+        <form class="modal" method="post" action="/admin/citas/cancelar">
+            <input type="hidden" name="agendamientoId" value="{cancelar.agendamientoId}">
+            <input type="hidden" name="vista" value="{vista}">
+            <input type="hidden" name="fecha" value="{fechaIso}">
+            <h2>Cancelar cita</h2>
+            <p class="modal-sub">¿Seguro que deseas cancelar la cita de {cancelar.resumen}? Se liberará el horario.</p>
+            {#if error}<p class="modal-error">{error}</p>{/if}
+            <div class="modal-botones">
+                <a class="btn-sec" href="{cancelar.hrefCerrar}">Volver</a>
+                <button class="btn-peligro" type="submit">Sí, cancelar cita</button>
+            </div>
+        </form>
+    </div>
+{/if}
+
+    <script src="/js/admin/admin-sidebar.js"></script>
+
+</body>
+</html>

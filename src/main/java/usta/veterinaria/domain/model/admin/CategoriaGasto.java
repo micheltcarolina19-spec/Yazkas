@@ -6,5 +6,14 @@ public enum CategoriaGasto {
     SERVICIOS_PUBLICOS,
     ALQUILER_LOCAL,
     MANTENIMIENTO_EQUIPOS,
-    PERSONAL
+    PERSONAL,
+    // --- nuevas (agregadas al final para no alterar los valores existentes) ---
+    HERRAMIENTAS,
+    LIMPIEZA_DESINFECCION,
+    INTERNET_TELEFONIA,
+    PRODUCTOS_VENTA,
+    PUBLICIDAD,
+    IMPUESTOS_TRAMITES,
+    CAPACITACION,
+    OTROS
 }

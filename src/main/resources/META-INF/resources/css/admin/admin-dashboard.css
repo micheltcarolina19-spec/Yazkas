@@ -10,7 +10,34 @@
     --d-bad: #e0524a;
     --d-shadow: 0 6px 20px rgba(26, 92, 130, .08);
 }
+/* Planilla de Sanidad — YAZKAS Admin. */
+:root {
+    --ps-font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --ps-ink: #123a8f;
+    --ps-text: #1e2f4d;
+    --ps-muted: #5f7396;
+    --ps-blue: #1d63d8;
+    --ps-blue-dark: #0b429c;
+    --ps-soft: #eaf3ff;
+    --ps-line: #cfe0f7;
+    --ps-ok: #1f9d55;
+    --ps-bad: #d64545;
+}
 
+/* La fuente va en el body para que la hereden sidebar, contenido, diálogos y avisos */
+body {
+    margin: 0;
+    font-family: var(--ps-font);
+    -webkit-font-smoothing: antialiased;
+}
+
+button, input, select, textarea { font-family: inherit; }
+
+/* Ancho, padding (incluida la barra superior en móvil) y fondo los da .adm-main / .adm-layout
+   del sidebar; aquí solo va el color del texto. */
+.ps-main { color: var(--ps-text); }
+
+.ps-main *, .ps-main *::before, .ps-main *::after { box-sizing: border-box; }
 .visually-hidden {
     position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
     overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
