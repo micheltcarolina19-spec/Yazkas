@@ -134,4 +134,35 @@ public class ImagenStorage {
         }
         throw new BusinessRuleException("Formato no válido. Usa una imagen JPG, PNG o WebP");
     }
+
+
+    // Valida tamaño y formato ANTES de decodificar la imagen
+    public void validar(FileUpload archivo) {
+        if (archivo == null || archivo.size() == 0) {
+            throw new BusinessRuleException("Selecciona una imagen para subir");
+        }
+        if (archivo.size() > MAX_BYTES) {
+            throw new BusinessRuleException("La imagen no puede superar 5 MB");
+        }
+        detectarExtension(archivo.uploadedFile()); // lanza si no es JPG/PNG/WebP
+    }
+
+    // Guarda bytes ya procesados (PNG sin fondo) como archivo .png
+    public String guardarPng(byte[] datos, String carpeta) {
+        if (!CARPETAS.contains(carpeta)) {
+            throw new BusinessRuleException("Destino de imagen no válido");
+        }
+        if (datos == null || datos.length == 0) {
+            throw new BusinessRuleException("No se pudo procesar la imagen");
+        }
+
+        String nombre = UUID.randomUUID().toString().replace("-", "") + ".png";
+        try {
+            Files.write(raiz.resolve(carpeta).resolve(nombre), datos);
+        } catch (IOException e) {
+            LOG.error("No se pudo guardar la imagen", e);
+            throw new UncheckedIOException("No se pudo guardar la imagen", e);
+        }
+        return RAIZ_URL + carpeta + "/" + nombre;
+    }
 }

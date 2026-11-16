@@ -20,10 +20,19 @@ import usta.veterinaria.domain.model.admin.CategoriaProducto;
 import usta.veterinaria.domain.model.admin.Producto;
 import usta.veterinaria.domain.model.admin.TipoProducto;
 import usta.veterinaria.infrastructure.adapter.in.web.ImagenStorage;
+import org.jboss.logging.Logger;
+import usta.veterinaria.domain.exception.BusinessRuleException;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import usta.veterinaria.infrastructure.adapter.in.web.QuitarFondo;
+import jakarta.ws.rs.BadRequestException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+
+import org.jboss.logging.Logger;   // ya lo tienes importado
 
 // Inventario de productos del administrador.
 //  - GET    /admin/productos         -> la página (tabla + panel lateral para crear/editar)
@@ -66,16 +75,30 @@ public class AdminProductoResource {
         String html = datos(index.getFragment("filas").instance()).render();
         return Response.ok(html).header("Cache-Control", "no-store").build();
     }
+    private static final Logger LOG = Logger.getLogger(AdminProductoResource.class);
 
-    // ---------------------------------------------------------------- Imágenes
 
-    // Recibe la foto (campo "imagen"), la valida y la guarda como archivo. En la base solo se guarda la URL
+    @Inject
+    QuitarFondo recorte;
+
     @POST
     @Path("/imagen")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response subirImagen(@RestForm("imagen") FileUpload imagen) {
-        return Response.ok(Map.of("url", imagenes.guardar(imagen))).build();
+        imagenes.validar(imagen);
+
+        byte[] png = null;
+        try (InputStream in = Files.newInputStream(imagen.uploadedFile())) {
+            png = recorte.aPngSinFondo(in);
+        } catch (IOException | RuntimeException e) {
+            LOG.warn("No se pudo quitar el fondo; se guarda la original", e);
+        }
+
+        String url = (png != null)
+                ? imagenes.guardarPng(png, ImagenStorage.PRODUCTOS)
+                : imagenes.guardar(imagen, ImagenStorage.PRODUCTOS);
+        return Response.ok(Map.of("url", url)).build();
     }
 
     // Borra una foto que subimos nosotros (las URLs externas se ignoran)
