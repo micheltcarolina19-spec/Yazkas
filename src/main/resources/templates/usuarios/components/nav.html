@@ -1,7 +1,10 @@
 {! ===== Navbar Yazka's =====
-   Uso en cualquier plantilla:  {#include nav active='inicio' /}
+   Uso en cualquier plantilla:  {#include usuarios/components/nav active='inicio' /}
    Valores de "active": inicio | servicios | catalogo | nosotros | contacto
    Si no se pasa "active", ningún enlace queda resaltado.
+   Sesión: se lee del bean @Named("sesion") (SesionActual) con {inject:sesion...}
+     - Con sesión: botón "Mi perfil" (cliente → /mascotas, admin → /admin) y botón para cerrar sesión.
+     - Sin sesión: botón "Iniciar sesión" (→ /login).
    Acción principal: botón "Agendar cita" (ruta /citas). !}
 {#let activo=active.or('')}
 
@@ -43,23 +46,32 @@
             <rect x="3.5" y="5" width="17" height="15.5" rx="3"/>
             <path d="M8 3v4M16 3v4M3.5 10h17M9.5 15l2 2 3.5-3.5"/>
         </symbol>
+        <symbol id="i-user" viewBox="0 0 24 24">
+            <circle cx="12" cy="8.5" r="4"/>
+            <path d="M4.5 20a7.5 7.5 0 0 1 15 0"/>
+        </symbol>
+        <symbol id="i-login" viewBox="0 0 24 24">
+            <path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/>
+            <path d="M10 8l4 4-4 4M14 12H4"/>
+        </symbol>
+        <symbol id="i-logout" viewBox="0 0 24 24">
+            <path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"/>
+            <path d="M15 8l4 4-4 4M19 12H9"/>
+        </symbol>
     </svg>
 
     <header class="pc-header">
         <nav class="pc-nav" aria-label="Navegación principal">
 
-            {! ---- LOGO / MARCA ----
-               Para usar el logo real, reemplaza el <svg> por:
-               <img src="/img/usuario/logo.png" alt="Yazka's">
-               (guarda el archivo en META-INF/resources/img/) !}
+            {! ---- LOGO / MARCA ---- !}
             <a class="pc-brand" href="/" aria-label="Yazka's, ir al inicio">
-            <span class="pc-brand__logo">
-                <img src="/img/usuario/logo.png" width="800" alt="Logo de Yazka's">
-            </span>
+                <span class="pc-brand__logo">
+                    <img src="/img/usuario/logo.png" width="800" alt="Logo de Yazka's">
+                </span>
                 <span class="pc-brand__text">
-                <strong>Yazka's</strong>
-                <small>Peluquería canina y felina</small>
-            </span>
+                    <strong>Yazka's</strong>
+                    <small>Peluquería canina y felina</small>
+                </span>
             </a>
 
             <button class="pc-toggle" type="button" aria-expanded="false"
@@ -84,6 +96,28 @@
                     </ul>
 
                     <div class="pc-actions">
+                        {#if inject:sesion.activa}
+                            {! ---- Con sesión: perfil + cerrar sesión ---- !}
+                            <a class="pc-user" href="{inject:sesion.rutaPerfil}">
+                                <span class="pc-user__avatar" aria-hidden="true">
+                                    <svg class="pc-ico"><use href="#i-user"/></svg>
+                                </span>
+                                {#if inject:sesion.admin}Panel admin{#else}Mi perfil{/if}
+                            </a>
+                            <a class="pc-logout" href="/logout" aria-label="Cerrar sesión" title="Cerrar sesión">
+                                <svg class="pc-ico" aria-hidden="true"><use href="#i-logout"/></svg>
+                                <span class="pc-logout__text">Cerrar sesión</span>
+                            </a>
+                        {#else}
+                            {! ---- Sin sesión: invitación a iniciar sesión ---- !}
+                            <a class="pc-user" href="/login">
+                                <span class="pc-user__avatar" aria-hidden="true">
+                                    <svg class="pc-ico"><use href="#i-login"/></svg>
+                                </span>
+                                Iniciar sesión
+                            </a>
+                        {/if}
+
                         <a class="pc-cta" href="/citas">
                             <svg class="pc-ico" aria-hidden="true"><use href="#i-calendar"/></svg>
                             Agendar cita

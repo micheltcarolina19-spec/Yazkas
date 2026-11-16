@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contáctanos - Yazka's Peluquería canina y felina</title>
+    <meta name="description" content="Contacta a Yazka's por WhatsApp, teléfono o correo. Carrera 9 # 2-37, Chiquinquirá, Boyacá.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/usuarios/Navbar.css" rel="stylesheet">
+    <link href="/css/usuarios/home.css" rel="stylesheet">
+    <link href="/css/usuarios/contacto.css" rel="stylesheet">
+</head>
+<body class="hm-body">
+
+{! Navbar reutilizable: aquí se marca 'contacto' como activo !}
+{#include usuarios/components/nav active='contacto' /}
+
+{! Iconos de la página: se usan con <use href="#c-..."> !}
+<svg class="hm-sprite" aria-hidden="true" focusable="false">
+    <symbol id="c-paw" viewBox="0 0 48 48">
+        <ellipse cx="24" cy="31" rx="10.5" ry="8.5"/>
+        <ellipse cx="9.5" cy="22" rx="4.2" ry="5.6" transform="rotate(-18 9.5 22)"/>
+        <ellipse cx="18" cy="12.5" rx="4.4" ry="6" transform="rotate(-6 18 12.5)"/>
+        <ellipse cx="30" cy="12.5" rx="4.4" ry="6" transform="rotate(6 30 12.5)"/>
+        <ellipse cx="38.5" cy="22" rx="4.2" ry="5.6" transform="rotate(18 38.5 22)"/>
+    </symbol>
+    <symbol id="c-bone" viewBox="0 0 64 28">
+        <path d="M14 4a7 7 0 0 0-6.6 9.3A7 7 0 1 0 14 24h36a7 7 0 1 0 6.6-10.7A7 7 0 1 0 50 4c-3 0-5.4 1.8-6.4 4.4H20.4C19.4 5.8 17 4 14 4Z"/>
+    </symbol>
+    <symbol id="c-heart" viewBox="0 0 24 24">
+        <path d="M12 21s-8-4.9-8-11a4.6 4.6 0 0 1 8-3.1A4.6 4.6 0 0 1 20 10c0 6.1-8 11-8 11Z"/>
+    </symbol>
+    <symbol id="c-sparkle" viewBox="0 0 24 24">
+        <path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7Z"/>
+    </symbol>
+    <symbol id="c-arrow" viewBox="0 0 24 24">
+        <path d="M5 12h14M13 6l6 6-6 6"/>
+    </symbol>
+    <symbol id="c-phone" viewBox="0 0 24 24">
+        <path d="M6.6 3.5h2.6l1.4 4-2 1.3a11 11 0 0 0 6.6 6.6l1.3-2 4 1.4v2.6A2 2 0 0 1 18.4 19.5 15.5 15.5 0 0 1 4.5 5.6a2 2 0 0 1 2.1-2.1Z"/>
+    </symbol>
+    <symbol id="c-whatsapp" viewBox="0 0 24 24">
+        <path d="M12 3.2a8.8 8.8 0 0 0-7.6 13.2L3.2 20.8l4.5-1.2A8.8 8.8 0 1 0 12 3.2Z"/>
+        <path d="M9 8.2c.3-.3.8-.3 1 .1l.8 1.7c.1.3 0 .6-.2.8l-.5.5a6 6 0 0 0 2.7 2.7l.5-.5c.2-.2.5-.3.8-.2l1.7.8c.4.2.4.7.1 1-.6.7-1.5 1-2.4.8A7.5 7.5 0 0 1 8.2 10.6c-.2-.9.1-1.8.8-2.4Z"/>
+    </symbol>
+    <symbol id="c-mail" viewBox="0 0 24 24">
+        <rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/>
+        <path d="m4.5 7 7.5 6 7.5-6"/>
+    </symbol>
+    <symbol id="c-clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>
+    </symbol>
+    <symbol id="c-pin" viewBox="0 0 24 24">
+        <path d="M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.8 12 21 12 21Z"/>
+        <circle cx="12" cy="9.8" r="2.4"/>
+    </symbol>
+    <symbol id="c-user" viewBox="0 0 24 24">
+        <circle cx="12" cy="8.5" r="4"/>
+        <path d="M4.5 20a7.5 7.5 0 0 1 15 0"/>
+    </symbol>
+    <symbol id="c-external" viewBox="0 0 24 24">
+        <path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/>
+    </symbol>
+</svg>
+
+<main class="hm-main">
+
+    {! ============================== 1. ENCABEZADO + BOTONES RÁPIDOS ============================== !}
+    <section class="ct-hero" aria-labelledby="ct-titulo">
+        <div class="ct-hero__deco" aria-hidden="true">
+            <svg class="ct-float ct-float--1"><use href="#c-paw"/></svg>
+            <svg class="ct-float ct-float--2"><use href="#c-sparkle"/></svg>
+            <svg class="ct-float ct-float--3"><use href="#c-heart"/></svg>
+            <svg class="ct-float ct-float--4"><use href="#c-bone"/></svg>
+            <svg class="ct-float ct-float--5"><use href="#c-sparkle"/></svg>
+            <svg class="ct-float ct-float--6"><use href="#c-paw"/></svg>
+        </div>
+
+        <div class="hm-container ct-hero__inner">
+            <span class="ct-eyebrow">
+                <svg class="hm-ico hm-ico--fill" aria-hidden="true"><use href="#c-paw"/></svg>
+                Contáctanos
+            </span>
+            <h1 id="ct-titulo" class="ct-hero__title">
+                Estamos para <span class="hm-script">ayudarte</span>
+            </h1>
+            <p class="ct-hero__lead">
+                ¿Tienes dudas sobre un servicio, un producto o tu cita? Escríbenos o llámanos,
+                con gusto te atendemos a ti y a tu peludito.
+            </p>
+
+            {! Botones rápidos: cambia los números y el correo por los reales !}
+            <ul class="ct-quick">
+                <li>
+                    <a class="ct-quick__card ct-quick__card--wa"
+                       href="https://wa.me/573104567890?text=Hola%20Yazka%27s%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n"
+                       target="_blank" rel="noopener">
+                        <span class="ct-quick__icon"><svg class="hm-ico"><use href="#c-whatsapp"/></svg></span>
+                        <span class="ct-quick__text">
+                            <strong>WhatsApp</strong>
+                            <small>+57 310 456 7890</small>
+                        </span>
+                        <svg class="hm-ico ct-quick__go" aria-hidden="true"><use href="#c-arrow"/></svg>
+                    </a>
+                </li>
+                <li>
+                    <a class="ct-quick__card ct-quick__card--call" href="tel:+573104567890">
+                        <span class="ct-quick__icon"><svg class="hm-ico"><use href="#c-phone"/></svg></span>
+                        <span class="ct-quick__text">
+                            <strong>Llámanos</strong>
+                            <small>+57 310 456 7890</small>
+                        </span>
+                        <svg class="hm-ico ct-quick__go" aria-hidden="true"><use href="#c-arrow"/></svg>
+                    </a>
+                </li>
+                <li>
+                    <a class="ct-quick__card ct-quick__card--mail" href="mailto:contacto@yazkas.com.co">
+                        <span class="ct-quick__icon"><svg class="hm-ico"><use href="#c-mail"/></svg></span>
+                        <span class="ct-quick__text">
+                            <strong>Escríbenos</strong>
+                            <small>contacto@yazkas.com.co</small>
+                        </span>
+                        <svg class="hm-ico ct-quick__go" aria-hidden="true"><use href="#c-arrow"/></svg>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    {! ============================== 2. ADMINISTRADORAS ============================== !}
+    <section class="hm-section" id="equipo" aria-labelledby="equipo-titulo">
+        <div class="hm-container">
+            <header class="ct-head">
+                <h2 id="equipo-titulo" class="hm-h2">Habla directo con <span class="hm-script">nosotras</span></h2>
+                <p class="hm-muted">Nuestras administradoras te responden personalmente.</p>
+            </header>
+
+            <div class="ct-team">
+                {! ---------- Administradora 1 (datos de ejemplo) ---------- !}
+                <article class="ct-admin">
+                    <svg class="ct-admin__paw" aria-hidden="true"><use href="#c-paw"/></svg>
+                    <div class="ct-admin__head">
+                        <span class="ct-admin__avatar ct-admin__avatar--sky" aria-hidden="true">
+                            <svg class="hm-ico"><use href="#c-user"/></svg>
+                        </span>
+                        <div>
+                            <h3 class="ct-admin__name">Yasmín Torres</h3>
+                            <span class="ct-admin__role">Administradora</span>
+                        </div>
+                    </div>
+
+                    <ul class="ct-admin__data">
+                        <li>
+                            <svg class="hm-ico" aria-hidden="true"><use href="#c-whatsapp"/></svg>
+                            <span><small>WhatsApp</small>+57 310 456 7890</span>
+                        </li>
+                        <li>
+                            <svg class="hm-ico" aria-hidden="true"><use href="#c-phone"/></svg>
+                            <span><small>Teléfono</small>+57 310 456 7890</span>
+                        </li>
+                    </ul>
+
+                    <div class="ct-admin__actions">
+                        <a class="hm-btn hm-btn--sm ct-btn-wa"
+                           href="https://wa.me/573104567890?text=Hola%20Yasm%C3%ADn%2C%20te%20escribo%20desde%20la%20p%C3%A1gina%20de%20Yazka%27s"
+                           target="_blank" rel="noopener">
+                            <svg class="hm-ico" aria-hidden="true"><use href="#c-whatsapp"/></svg>
+                            WhatsApp
+                        </a>
+                        <a class="hm-btn hm-btn--soft hm-btn--sm" href="tel:+573104567890">
+                            <svg class="hm-ico" aria-hidden="true"><use href="#c-phone"/></svg>
+                            Llamar
+                        </a>
+                    </div>
+                </article>
+
+                {! ---------- Administradora 2 (datos de ejemplo) ---------- !}
+                <article class="ct-admin">
+                    <svg class="ct-admin__paw" aria-hidden="true"><use href="#c-paw"/></svg>
+                    <div class="ct-admin__head">
+                        <span class="ct-admin__avatar ct-admin__avatar--pink" aria-hidden="true">
+                            <svg class="hm-ico"><use href="#c-user"/></svg>
+                        </span>
+                        <div>
+                            <h3 class="ct-admin__name">Janet Rodríguez</h3>
+                            <span class="ct-admin__role">Administradora</span>
+                        </div>
+                    </div>
+
+                    <ul class="ct-admin__data">
+                        <li>
+                            <svg class="hm-ico" aria-hidden="true"><use href="#c-whatsapp"/></svg>
+                            <span><small>WhatsApp</small>+57 320 123 4567</span>
+                        </li>
+                        <li>
+                            <svg class="hm-ico" aria-hidden="true"><use href="#c-phone"/></svg>
+                            <span><small>Teléfono</small>+57 320 123 4567</span>
+                        </li>
+                    </ul>
+
+                    <div class="ct-admin__actions">
+                        <a class="hm-btn hm-btn--sm ct-btn-wa"
+                           href="https://wa.me/573201234567?text=Hola%20Janet%2C%20te%20escribo%20desde%20la%20p%C3%A1gina%20de%20Yazka%27s"
+                           target="_blank" rel="noopener">
+                            <svg class="hm-ico" aria-hidden="true"><use href="#c-whatsapp"/></svg>
+                            WhatsApp
+                        </a>
+                        <a class="hm-btn hm-btn--soft hm-btn--sm" href="tel:+573201234567">
+                            <svg class="hm-ico" aria-hidden="true"><use href="#c-phone"/></svg>
+                            Llamar
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    {! ============================== 3. DIRECCIÓN, HORARIO Y MAPA ============================== !}
+    <section class="hm-section hm-section--tight ct-visit" id="ubicacion" aria-labelledby="visita-titulo">
+        <div class="hm-container">
+            <div class="ct-place">
+                <div class="ct-place__info">
+                    <h2 id="visita-titulo" class="ct-place__title">También puedes <span class="hm-script">visitarnos</span></h2>
+
+                    <div class="ct-place__row">
+                        <span class="ct-place__icon"><svg class="hm-ico" aria-hidden="true"><use href="#c-pin"/></svg></span>
+                        <address>
+                            <strong>Carrera 9 # 2-37</strong>
+                            Chiquinquirá, Boyacá
+                        </address>
+                    </div>
+
+                    <div class="ct-place__row">
+                        <span class="ct-place__icon"><svg class="hm-ico" aria-hidden="true"><use href="#c-clock"/></svg></span>
+                        <p>
+                            <strong>Lunes a sábado</strong>
+                            8:30 a. m. – 5:00 p. m.
+                            <em>Domingos y festivos cerrado</em>
+                        </p>
+                    </div>
+
+                    <a class="hm-btn hm-btn--primary hm-btn--sm"
+                       href="https://www.google.com/maps/dir/?api=1&amp;destination=Carrera+9+%232-37,+Chiquinquir%C3%A1,+Boyac%C3%A1,+Colombia"
+                       target="_blank" rel="noopener">
+                        Cómo llegar
+                        <svg class="hm-ico" aria-hidden="true"><use href="#c-external"/></svg>
+                    </a>
+                </div>
+
+                <div class="ct-place__map">
+                    <iframe
+                        title="Mapa de ubicación de Yazka's en Carrera 9 # 2-37, Chiquinquirá, Boyacá"
+                        src="https://www.google.com/maps?q=Carrera+9+%232-37,+Chiquinquir%C3%A1,+Boyac%C3%A1,+Colombia&amp;z=17&amp;output=embed"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+{! ============================== PIE DE PÁGINA (igual al del inicio) ============================== !}
+<footer class="hm-footer">
+    <div class="hm-footer__wave" aria-hidden="true"></div>
+    <img class="hm-footer__pets" src="/img/usuario/TrioColin.png" alt="" aria-hidden="true" loading="lazy">
+
+    <div class="hm-container hm-footer__grid">
+        <div class="hm-footer__brand">
+            <a class="hm-footer__logo" href="/">
+                <img src="/img/usuario/logo.png" alt="" width="52" height="52">
+                <span><strong>Yazka's</strong><small>Peluquería canina y felina</small></span>
+            </a>
+            <p>Cuidamos con amor, porque ellos lo merecen.</p>
+        </div>
+
+        <nav class="hm-footer__col" aria-label="Navegación del pie de página">
+            <h3>Navegación</h3>
+            <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/servicios">Servicios</a></li>
+                <li><a href="/nosotros">Nosotros</a></li>
+                <li><a href="/contacto">Contacto</a></li>
+            </ul>
+        </nav>
+
+        <div class="hm-footer__col">
+            <h3>Contacto</h3>
+            <ul>
+                <li><a href="tel:+573104567890">+57 310 456 7890</a></li>
+                <li><a href="mailto:contacto@yazkas.com.co">contacto@yazkas.com.co</a></li>
+                <li><a href="#ubicacion">Cra. 9 # 2-37, Chiquinquirá</a></li>
+            </ul>
+        </div>
+    </div>
+    <p class="hm-footer__copy">
+        © <span id="anio">2026</span> Yazka's · Peluquería canina y felina. Todos los derechos reservados.
+    </p>
+</footer>
+
+<script src="/js/usuario/Navbar.js"></script>
+<script src="/js/usuario/contacto.js"></script>
+</body>
+</html>

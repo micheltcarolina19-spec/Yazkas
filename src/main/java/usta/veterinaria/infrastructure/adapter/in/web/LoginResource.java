@@ -16,6 +16,8 @@ import usta.veterinaria.application.port.in.usuario.AutenticarUsuarioUseCase;
 import usta.veterinaria.domain.exception.BusinessRuleException;
 import usta.veterinaria.domain.model.usuario.RolUsuario;
 import usta.veterinaria.domain.model.usuario.Usuario;
+import usta.veterinaria.infrastructure.adapter.in.web.sesion.SesionActual;
+import usta.veterinaria.infrastructure.adapter.in.web.sesion.SesionCookie;
 
 import java.net.URI;
 
@@ -23,7 +25,7 @@ import java.net.URI;
 public class LoginResource {
 
     private static final String RUTA_ADMIN = "/admin";
-    private static final String RUTA_CLIENTE = "/";
+    private static final String RUTA_CLIENTE = "/mascotas";
 
     @Inject
     @Location("login.html")
@@ -32,14 +34,24 @@ public class LoginResource {
     @Inject
     AutenticarUsuarioUseCase autenticarUsuarioUseCase;
 
-    // Mostrar formulario de inicio de sesión
+    // Crea la cookie firmada de sesión (la misma que lee SesionActual)
+    @Inject
+    SesionCookie sesionCookie;
+
+    @Inject
+    SesionActual sesion;
+
+    // Mostrar formulario de inicio de sesión (si ya hay sesión, va directo a su perfil)
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance mostrarLogin() {
-        return vistaLogin(null, "");
+    public Response mostrarLogin() {
+        if (sesion.isActiva()) {
+            return Response.seeOther(URI.create(sesion.getRutaPerfil())).build();
+        }
+        return Response.ok(vistaLogin(null, "")).build();
     }
 
-    // Procesar inicio de sesión y redirigir según el rol
+    // Procesar inicio de sesión: guarda la cookie de sesión y redirige según el rol
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
@@ -47,7 +59,11 @@ public class LoginResource {
                                   @RestForm("contrasena") String contrasena) {
         try {
             Usuario usuario = autenticarUsuarioUseCase.autenticar(correo, contrasena);
-            return Response.seeOther(URI.create(rutaSegunRol(usuario.getRol()))).build();
+            String destino = rutaSegunRol(usuario.getRol());
+
+            return Response.seeOther(URI.create(destino))
+                    .cookie(sesionCookie.crear(usuario.getId(), usuario.getRol()))
+                    .build();
 
         } catch (BusinessRuleException e) {
             return Response.status(Response.Status.UNAUTHORIZED)

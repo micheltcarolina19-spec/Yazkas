@@ -1,0 +1,439 @@
+/* =====================================================================
+   Yazka's · Vista "Nosotros"
+   Se carga después de home.css y reutiliza sus clases base
+   (hm-container, hm-section, hm-h2, hm-script, hm-btn, hm-ico, hm-footer).
+   ===================================================================== */
+:root {
+    --ns-navy: #0b2a55;
+    --ns-blue: #0a74c9;
+    --ns-sky: #29a8ec;
+    --ns-baby: #dff0ff;
+    --ns-ice: #f1f8ff;
+    --ns-pink: #ff5fa2;
+    --ns-pink-soft: #ffe3ef;
+    --ns-text: #4a5b74;
+    --ns-muted: #7a8aa3;
+    --ns-radius: 28px;
+    --ns-shadow: 0 18px 40px rgba(11, 42, 85, .08);
+}
+
+/* ---------- Utilidades de la página ---------- */
+.ns-head {
+    text-align: center;
+    max-width: 620px;
+    margin: 0 auto 2.5rem;
+}
+.ns-head .hm-muted { margin: .5rem 0 0; }
+
+.ns-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .4rem .95rem;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--ns-blue);
+    font-weight: 600;
+    font-size: .85rem;
+    box-shadow: 0 6px 16px rgba(10, 116, 201, .12);
+}
+.ns-eyebrow .hm-ico { width: 16px; height: 16px; color: var(--ns-pink); }
+
+/* ============================== 1. ENCABEZADO ============================== */
+.ns-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 7.5rem 0 4rem;
+    background:
+        radial-gradient(circle at 12% 20%, #ffffff 0, transparent 40%),
+        linear-gradient(180deg, #eaf6ff 0%, #d9eeff 100%);
+}
+.ns-hero__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    align-items: center;
+    gap: 3rem;
+}
+.ns-hero__title {
+    margin: 1rem 0;
+    font-size: clamp(2.1rem, 4.4vw, 3.4rem);
+    font-weight: 800;
+    line-height: 1.12;
+    color: var(--ns-navy);
+}
+.ns-hero__lead {
+    max-width: 520px;
+    margin: 0 0 2rem;
+    font-size: 1.08rem;
+    line-height: 1.65;
+    color: var(--ns-text);
+}
+
+.ns-stats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .9rem;
+}
+.ns-stats li {
+    flex: 1 1 140px;
+    padding: 1rem 1.1rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, .85);
+    box-shadow: var(--ns-shadow);
+}
+.ns-stats strong {
+    display: block;
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--ns-blue);
+    line-height: 1.1;
+}
+.ns-stats span { font-size: .85rem; color: var(--ns-text); }
+
+.ns-hero__media {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 380px;
+}
+.ns-hero__blob {
+    position: absolute;
+    width: min(380px, 90%);
+    aspect-ratio: 1;
+    border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%;
+    background: linear-gradient(160deg, #ffffff 0%, var(--ns-baby) 100%);
+    box-shadow: inset 0 -20px 40px rgba(41, 168, 236, .15), var(--ns-shadow);
+    animation: ns-morph 12s ease-in-out infinite;
+}
+.ns-hero__ring {
+    position: absolute;
+    width: min(440px, 100%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px dashed rgba(41, 168, 236, .35);
+    animation: ns-spin 40s linear infinite;
+}
+.ns-hero__media img {
+    position: relative;
+    width: min(340px, 85%);
+    height: auto;
+    filter: drop-shadow(0 18px 24px rgba(11, 42, 85, .18));
+}
+.ns-badge {
+    position: absolute;
+    left: 0;
+    bottom: 12%;
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    padding: .75rem 1.1rem;
+    border-radius: 18px;
+    background: #fff;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--ns-navy);
+    box-shadow: var(--ns-shadow);
+    animation: ns-bob 5s ease-in-out infinite;
+}
+.ns-badge .hm-ico {
+    width: 34px;
+    height: 34px;
+    padding: 8px;
+    border-radius: 50%;
+    background: var(--ns-pink-soft);
+    color: var(--ns-pink);
+}
+
+/* Decoración flotante */
+.ns-hero__deco { position: absolute; inset: 0; pointer-events: none; }
+.ns-float { position: absolute; fill: currentColor; opacity: .55; animation: ns-bob 6s ease-in-out infinite; }
+.ns-float--1 { width: 46px; height: 46px; top: 22%; left: 4%;  color: #9fd3fb; }
+.ns-float--2 { width: 22px; height: 22px; top: 18%; right: 9%; color: var(--ns-sky); animation-delay: -2s; }
+.ns-float--3 { width: 24px; height: 24px; top: 58%; right: 4%; color: #ffa8cb; animation-delay: -1s; }
+.ns-float--4 { width: 60px; height: 26px; bottom: 10%; left: 42%; color: #b9e0fc; animation-delay: -3s; }
+.ns-float--5 { width: 18px; height: 18px; bottom: 22%; left: 8%; color: var(--ns-sky); animation-delay: -4s; }
+
+/* ============================== 2. A QUÉ NOS DEDICAMOS ============================== */
+.ns-what {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+}
+.ns-what__card {
+    position: relative;
+    padding: 1.75rem 1.4rem;
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: var(--ns-shadow);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+.ns-what__card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 46px rgba(11, 42, 85, .12);
+}
+.ns-what__card h3 {
+    margin: 1rem 0 .4rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ns-navy);
+}
+.ns-what__card p { margin: 0; font-size: .92rem; line-height: 1.55; color: var(--ns-text); }
+.ns-what__icon {
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+}
+.ns-what__icon .hm-ico { width: 26px; height: 26px; }
+.ns-what__icon--sky  { background: var(--ns-baby);     color: var(--ns-blue); }
+.ns-what__icon--pink { background: var(--ns-pink-soft); color: var(--ns-pink); }
+.ns-what__icon--mint { background: #dff7ee;            color: #1f9d72; }
+.ns-what__icon--sun  { background: #fff3d6;            color: #d98b00; }
+
+/* ============================== 3. MISIÓN Y VISIÓN ============================== */
+.ns-mv {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+.ns-mv__card {
+    position: relative;
+    overflow: hidden;
+    padding: 2.25rem 2rem 2.5rem;
+    border-radius: var(--ns-radius);
+    box-shadow: var(--ns-shadow);
+}
+.ns-mv__card--mision { background: linear-gradient(150deg, #0a74c9 0%, #0b4f96 100%); color: #fff; }
+.ns-mv__card--vision { background: linear-gradient(150deg, #ffffff 0%, var(--ns-baby) 100%); color: var(--ns-navy); }
+
+.ns-mv__icon {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    margin-bottom: 1.1rem;
+}
+.ns-mv__icon .hm-ico { width: 26px; height: 26px; }
+.ns-mv__card--mision .ns-mv__icon { background: rgba(255, 255, 255, .18); color: #fff; }
+.ns-mv__card--vision .ns-mv__icon { background: #fff; color: var(--ns-pink); box-shadow: 0 6px 14px rgba(255, 95, 162, .2); }
+
+.ns-mv__label {
+    display: block;
+    font-family: 'Caveat', cursive;
+    font-size: 2rem;
+    line-height: 1;
+    margin-bottom: .6rem;
+}
+.ns-mv__card--mision .ns-mv__label { color: #bfe4ff; }
+.ns-mv__card--vision .ns-mv__label { color: var(--ns-blue); }
+
+.ns-mv__text {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    max-width: 440px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+.ns-mv__paw {
+    position: absolute;
+    right: -18px;
+    bottom: -22px;
+    width: 140px;
+    height: 140px;
+    fill: currentColor;
+    opacity: .08;
+    transform: rotate(-18deg);
+}
+
+/* ============================== 4. HORARIOS Y UBICACIÓN ============================== */
+.ns-visit { background: linear-gradient(180deg, transparent 0%, var(--ns-ice) 30%, var(--ns-ice) 100%); }
+
+.ns-visit__grid {
+    display: grid;
+    grid-template-columns: .85fr 1.15fr;
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+.ns-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 2rem;
+    border-radius: var(--ns-radius);
+    background: #fff;
+    box-shadow: var(--ns-shadow);
+}
+.ns-info__block + .ns-info__block {
+    padding-top: 1.25rem;
+    border-top: 1px dashed #cfe6fa;
+}
+.ns-info__title {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    margin: 0 0 1rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ns-navy);
+}
+.ns-info__title .hm-ico {
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    border-radius: 12px;
+    background: var(--ns-baby);
+    color: var(--ns-blue);
+}
+
+.ns-hours { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+.ns-hours__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: .8rem 1rem;
+    border-radius: 14px;
+    background: var(--ns-ice);
+    font-size: .93rem;
+}
+.ns-hours__day { display: inline-flex; align-items: center; gap: .4rem; font-weight: 600; color: var(--ns-navy); }
+.ns-hours__time { font-weight: 600; color: var(--ns-blue); white-space: nowrap; }
+.ns-hours__row--off { background: var(--ns-pink-soft); }
+.ns-hours__row--off .ns-hours__time { color: var(--ns-pink); }
+.ns-hours__row--off .hm-ico { width: 16px; height: 16px; color: var(--ns-pink); }
+
+.ns-info__note {
+    display: flex;
+    gap: .5rem;
+    margin: .9rem 0 0;
+    font-size: .85rem;
+    color: var(--ns-muted);
+}
+.ns-info__note .hm-ico { flex: 0 0 18px; width: 18px; height: 18px; color: var(--ns-sky); }
+
+.ns-address {
+    margin: 0;
+    font-style: normal;
+    line-height: 1.5;
+    color: var(--ns-text);
+}
+.ns-address strong { display: block; font-size: 1.15rem; color: var(--ns-navy); }
+
+.ns-info__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .65rem;
+    margin-top: auto;
+}
+
+/* Mapa */
+.ns-map {
+    position: relative;
+    min-height: 440px;
+    border-radius: var(--ns-radius);
+    overflow: hidden;
+    background: var(--ns-baby);
+    border: 6px solid #fff;
+    box-shadow: var(--ns-shadow);
+}
+.ns-map__frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+.ns-map__tag {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .55rem .9rem .55rem .55rem;
+    border-radius: 999px;
+    background: #fff;
+    font-size: .82rem;
+    color: var(--ns-text);
+    box-shadow: 0 8px 20px rgba(11, 42, 85, .15);
+    pointer-events: none;
+}
+.ns-map__tag strong { display: block; font-size: .9rem; color: var(--ns-navy); line-height: 1.1; }
+.ns-map__pin {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--ns-pink);
+    color: #fff;
+}
+.ns-map__pin .hm-ico { width: 18px; height: 18px; }
+
+/* ============================== 5. LLAMADO FINAL ============================== */
+.ns-cta {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 2.25rem 2.5rem;
+    border-radius: var(--ns-radius);
+    background: linear-gradient(120deg, var(--ns-navy) 0%, #0a5aa8 100%);
+    color: #fff;
+    box-shadow: 0 22px 44px rgba(11, 42, 85, .22);
+}
+.ns-cta__title { margin: 0 0 .35rem; font-size: 1.5rem; font-weight: 700; }
+.ns-cta__text p { margin: 0; color: #c7e3fb; }
+.ns-cta__actions { display: flex; align-items: center; gap: 1.1rem; flex-shrink: 0; position: relative; z-index: 1; }
+.ns-cta__link { color: #fff; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+.ns-cta__link:hover { color: #bfe4ff; }
+.ns-cta__paw { position: absolute; fill: #fff; opacity: .07; }
+.ns-cta__paw--a { width: 120px; height: 120px; right: 28%; top: -30px; transform: rotate(20deg); }
+.ns-cta__paw--b { width: 80px; height: 80px; left: -14px; bottom: -20px; transform: rotate(-25deg); }
+
+/* ============================== ANIMACIONES ============================== */
+@keyframes ns-bob   { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes ns-spin  { to { transform: rotate(360deg); } }
+@keyframes ns-morph {
+    0%, 100% { border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%; }
+    50%      { border-radius: 54% 46% 44% 56% / 45% 55% 45% 55%; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .ns-float, .ns-badge, .ns-hero__blob, .ns-hero__ring { animation: none; }
+}
+
+/* ============================== RESPONSIVE ============================== */
+@media (max-width: 991px) {
+    .ns-hero { padding-top: 6.5rem; }
+    .ns-hero__grid { grid-template-columns: 1fr; text-align: center; }
+    .ns-hero__lead { margin-inline: auto; }
+    .ns-stats { justify-content: center; }
+    .ns-hero__media { min-height: 320px; }
+    .ns-what { grid-template-columns: repeat(2, 1fr); }
+    .ns-visit__grid { grid-template-columns: 1fr; }
+    .ns-map { min-height: 360px; }
+    .ns-cta { flex-direction: column; text-align: center; }
+}
+@media (max-width: 575px) {
+    .ns-what, .ns-mv { grid-template-columns: 1fr; }
+    .ns-mv__card { padding: 1.75rem 1.5rem 2rem; }
+    .ns-mv__text { font-size: 1.05rem; }
+    .ns-info { padding: 1.5rem; }
+    .ns-hours__row { flex-direction: column; align-items: flex-start; gap: .2rem; }
+    .ns-badge { left: 50%; transform: translateX(-50%); bottom: 0; animation: none; }
+    .ns-cta { padding: 2rem 1.5rem; }
+    .ns-cta__actions { flex-direction: column; width: 100%; }
+    .ns-cta__actions .hm-btn { width: 100%; justify-content: center; }
+}

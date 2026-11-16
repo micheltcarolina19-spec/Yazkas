@@ -1,299 +1,228 @@
-// Vista "Agregar Mascota": vista previa de la foto, validación y envío al API existente.
-// Endpoint usado (ya existente):  POST /api/usuarios/{usuarioId}/mascotas
+// Agregar mascota (cliente con sesión) — mismos pasos y validaciones de la mascota en /registro.
+// Endpoints existentes:
+//   POST /uploads/mascotas                            -> sube la foto y devuelve { url }
+//   POST /api/usuarios/{usuarioId}/mascotas           -> crea la mascota
+//   POST /api/mascotas/{mascotaId}/historia-clinica   -> historia clínica (solo si se llenó)
 (() => {
-    const form = document.getElementById('am-form');
-    if (!form) return;
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+    const MAX = 5 * 1024 * 1024;
+    const PRIMERO = 1, ULTIMO = 3;
+    const S = { step: PRIMERO, usuarioId: ($('#form').dataset.usuarioId || '').trim(), foto: '', subiendo: false, nombres: [], ultimoId: null };
 
-    const $ = (sel, root = document) => root.querySelector(sel);
-    const alertBox = $('#am-alert');
-    const submitBtn = $('#am-submit');
-
-    /* ======================= Usuario dueño de la mascota =======================
-       Se toma del atributo data-usuario-id (la plantilla lo llena si recibe "usuarioId")
-       o, si no viene, del parámetro ?usuarioId= de la URL. */
-    const usuarioId = () => {
-        const desdePlantilla = (form.dataset.usuarioId || '').trim();
-        const desdeUrl = new URLSearchParams(location.search).get('usuarioId') || '';
-        const id = desdePlantilla || desdeUrl.trim();
-        return /^\d+$/.test(id) ? id : null;
+    const RAZAS = {
+        perro: ['Criollo', 'Golden Retriever', 'Labrador', 'Pastor Alemán', 'Bulldog Francés', 'Poodle', 'Schnauzer', 'Shih Tzu', 'Yorkshire Terrier', 'Chihuahua', 'Pug', 'Beagle', 'Husky Siberiano', 'Rottweiler', 'Pinscher', 'Cocker Spaniel', 'Maltés', 'Border Collie'],
+        gato: ['Criollo', 'Siamés', 'Persa', 'Angora', 'Maine Coon', 'Bengalí', 'Ragdoll', 'Británico de pelo corto', 'Azul Ruso', 'Sphynx', 'Birmano']
     };
 
-    /* ======================= Mensajes generales ======================= */
-    const escapar = (t) => String(t).replace(/[&<>"']/g, (c) =>
-        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    // ---------- etiquetas legibles para los enums (PELO_CORTO -> Pelo corto)
+    const bonito = t => { t = t.replace(/_/g, ' ').toLowerCase(); return t.charAt(0).toUpperCase() + t.slice(1); };
+    $$('[data-pretty]').forEach(e => e.textContent = bonito(e.textContent.trim()));
 
-    const mostrarAlerta = (tipo, titulo, detalles = [], enlace = null) => {
-        const body = $('.am-alert__body', alertBox);
-        body.innerHTML = '<p>' + escapar(titulo) + '</p>' +
-            (detalles.length ? '<ul>' + detalles.map((d) => '<li>' + escapar(d) + '</li>').join('') + '</ul>' : '') +
-            (enlace ? '<p class="am-alert__link"><a href="' + escapar(enlace.href) + '">' + escapar(enlace.texto) + ' →</a></p>' : '');
-        alertBox.classList.toggle('is-success', tipo === 'ok');
-        $('use', alertBox).setAttribute('href', tipo === 'ok' ? '#am-check' : '#am-i-alert');
-        alertBox.hidden = false;
-        alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    };
-    const ocultarAlerta = () => { alertBox.hidden = true; };
-    $('.am-alert__close', alertBox).addEventListener('click', ocultarAlerta);
-
-    /* ======================= Volver ======================= */
-    const back = $('[data-am-back]');
-    if (back) {
-        back.addEventListener('click', (e) => {
-            // Si se llegó desde otra página del sitio, regresa a ella
-            if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) {
-                e.preventDefault();
-                history.back();
-            }
+    // ---------- tipo: iconos y razas dinámicas
+    const esGato = v => /^gat/i.test(v);
+    const tipoActual = () => $('input[name=tipo]:checked').value;
+    function pintarTipo() {
+        $$('#tipoSeg label').forEach(l => {
+            const v = $('input', l).value;
+            $('i', l).className = 'bi ' + (esGato(v) ? 'bi-emoji-sunglasses' : 'bi-emoji-smile');
         });
+        $('#razas').innerHTML = RAZAS[esGato(tipoActual()) ? 'gato' : 'perro'].map(r => `<option value="${r}">`).join('');
+    }
+    $$('input[name=tipo]').forEach(r => r.addEventListener('change', () => { $('#mRaza').value = ''; pintarTipo(); }));
+    pintarTipo();
+
+    // Raza como combobox: al hacer clic se despliega la lista (también se puede escribir otra raza)
+    const raza = $('#mRaza');
+    raza.addEventListener('click', () => { try { raza.showPicker && raza.showPicker(); } catch { /* navegador sin soporte */ } });
+
+    // La fecha de nacimiento no puede ser futura
+    $('#mFecha').max = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
+    // ---------- chips y switches
+    $$('.chips .chip').forEach(c => c.addEventListener('click', () => c.classList.toggle('on')));
+    $$('.switch input').forEach(i => {
+        const t = () => $('em', i.closest('.switch')).textContent = i.checked ? 'Sí' : 'No';
+        i.addEventListener('change', t); t();
+    });
+
+    // ---------- validación (las mismas reglas de la mascota en el registro)
+    const reglas = {
+        mFecha: v => new Date(v) <= new Date() || 'La fecha no puede ser futura',
+        mTamano: v => +v.replace(',', '.') > 0 || 'Debe ser mayor a 0',
+        mPeso: v => +v.replace(',', '.') > 0 || 'Debe ser mayor a 0'
+    };
+    function validar(inp) {
+        const f = inp.closest('.field'), v = inp.value.trim();
+        let msg = '';
+        if (!v) msg = 'Campo obligatorio';
+        else if (reglas[inp.id]) { const r = reglas[inp.id](inp.value.trim()); if (r !== true) msg = r; }
+        f.classList.toggle('error', !!msg); f.classList.toggle('ok', !msg);
+        const s = $('small', f); if (s) s.textContent = msg;
+        return !msg;
+    }
+    $$('[data-req]').forEach(i => {
+        i.addEventListener('blur', () => i.value && validar(i));
+        i.addEventListener('input', () => i.closest('.field').classList.contains('error') && validar(i));
+    });
+    const validarPaso = n => {
+        const r = $$(`.step[data-step="${n}"] [data-req]`).map(validar);
+        const primero = $(`.step[data-step="${n}"] .error input, .step[data-step="${n}"] .error select`);
+        if (primero) primero.focus();
+        return r.every(Boolean);
+    };
+
+    // ---------- navegación
+    const alerta = m => { const a = $('#alert'); a.hidden = !m; if (m) $('span', a).textContent = m; };
+    function ir(n) {
+        S.step = n; alerta('');
+        $$('.step').forEach(s => s.classList.toggle('active', +s.dataset.step === n));
+        $$('#stepper li').forEach(li => { const k = +li.dataset.s; li.classList.toggle('active', k === n); li.classList.toggle('done', k < n); });
+        $('#bar').style.width = ((n - PRIMERO) / (ULTIMO - PRIMERO) * 100) + '%';
+        $('#atras').hidden = n === PRIMERO;
+        $('#omitir').hidden = n !== ULTIMO;
+        $('#siguiente').innerHTML = n === ULTIMO
+            ? '<i class="bi bi-check2-circle"></i> Guardar mascota'
+            : 'Continuar <i class="bi bi-arrow-right"></i>';
+        $('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    /* ======================= Icono de sexo ======================= */
-    const sexo = $('#am-sexo');
-    const sexoIco = $('#am-sexo-ico');
-    const actualizarIconoSexo = () =>
-        sexoIco.setAttribute('href', sexo.value === 'HEMBRA' ? '#am-female' : '#am-male');
-    sexo.addEventListener('change', actualizarIconoSexo);
-
-    /* ======================= Contadores (observaciones y fobias) ======================= */
-    const areasConContador = [...form.querySelectorAll('textarea[data-contador]')];
-    const contar = () => areasConContador.forEach((area) => {
-        const salida = document.getElementById(area.dataset.contador);
-        if (salida) salida.textContent = area.value.length;
+    $('#atras').addEventListener('click', () => ir(S.step - 1));
+    $('#siguiente').addEventListener('click', () => {
+        if (S.step < ULTIMO) { if (validarPaso(S.step)) ir(S.step + 1); }
+        else enviar();
     });
-    areasConContador.forEach((area) => area.addEventListener('input', contar));
-
-    /* ======================= Fecha de nacimiento: no puede ser futura ======================= */
-    const hoyIso = () => {
-        const d = new Date();
-        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-        return d.toISOString().slice(0, 10);
-    };
-    const fecha = $('#am-fecha');
-    fecha.max = hoyIso();
-
-    /* ======================= Foto (vista previa) =======================
-       El API actual solo recibe "fotoMascota" como URL de texto (máx. 255) y no tiene un
-       endpoint para subir fotos de mascotas, por eso aquí la imagen se muestra como vista
-       previa y no se envía. Cuando exista ese endpoint, basta con subir "archivoFoto" y
-       poner la URL devuelta en el campo fotoMascota del cuerpo. */
-    const TIPOS = ['image/jpeg', 'image/png', 'image/webp'];
-    const MAX_BYTES = 2 * 1024 * 1024;
-    const drop = $('#am-drop');
-    const fileInput = $('#am-foto');
-    const preview = $('#am-preview');
-    const fotoError = $('#am-foto-error');
-    const fotoLabel = $('#am-foto-label');
-    const quitarFoto = $('#am-foto-quitar');
-    let archivoFoto = null;
-    let urlPreview = null;
-
-    const errorFoto = (msg) => {
-        fotoError.textContent = msg || '';
-        fotoError.hidden = !msg;
-        drop.classList.toggle('is-invalid', Boolean(msg));
-    };
-
-    const limpiarFoto = () => {
-        if (urlPreview) URL.revokeObjectURL(urlPreview);
-        urlPreview = null;
-        archivoFoto = null;
-        fileInput.value = '';
-        preview.removeAttribute('src');
-        preview.hidden = true;
-        drop.classList.remove('has-image');
-        fotoLabel.textContent = 'Seleccionar imagen';
-        quitarFoto.hidden = true;
-        errorFoto('');
-    };
-
-    const cargarFoto = (file) => {
-        if (!file) return;
-        if (!TIPOS.includes(file.type)) { errorFoto('Formato no válido. Usa una imagen JPG, PNG o WebP.'); return; }
-        if (file.size > MAX_BYTES) { errorFoto('La imagen no puede superar 2 MB.'); return; }
-        limpiarFoto();
-        archivoFoto = file;
-        urlPreview = URL.createObjectURL(file);
-        preview.src = urlPreview;
-        preview.hidden = false;
-        drop.classList.add('has-image');
-        fotoLabel.textContent = 'Cambiar imagen';
-        quitarFoto.hidden = false;
-    };
-
-    fileInput.addEventListener('change', () => cargarFoto(fileInput.files[0]));
-    quitarFoto.addEventListener('click', limpiarFoto);
-
-    ['dragenter', 'dragover'].forEach((ev) => drop.addEventListener(ev, (e) => {
-        e.preventDefault();
-        drop.classList.add('is-dragover');
-    }));
-    ['dragleave', 'dragend', 'drop'].forEach((ev) => drop.addEventListener(ev, (e) => {
-        e.preventDefault();
-        drop.classList.remove('is-dragover');
-    }));
-    drop.addEventListener('drop', (e) => cargarFoto(e.dataTransfer && e.dataTransfer.files[0]));
-
-    /* ======================= Validación ======================= */
-    const campoDe = (el) => el.closest('.am-field');
-
-    const marcar = (field, msg) => {
-        const err = $('.am-error', field);
-        field.classList.toggle('is-invalid', Boolean(msg));
-        if (err) { err.textContent = msg || ''; err.hidden = !msg; }
-        field.querySelectorAll('input, select, textarea').forEach((el) => {
-            if (msg) el.setAttribute('aria-invalid', 'true'); else el.removeAttribute('aria-invalid');
-        });
-    };
-
-    const validarCampo = (el) => {
-        const field = campoDe(el);
-        if (!field) return true;
-        let msg = '';
-        if (el.type === 'radio') {
-            if (!form.querySelector(`input[name="${el.name}"]:checked`)) {
-                const conMensaje = form.querySelector(`input[name="${el.name}"][data-msg]`);
-                msg = (conMensaje && conMensaje.dataset.msg) || 'Selecciona una opción';
-            }
-        } else if (el.type === 'date') {
-            if (el.validity.badInput) msg = 'Escribe una fecha válida';
-            else if (el.required && !el.value) msg = el.dataset.msg || 'Este campo es obligatorio';
-            else if (el.value && el.value > hoyIso()) msg = 'La fecha de nacimiento no puede ser futura';
-            else if (el.value && el.min && el.value < el.min) msg = 'Revisa la fecha de nacimiento';
-        } else if (el.type === 'number' && el.validity.badInput) {
-            msg = 'Escribe un número válido';
-        } else if (el.type === 'number' && el.value !== '') {
-            const n = Number(el.value);
-            if (!(n > 0)) msg = 'El peso debe ser mayor a 0';
-            else if (el.max && n > Number(el.max)) msg = `Revisa el peso (máximo ${el.max} kg)`;
-        } else if (el.required && !el.value.trim()) {
-            msg = el.dataset.msg || 'Este campo es obligatorio';
-        }
-        marcar(field, msg);
-        return !msg;
-    };
-
-    const validarTodo = () => {
-        const requeridos = [...form.querySelectorAll('[required]')];
-        const vistos = new Set();
-        let primero = null;
-        requeridos.forEach((el) => {
-            if (el.type === 'radio') { if (vistos.has(el.name)) return; vistos.add(el.name); }
-            if (!validarCampo(el) && !primero) primero = el;
-        });
-        if (primero) primero.focus({ preventScroll: false });
-        return !primero;
-    };
-
-    // Se valida al salir del campo y se limpia el error mientras se corrige
-    form.addEventListener('focusout', (e) => {
-        const el = e.target;
-        if (el.matches('input[type="text"][required], input[type="number"], input[type="date"]')
-            && (el.value !== '' || el.validity.badInput)) validarCampo(el);
-    });
-    form.addEventListener('input', (e) => {
-        const field = campoDe(e.target);
-        if (field && field.classList.contains('is-invalid')) validarCampo(e.target);
-    });
-    form.addEventListener('change', (e) => {
-        if (e.target.matches('select, input[type="radio"]')) validarCampo(e.target);
+    $('#omitir').addEventListener('click', () => enviar(true));
+    $('#form').addEventListener('keydown', e => {
+        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); $('#siguiente').click(); }
     });
 
-    /* ======================= Limpiar ======================= */
-    form.addEventListener('reset', () => {
-        // Espera a que el navegador restablezca los valores
-        setTimeout(() => {
-            form.querySelectorAll('.am-field.is-invalid').forEach((f) => marcar(f, ''));
-            limpiarFoto();
-            actualizarIconoSexo();
-            contar();
-            ocultarAlerta();
-            $('#am-nombre').focus();
-        });
-    });
+    // ---------- foto
+    const drop = $('#drop'), file = $('#foto');
+    const estado = (t, c) => { const u = $('#upState'); u.textContent = t; u.className = 'up ' + (c || ''); };
+    drop.addEventListener('click', e => { if (!e.target.closest('#quitarFoto')) file.click(); });
+    drop.addEventListener('keydown', e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), file.click()));
+    ['dragover', 'dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+    ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+    drop.addEventListener('drop', e => e.dataTransfer.files[0] && subir(e.dataTransfer.files[0]));
+    file.addEventListener('change', () => file.files[0] && subir(file.files[0]));
+    $('#quitarFoto').addEventListener('click', quitarFoto);
+    function quitarFoto() { S.foto = ''; file.value = ''; $('#preview').hidden = true; $('#dropBody').hidden = false; }
 
-    /* ======================= Envío ======================= */
-    const texto = (name) => {
-        const v = (form.elements[name].value || '').trim();
-        return v === '' ? null : v;
-    };
-
-    // Radios Sí / No -> true / false (null si no se eligió)
-    const siNo = (name) => {
-        const marcado = form.querySelector(`input[name="${name}"]:checked`);
-        return marcado ? marcado.value === 'true' : null;
-    };
-
-    // Mismos campos que DesparasitacionResponse.MascotaRequest
-    const construirCuerpo = () => ({
-        nombre: texto('nombre'),
-        fechaNacimiento: texto('fechaNacimiento'),
-        tipo: form.querySelector('input[name="tipo"]:checked').value,
-        raza: texto('raza'),
-        sexo: texto('sexo'),
-        tamano: texto('tamano') ? Number(texto('tamano')) : null,
-        peso: texto('peso') ? Number(texto('peso')) : null,
-        color: texto('color'),
-        pelaje: texto('pelaje'),
-        observaciones: texto('observaciones'),
-        fotoMascota: null,
-        temperamento: texto('temperamento'),
-        nivelAgresividad: texto('nivelAgresividad'),
-        usaBozal: siNo('usaBozal'),
-        fobias: texto('fobias'),
-        sociable: siNo('sociable'),
-        energia: texto('energia')
-    });
-
-    const ocupado = (si) => {
-        submitBtn.disabled = si;
-        submitBtn.classList.toggle('is-loading', si);
-        $('use', submitBtn).setAttribute('href', si ? '#am-refresh' : '#am-check');
-        $('span', submitBtn).textContent = si ? 'Guardando...' : 'Guardar Mascota';
-    };
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        ocultarAlerta();
-        if (!validarTodo()) return;
-
-        const id = usuarioId();
-        if (!id) {
-            mostrarAlerta('error', 'No pudimos identificar tu cuenta.',
-                ['Vuelve a ingresar a la plataforma e inténtalo de nuevo.']);
-            return;
-        }
-
-        ocupado(true);
+    async function subir(f) {
+        if (!/^image\/(jpeg|png|webp)$/.test(f.type)) return alerta('Formato no válido. Usa JPG, PNG o WebP');
+        if (f.size > MAX) return alerta('La imagen no puede superar 5 MB');
+        alerta('');
+        $('#prevImg').src = URL.createObjectURL(f);
+        $('#preview').hidden = false; $('#dropBody').hidden = true;
+        estado('Subiendo…'); S.subiendo = true; S.foto = '';
         try {
-            const res = await fetch(`/api/usuarios/${encodeURIComponent(id)}/mascotas`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                body: JSON.stringify(construirCuerpo())
+            const fd = new FormData(); fd.append('imagen', f);
+            const r = await fetch('/uploads/mascotas', { method: 'POST', body: fd, credentials: 'same-origin' });
+            if (!r.ok) throw new Error(await msgError(r));
+            S.foto = (await r.json()).url; estado('Foto lista ✓', 'ok');
+        } catch (e) { estado(e.message, 'err'); S.foto = ''; }
+        finally { S.subiendo = false; }
+    }
+
+    // ---------- historial clínico
+    $$('input[name=hc]').forEach(r => r.addEventListener('change', () => $('#hcDetalle').hidden = $('input[name=hc]:checked').value !== 'si'));
+    $$('.acc').forEach(a => a.addEventListener('input', () => {
+        const n = $$('[data-h]', a).filter(i => i.value.trim()).length;
+        $('.cnt', a).textContent = n ? n + (n > 1 ? ' campos' : ' campo') : '';
+    }));
+    const tri = n => ({ si: true, no: false })[$(`input[name=${n}]:checked`).value] ?? null;
+    function historia() {
+        const h = { esterilizacion: tri('esterilizacion'), presenciaParasitos: tri('presenciaParasitos') };
+        const det = $('input[name=hc]:checked').value === 'si';
+        $$('[data-h]').forEach(e => h[e.dataset.h] = (det && e.value.trim()) || null);
+        return Object.values(h).some(v => v !== null) ? h : null;   // null = sin historia
+    }
+
+    // ---------- envío
+    async function msgError(r) {
+        try {
+            const j = await r.json();
+            return j.message || j.mensaje || j.error || j.detail || j.title ||
+                (j.violations && j.violations.map(v => v.message).join('. ')) || ('Error ' + r.status);
+        } catch { return 'Error ' + r.status; }
+    }
+    const num = v => parseFloat(v.replace(',', '.'));
+    function mascota() {
+        const fobias = [...$$('#fobias .chip.on').map(c => c.dataset.v), $('#fobiaOtra').value.trim()].filter(Boolean).join(', ');
+        const obs = [$('#mEspecial').checked ? 'Requiere cuidados especiales.' : '', $('#mObs').value.trim()].filter(Boolean).join(' ');
+        return {
+            nombre: $('#mNombre').value.trim(), fechaNacimiento: $('#mFecha').value, tipo: tipoActual(),
+            raza: $('#mRaza').value.trim(), sexo: $('#mSexo').value, tamano: num($('#mTamano').value), peso: num($('#mPeso').value),
+            color: $('#mColor').value.trim(), pelaje: $('#mPelaje').value, observaciones: obs || null,
+            fotoMascota: S.foto || null, temperamento: $$('#temp .chip.on').map(c => c.dataset.v).join(', ') || null,
+            nivelAgresividad: $('#mAgr').value, usaBozal: $('#mBozal').checked, fobias: fobias || null,
+            sociable: $('#mSociable').checked, energia: $('#mEnergia').value
+        };
+    }
+    async function enviar(omitir = false) {
+        if (S.subiendo) return alerta('Espera a que termine de subir la foto');
+        if (!S.usuarioId) return alerta('Tu sesión expiró. Vuelve a iniciar sesión.');
+        if (!validarPaso(PRIMERO)) return ir(PRIMERO);      // por si se editó algo al volver atrás
+
+        const btn = $('#siguiente'), om = $('#omitir'), html = btn.innerHTML;
+        btn.disabled = om.disabled = true; btn.innerHTML = '<span class="spin"></span> Guardando…'; alerta('');
+        const hist = omitir ? null : historia();
+        try {
+            const body = mascota();
+            const r = await fetch(`/api/usuarios/${encodeURIComponent(S.usuarioId)}/mascotas`, {
+                method: 'POST', credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
             });
+            if (!r.ok) throw new Error(await msgError(r));
+            const data = await r.json().catch(() => ({}));
 
-            if (res.ok) {
-                const mascota = await res.json().catch(() => ({}));
-                const nombre = (mascota && mascota.nombre) || texto('nombre') || 'Tu mascota';
-                form.reset();
-                // Después del restablecimiento (que limpia mensajes) se muestra el éxito
-                const perfil = mascota && mascota.id != null
-                    ? { href: `/mascotas/perfil?id=${encodeURIComponent(mascota.id)}`, texto: `Ver perfil de ${nombre}` }
-                    : null;
-                setTimeout(() => mostrarAlerta('ok', `¡${nombre} quedó registrada en Yazkas!`,
-                    ['Ya puedes agendarle una cita o registrar otra mascota.'], perfil));
-                return;
+            S.aviso = '';
+            if (hist && data.id != null) {   // la historia va por su propio endpoint
+                try {
+                    const h = await fetch(`/api/mascotas/${data.id}/historia-clinica`, {
+                        method: 'POST', credentials: 'same-origin',
+                        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(hist)
+                    });
+                    if (!h.ok) throw 0;
+                } catch { S.aviso = 'No pudimos guardar el historial clínico; podrás completarlo después.'; }
             }
+            S.ultimoId = data.id ?? null;
+            S.nombres.push(body.nombre);
+            exito(body.nombre);
+        } catch (e) { alerta(e.message); }
+        finally { btn.disabled = om.disabled = false; btn.innerHTML = html; }
+    }
 
-            const error = await res.json().catch(() => null);
-            const titulo = (error && error.mensaje) || 'No se pudo registrar la mascota.';
-            const detalles = (error && Array.isArray(error.detalles))
-                ? error.detalles.map((d) => String(d).replace(/^[\w.]+:\s*/, ''))
-                : [];
-            mostrarAlerta('error', titulo, detalles);
-        } catch (_) {
-            mostrarAlerta('error', 'No hay conexión con el servidor.', ['Revisa tu conexión e inténtalo de nuevo.']);
-        } finally {
-            ocupado(false);
-        }
+    // ---------- éxito y "agregar otra mascota"
+    function exito(nombre) {
+        $('#form').hidden = true; $('#stepper').hidden = true; $('#done').hidden = false;
+        $('#titulo').textContent = '¡Listo!';
+        $('#subtitulo').textContent = `${nombre} ya hace parte de la familia Yazka’s`;
+        $('#doneTexto').textContent = S.nombres.length > 1 ? 'Mascotas registradas en esta sesión:' : 'Tu mascota ya está registrada. ¿Tienes más?';
+        if (S.aviso) $('#doneTexto').textContent += ' ' + S.aviso;
+        $('#added').innerHTML = S.nombres.map(n => `<li><i class="bi bi-balloon-heart-fill"></i> ${n.replace(/</g, '&lt;')}</li>`).join('');
+        const ver = $('#verPerfil');
+        ver.href = S.ultimoId != null ? `/mascotas/${encodeURIComponent(S.ultimoId)}` : '/mascotas';
+        ver.innerHTML = `Ver perfil de ${nombre.replace(/</g, '&lt;')} <i class="bi bi-arrow-right"></i>`;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    $('#otra').addEventListener('click', () => {
+        $$('.step input:not([type=radio]):not([type=checkbox]):not([type=file]), textarea').forEach(i => i.value = '');
+        $$('#mSexo, #mPelaje, #mEnergia, #mAgr').forEach(s => s.selectedIndex = 0);
+        $$('input[name=tipo]')[0].checked = true;
+        $$('.chip.on').forEach(c => c.classList.remove('on'));
+        $$('.field').forEach(f => f.classList.remove('ok', 'error'));
+        $$('.field small').forEach(s => s.textContent = '');
+        $('#mSociable').checked = true; $('#mBozal').checked = false; $('#mEspecial').checked = false;
+        $$('input[name=esterilizacion][value=ns],input[name=presenciaParasitos][value=ns],input[name=hc][value=no]').forEach(r => r.checked = true);
+        $('#hcDetalle').hidden = true; $$('.cnt').forEach(c => c.textContent = ''); $$('.acc').forEach((a, i) => a.open = i === 0);
+        $$('.switch input').forEach(i => i.dispatchEvent(new Event('change')));
+        quitarFoto(); pintarTipo();
+        $('#done').hidden = true; $('#form').hidden = false; $('#stepper').hidden = false;
+        $('#titulo').textContent = 'Agregar otra mascota'; $('#subtitulo').textContent = 'Cuéntanos sobre tu nuevo peludo';
+        ir(PRIMERO);
     });
+
+    ir(PRIMERO);
 })();

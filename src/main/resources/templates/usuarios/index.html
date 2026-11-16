@@ -266,10 +266,9 @@
         </div>
     </section>
 
-    {! ============================== 4. AGENDA TU CITA (PROTAGONISTA, CENTRADA) ============================== !}
+    {! ============================== 4. INVITACIÓN A INICIAR SESIÓN ============================== !}
     <section class="hm-section hm-agenda" id="agendar" aria-labelledby="agenda-titulo">
 
-        {! Decoración suave en azul pastel: camino punteado, huellitas, corazones y destellos !}
         <div class="hm-agenda__deco" aria-hidden="true">
             <span class="hm-agenda__trail"></span>
             <svg class="hm-float hm-float--1"><use href="#h-paw"/></svg>
@@ -285,96 +284,49 @@
         <div class="hm-container hm-agenda__inner">
             <header class="hm-agenda__head">
                 <h2 id="agenda-titulo" class="hm-h2 hm-agenda__title">
-                    Agenda tu cita <span class="hm-script">hoy</span>
+                    Tu espacio <span class="hm-script">peludito</span>
                 </h2>
-                <p class="hm-agenda__highlight">¡No importa si tienes más de un peludito!</p>
+                <p class="hm-agenda__highlight">¡Inicia sesión y agenda en pocos pasos!</p>
                 <p class="hm-muted hm-agenda__lead">
-                    Puedes agendar los servicios de todas tus mascotas en una misma solicitud,
-                    de manera fácil y rápida.
+                    Con tu cuenta puedes gestionar a todas tus mascotas y agendar sus servicios
+                    en una misma solicitud, de manera fácil y rápida.
                 </p>
             </header>
 
-            {! Vista previa del flujo: los pasos se pueden recorrer; el agendamiento real está en /citas !}
-            <div class="hm-booking" data-booking>
+            <div class="hm-booking hm-login">
                 <div class="hm-booking__ribbon" aria-hidden="true">
                     <svg class="hm-ico hm-ico--fill"><use href="#h-paw"/></svg>
                 </div>
 
-                <ol class="hm-steps" role="tablist" aria-label="Pasos para agendar una cita">
-                    <li><button type="button" class="hm-step is-active" role="tab" aria-selected="true" data-step="0">
-                        <span class="hm-step__dot">1</span><span class="hm-step__label">Mascotas</span></button></li>
-                    <li><button type="button" class="hm-step" role="tab" aria-selected="false" data-step="1">
-                        <span class="hm-step__dot">2</span><span class="hm-step__label">Servicio</span></button></li>
-                    <li><button type="button" class="hm-step" role="tab" aria-selected="false" data-step="2">
-                        <span class="hm-step__dot">3</span><span class="hm-step__label">Fecha</span></button></li>
-                    <li><button type="button" class="hm-step" role="tab" aria-selected="false" data-step="3">
-                        <span class="hm-step__dot">4</span><span class="hm-step__label">Confirmar</span></button></li>
-                </ol>
-                <div class="hm-steps__bar" aria-hidden="true"><span data-bar></span></div>
+                <h3 class="hm-pane__title hm-login__title">¿Ya eres parte de la familia Yazka's?</h3>
+                <p class="hm-muted hm-login__text">Ingresa a tu cuenta y desde tu panel podrás:</p>
 
-                <div class="hm-panes">
-                    <div class="hm-pane is-active" role="tabpanel" data-pane="0">
-                        <h3 class="hm-pane__title">¿Quiénes vienen a consentirse?</h3>
-                        <p class="hm-muted">Elige una o varias de tus mascotas registradas.</p>
-                        <div class="hm-pets">
-                            <span class="hm-pet is-on">
-                                <svg class="hm-ico hm-ico--fill" aria-hidden="true"><use href="#h-paw"/></svg>Tu peludito
-                            </span>
-                            <a class="hm-pet hm-pet--add" href="/citas">
-                                <svg class="hm-ico" aria-hidden="true"><use href="#h-plus"/></svg>
-                                Agregar otro peludito
-                            </a>
-                        </div>
-                    </div>
+                <ul class="hm-login__perks">
+                    <li>
+                        <span class="hm-login__icon"><svg class="hm-ico hm-ico--fill" aria-hidden="true"><use href="#h-paw"/></svg></span>
+                        <span><strong>Registrar tus mascotas</strong>y mantener sus datos al día.</span>
+                    </li>
+                    <li>
+                        <span class="hm-login__icon"><svg class="hm-ico" aria-hidden="true"><use href="#h-calendar"/></svg></span>
+                        <span><strong>Agendar citas</strong>para uno o varios peluditos a la vez.</span>
+                    </li>
+                    <li>
+                        <span class="hm-login__icon"><svg class="hm-ico" aria-hidden="true"><use href="#h-check"/></svg></span>
+                        <span><strong>Descargar tu última cita</strong>en PDF cuando la necesites.</span>
+                    </li>
+                </ul>
 
-                    <div class="hm-pane" role="tabpanel" data-pane="1" hidden>
-                        <h3 class="hm-pane__title">¿Qué servicio necesita?</h3>
-                        <div class="hm-chips">
-                            <span class="hm-chip"><svg class="hm-ico" aria-hidden="true"><use href="#h-drop"/></svg>Baño</span>
-                            <span class="hm-chip"><svg class="hm-ico" aria-hidden="true"><use href="#h-scissors"/></svg>Peluquería</span>
-                            <span class="hm-chip"><svg class="hm-ico" aria-hidden="true"><use href="#h-syringe"/></svg>Vacunación</span>
-                        </div>
-                        <p class="hm-muted hm-pane__note">Según su raza y pelaje te indicamos cuánto tarda:</p>
-                        <div class="hm-durations">
-                            <span class="hm-duration hm-duration--baja"><strong>Baja</strong>hasta 2 h</span>
-                            <span class="hm-duration hm-duration--media"><strong>Media</strong>de 2 a 4 h</span>
-                            <span class="hm-duration hm-duration--alta"><strong>Alta</strong>más de 4 h</span>
-                        </div>
-                    </div>
-
-                    <div class="hm-pane" role="tabpanel" data-pane="2" hidden>
-                        <h3 class="hm-pane__title">Escoge el día y la hora</h3>
-                        <p class="hm-muted">Te mostramos solo los espacios que tienen cupo.</p>
-                        <div class="hm-slots">
-                            <span class="hm-slot">8:30 a. m.</span>
-                            <span class="hm-slot is-on">10:30 a. m.</span>
-                            <span class="hm-slot">1:30 p. m.</span>
-                            <span class="hm-slot is-off">3:30 p. m.</span>
-                        </div>
-                        <p class="hm-muted hm-pane__note">Si un horario está lleno, te sugerimos el siguiente disponible.</p>
-                    </div>
-
-                    <div class="hm-pane" role="tabpanel" data-pane="3" hidden>
-                        <h3 class="hm-pane__title">¡Listo para consentirlo!</h3>
-                        <p class="hm-muted">Revisa los datos y confirma. Te esperamos con tu peludito.</p>
-                        <div class="hm-confirm">
-                            <svg class="hm-ico hm-ico--fill" aria-hidden="true"><use href="#h-heart"/></svg>
-                            <span>El precio lo acordamos contigo en la peluquería, después de revisar a tu mascota.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="hm-booking__actions">
-                    <button type="button" class="hm-btn hm-btn--soft hm-btn--sm" data-prev disabled>Atrás</button>
-                    <button type="button" class="hm-btn hm-btn--sky hm-btn--sm" data-next>
-                        Continuar
-                        <svg class="hm-ico" aria-hidden="true"><use href="#h-arrow"/></svg>
-                    </button>
-                    <a class="hm-btn hm-btn--sky hm-btn--sm" href="/citas" data-go hidden>
-                        Agendar ahora
+                <div class="hm-login__actions">
+                    <a class="hm-btn hm-btn--sky" href="/login">
+                        Iniciar sesión
                         <svg class="hm-ico" aria-hidden="true"><use href="#h-arrow"/></svg>
                     </a>
+                    <a class="hm-btn hm-btn--soft" href="/registro">
+                        <svg class="hm-ico" aria-hidden="true"><use href="#h-plus"/></svg>
+                        Crear una cuenta
+                    </a>
                 </div>
+                <p class="hm-login__hint">¿Primera vez? Registrarte es gratis y toma menos de un minuto.</p>
             </div>
 
             <ul class="hm-agenda__facts">
