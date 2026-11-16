@@ -11,7 +11,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/")
-public class PaginaResource {
+public class    PaginaResource {
 
     @Inject
     @Location("usuarios/index.html")   // ruta dentro de src/main/resources/templates/

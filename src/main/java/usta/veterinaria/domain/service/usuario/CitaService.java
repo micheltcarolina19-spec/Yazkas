@@ -23,12 +23,21 @@ import java.util.TreeSet;
 // Servicio que aplica las reglas de negocio del agendamiento de citas de peluquería.
 // - El cliente agenda SIN ver precio (el precio lo pone el administrador al terminar la cita).
 // - En un mismo horario se atienden como máximo 2 mascotas al tiempo.
+// - La peluquería atiende de 8:30 a 17:30: la cita debe empezar desde las 8:30
+//   y TERMINAR a más tardar a las 17:30 (según su duración ALTA, MEDIA o BAJA).
 // - Al terminar la cita (o al final del día) el administrador registra lo cobrado
 //   y ese valor pasa al panel de finanzas.
 public class CitaService {
 
     // Número máximo de mascotas que se pueden atender al mismo tiempo
     private static final int CUPOS_SIMULTANEOS = 2;
+
+    // Horario de atención de la peluquería
+    private static final LocalTime HORA_APERTURA = LocalTime.of(8, 30);
+    private static final LocalTime HORA_CIERRE = LocalTime.of(17, 30);
+
+    // Límite de días hacia adelante para buscar el siguiente espacio disponible
+    private static final int MAXIMO_DIAS_BUSQUEDA = 365;
 
     private final Clock clock;
 
@@ -144,7 +153,8 @@ public class CitaService {
         return agendamiento;
     }
 
-    // Busca la primera hora (desde la deseada) en la que hay cupo para una mascota con esa duración.
+    // Busca la primera hora (desde la deseada) en la que hay cupo para una mascota con esa duración,
+    // dentro del horario de atención. Si ese día ya no cabe, sigue con el día siguiente desde las 8:30.
     // Sirve para sugerirle al cliente "el siguiente espacio disponible".
     public LocalDateTime siguienteEspacioDisponible(LocalDateTime horaDeseada,
                                                     DuracionCita duracion,
@@ -155,23 +165,40 @@ public class CitaService {
         long minutos = minutosReservados(duracion);
         List<MascotaCita> ocupadas = citasActivas(citasExistentes);
 
-        // Los candidatos son la hora deseada y cada momento en que termina una cita existente
-        TreeSet<LocalDateTime> candidatos = new TreeSet<>();
-        candidatos.add(horaDeseada);
-        for (MascotaCita cita : ocupadas) {
-            LocalDateTime fin = fin(cita);
-            if (fin.isAfter(horaDeseada)) {
-                candidatos.add(fin);
-            }
-        }
+        // Si pidió antes de abrir, se empieza a buscar desde la apertura de ese mismo día
+        LocalDate dia = horaDeseada.toLocalDate();
+        LocalDateTime desde = horaDeseada.toLocalTime().isBefore(HORA_APERTURA)
+                ? dia.atTime(HORA_APERTURA)
+                : horaDeseada;
 
-        for (LocalDateTime inicio : candidatos) {
-            if (hayCupo(inicio, inicio.plusMinutes(minutos), ocupadas)) {
-                return inicio;
+        for (int i = 0; i < MAXIMO_DIAS_BUSQUEDA; i++) {
+            LocalDateTime cierre = dia.atTime(HORA_CIERRE);
+
+            // Los candidatos son la hora desde la que se busca y cada momento en que termina una cita
+            TreeSet<LocalDateTime> candidatos = new TreeSet<>();
+            candidatos.add(desde);
+            for (MascotaCita cita : ocupadas) {
+                LocalDateTime fin = fin(cita);
+                if (fin.isAfter(desde) && fin.isBefore(cierre)) {
+                    candidatos.add(fin);
+                }
             }
+
+            for (LocalDateTime inicio : candidatos) {
+                // Los candidatos van en orden: si este ya no termina antes del cierre, los siguientes tampoco
+                if (inicio.plusMinutes(minutos).isAfter(cierre)) {
+                    break;
+                }
+                if (hayCupo(inicio, inicio.plusMinutes(minutos), ocupadas)) {
+                    return inicio;
+                }
+            }
+
+            dia = dia.plusDays(1);
+            desde = dia.atTime(HORA_APERTURA);
         }
-        // Después de que termina la última cita siempre hay cupo, así que nunca se llega aquí
-        return candidatos.last();
+        throw new BusinessRuleException("No hay espacios disponibles en los próximos "
+                + MAXIMO_DIAS_BUSQUEDA + " días");
     }
 
     // ============================================================================================
@@ -251,6 +278,24 @@ public class CitaService {
 
         if (!inicio(cita).isAfter(LocalDateTime.now(clock))) {
             throw new BusinessRuleException("La cita de " + nombre(cita.getMascota()) + " debe ser en una fecha y hora futura");
+        }
+        validarHorarioAtencion(cita);
+    }
+
+    // La cita debe empezar desde la apertura y terminar a más tardar al cierre del mismo día
+    private void validarHorarioAtencion(MascotaCita cita) {
+        if (cita.getHoraAgendamiento().isBefore(HORA_APERTURA)) {
+            throw new BusinessRuleException("La cita de " + nombre(cita.getMascota())
+                    + " debe empezar desde las " + HORA_APERTURA + ". La peluquería atiende de "
+                    + HORA_APERTURA + " a " + HORA_CIERRE);
+        }
+        LocalDateTime cierre = cita.getFechaAgendamiento().atTime(HORA_CIERRE);
+        if (fin(cita).isAfter(cierre)) {
+            LocalTime ultimaHoraInicio = HORA_CIERRE.minusMinutes(minutosReservados(cita.getDuracionCita()));
+            throw new BusinessRuleException("La cita de " + nombre(cita.getMascota())
+                    + " (duración " + cita.getDuracionCita() + ") terminaría a las " + fin(cita).toLocalTime()
+                    + " y la peluquería cierra a las " + HORA_CIERRE
+                    + ". Para esa duración, la última hora para empezar es " + ultimaHoraInicio);
         }
     }
 
