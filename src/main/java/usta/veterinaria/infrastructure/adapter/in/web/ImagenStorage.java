@@ -14,96 +14,106 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-// Guarda las fotos de los productos como ARCHIVOS en disco (nunca como blob en la base de datos).
-// En la base solo queda la URL pública (campo fotoProducto), por ejemplo: /uploads/productos/3f9c...a1.png
-//
-// Seguridad:
-//  - el tipo se detecta por los primeros bytes del archivo, no por la extensión ni por el Content-Type que manda el navegador
-//  - el nombre se genera aquí (UUID), así que el usuario no controla la ruta (no hay path traversal)
+// Guarda imágenes como ARCHIVOS en disco (carpetas: productos, mascotas). En la base solo queda la URL pública.
+// Seguridad: tipo por magic bytes, nombre generado (UUID), carpeta validada contra lista blanca.
 @ApplicationScoped
-public class ImagenProductoStorage {
+public class ImagenStorage {
 
-    public static final String PREFIJO_URL = "/uploads/productos/";
+    public static final String PRODUCTOS = "productos";
+    public static final String MASCOTAS = "mascotas";
+    public static final String RAIZ_URL = "/uploads/";
+    public static final String PREFIJO_URL = RAIZ_URL + PRODUCTOS + "/"; // compatibilidad con productos
 
-    private static final long MAX_BYTES = 2L * 1024 * 1024; // 2 MB
+    private static final Set<String> CARPETAS = Set.of(PRODUCTOS, MASCOTAS);
+    private static final long MAX_BYTES = 5L * 1024 * 1024; // 5 MB
     private static final Pattern NOMBRE_VALIDO = Pattern.compile("[0-9a-f]{32}\\.(jpg|png|webp)");
-    private static final Logger LOG = Logger.getLogger(ImagenProductoStorage.class);
+    private static final Logger LOG = Logger.getLogger(ImagenStorage.class);
 
-    // Carpeta base de las subidas. En producción apúntala a una ruta fuera del proyecto y con respaldo
     @ConfigProperty(name = "yazkas.uploads.dir", defaultValue = "uploads")
     String directorioBase;
 
-    private Path carpeta;
+    private Path raiz;
 
     @PostConstruct
     void iniciar() {
-        carpeta = Paths.get(directorioBase, "productos").toAbsolutePath().normalize();
+        raiz = Paths.get(directorioBase).toAbsolutePath().normalize();
         try {
-            Files.createDirectories(carpeta);
+            for (String carpeta : CARPETAS) {
+                Files.createDirectories(raiz.resolve(carpeta));
+            }
         } catch (IOException e) {
-            throw new UncheckedIOException("No se pudo crear la carpeta de imágenes: " + carpeta, e);
+            throw new UncheckedIOException("No se pudo crear la carpeta de imágenes: " + raiz, e);
         }
     }
 
-    // Valida y guarda la imagen; devuelve la URL pública que se guarda en el producto
     public String guardar(FileUpload archivo) {
+        return guardar(archivo, PRODUCTOS);
+    }
+
+    public String guardar(FileUpload archivo, String carpeta) {
+        if (!CARPETAS.contains(carpeta)) {
+            throw new BusinessRuleException("Destino de imagen no válido");
+        }
         if (archivo == null || archivo.size() == 0) {
             throw new BusinessRuleException("Selecciona una imagen para subir");
         }
         if (archivo.size() > MAX_BYTES) {
-            throw new BusinessRuleException("La imagen no puede superar 2 MB");
+            throw new BusinessRuleException("La imagen no puede superar 5 MB");
         }
 
         String extension = detectarExtension(archivo.uploadedFile());
         String nombre = UUID.randomUUID().toString().replace("-", "") + "." + extension;
 
         try {
-            Files.copy(archivo.uploadedFile(), carpeta.resolve(nombre));
+            Files.copy(archivo.uploadedFile(), raiz.resolve(carpeta).resolve(nombre));
         } catch (IOException e) {
-            LOG.error("No se pudo guardar la imagen del producto", e);
+            LOG.error("No se pudo guardar la imagen", e);
             throw new UncheckedIOException("No se pudo guardar la imagen", e);
         }
-        return PREFIJO_URL + nombre;
+        return RAIZ_URL + carpeta + "/" + nombre;
     }
 
-    // Archivo de una imagen guardada (vacío si el nombre no es válido o no existe)
     public Optional<Path> ubicar(String nombre) {
-        if (nombre == null || !NOMBRE_VALIDO.matcher(nombre).matches()) {
+        return ubicar(PRODUCTOS, nombre);
+    }
+
+    public Optional<Path> ubicar(String carpeta, String nombre) {
+        if (!CARPETAS.contains(carpeta) || nombre == null || !NOMBRE_VALIDO.matcher(nombre).matches()) {
             return Optional.empty();
         }
-        Path ruta = carpeta.resolve(nombre).normalize();
-        return ruta.startsWith(carpeta) && Files.isRegularFile(ruta) ? Optional.of(ruta) : Optional.empty();
+        Path base = raiz.resolve(carpeta);
+        Path ruta = base.resolve(nombre).normalize();
+        return ruta.startsWith(base) && Files.isRegularFile(ruta) ? Optional.of(ruta) : Optional.empty();
     }
 
     public String tipoDe(String nombre) {
-        if (nombre.endsWith(".png")) {
-            return "image/png";
-        }
-        if (nombre.endsWith(".webp")) {
-            return "image/webp";
-        }
+        if (nombre.endsWith(".png")) return "image/png";
+        if (nombre.endsWith(".webp")) return "image/webp";
         return "image/jpeg";
     }
 
-    // Borra una imagen que subimos nosotros. Ignora URLs externas o que no sean de esta carpeta
+    // Borra una imagen propia (/uploads/{carpeta}/{nombre}); ignora URLs externas
     public void eliminar(String url) {
-        if (url == null || !url.startsWith(PREFIJO_URL)) {
+        if (url == null || !url.startsWith(RAIZ_URL)) {
             return;
         }
-        String nombre = url.substring(PREFIJO_URL.length());
-        ubicar(nombre).ifPresent(ruta -> {
+        String[] partes = url.substring(RAIZ_URL.length()).split("/");
+        if (partes.length != 2) {
+            return;
+        }
+        ubicar(partes[0], partes[1]).ifPresent(ruta -> {
             try {
                 Files.deleteIfExists(ruta);
             } catch (IOException e) {
-                LOG.warn("No se pudo borrar la imagen " + nombre, e);
+                LOG.warn("No se pudo borrar la imagen " + url, e);
             }
         });
     }
 
-    // JPG, PNG o WebP según los primeros bytes del archivo
     private String detectarExtension(Path ruta) {
         byte[] b;
         try (InputStream in = Files.newInputStream(ruta)) {
@@ -111,7 +121,6 @@ public class ImagenProductoStorage {
         } catch (IOException e) {
             throw new UncheckedIOException("No se pudo leer la imagen subida", e);
         }
-
         if (b.length >= 3 && (b[0] & 0xFF) == 0xFF && (b[1] & 0xFF) == 0xD8 && (b[2] & 0xFF) == 0xFF) {
             return "jpg";
         }
