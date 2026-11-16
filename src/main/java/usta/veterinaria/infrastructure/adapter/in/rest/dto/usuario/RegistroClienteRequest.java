@@ -5,9 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import usta.veterinaria.infrastructure.adapter.in.rest.dto.mascota.DesparasitacionResponse;
+import usta.veterinaria.infrastructure.adapter.in.rest.dto.mascota.HistoriaClinicaRequest;
 
 // Datos que llegan para registrar un cliente junto con su primera mascota
-// (un cliente siempre debe tener al menos una mascota)
+// (un cliente siempre debe tener al menos una mascota) y, opcionalmente, su historia clínica
 public record RegistroClienteRequest(
         @Schema(example = "Ana")
         @NotBlank(message = "El nombre es obligatorio")
@@ -30,5 +32,10 @@ public record RegistroClienteRequest(
         @Size(min = 8, max = 100, message = "La contraseña debe tener entre 8 y 100 caracteres") String contrasena,
 
         @Valid
-        @NotNull(message = "La mascota es obligatoria") usta.veterinaria.infrastructure.adapter.in.rest.dto.mascota.DesparasitacionResponse.MascotaRequest mascota) {
+        @NotNull(message = "La mascota es obligatoria")
+        DesparasitacionResponse.MascotaRequest mascota,
+
+        // Opcional: puede venir null si el usuario omite el paso de historia clínica
+        @Valid
+        HistoriaClinicaRequest historiaClinica) {
 }

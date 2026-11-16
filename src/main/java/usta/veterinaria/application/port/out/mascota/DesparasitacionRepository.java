@@ -10,4 +10,7 @@ public interface DesparasitacionRepository {
     Desparasitacion save(Desparasitacion desparasitacion);
 
     List<Desparasitacion> findByMascotaId(Long mascotaId);
+
+    // Borra una desparasitación (la usa la bitácora cuando se desmarca "Desparasitación")
+    void deleteById(Long id);
 }

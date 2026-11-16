@@ -3,23 +3,505 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PetCare - Peluquería Canina</title>
+    <title>Yazka's - Peluquería canina y felina</title>
+    <meta name="description" content="Yazka's, peluquería canina y felina: baño, peluquería y vacunación con amor y profesionalismo. Agenda la cita de tus peluditos.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/usuarios/Navbar.css" rel="stylesheet">
+    <link href="/css/usuarios/home.css" rel="stylesheet">
 </head>
-<body style="background: linear-gradient(180deg, #d8eeff 0%, #f4faff 60%); min-height: 100vh;">
+<body class="hm-body">
 
 {! Navbar reutilizable: cambia 'inicio' según la página !}
-    {#include usuarios/components/nav active='inicio' /}
+{#include usuarios/components/nav active='inicio' /}
 
-<main class="container py-5">
-    <h1>Aquí va el contenido de tu página</h1>
+{! Iconos del home: se definen una sola vez y se usan con <use href="#h-..."> !}
+<svg class="hm-sprite" aria-hidden="true" focusable="false">
+    <symbol id="h-paw" viewBox="0 0 48 48">
+        <ellipse cx="24" cy="31" rx="10.5" ry="8.5"/>
+        <ellipse cx="9.5" cy="22" rx="4.2" ry="5.6" transform="rotate(-18 9.5 22)"/>
+        <ellipse cx="18" cy="12.5" rx="4.4" ry="6" transform="rotate(-6 18 12.5)"/>
+        <ellipse cx="30" cy="12.5" rx="4.4" ry="6" transform="rotate(6 30 12.5)"/>
+        <ellipse cx="38.5" cy="22" rx="4.2" ry="5.6" transform="rotate(18 38.5 22)"/>
+    </symbol>
+    <symbol id="h-bone" viewBox="0 0 64 28">
+        <path d="M14 4a7 7 0 0 0-6.6 9.3A7 7 0 1 0 14 24h36a7 7 0 1 0 6.6-10.7A7 7 0 1 0 50 4c-3 0-5.4 1.8-6.4 4.4H20.4C19.4 5.8 17 4 14 4Z"/>
+    </symbol>
+    <symbol id="h-heart" viewBox="0 0 24 24">
+        <path d="M12 21s-8-4.9-8-11a4.6 4.6 0 0 1 8-3.1A4.6 4.6 0 0 1 20 10c0 6.1-8 11-8 11Z"/>
+    </symbol>
+    <symbol id="h-shield" viewBox="0 0 24 24">
+        <path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6L12 3Z"/>
+        <path d="m8.8 12 2.2 2.2 4.2-4.4"/>
+    </symbol>
+    <symbol id="h-star" viewBox="0 0 24 24">
+        <path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9L12 3.5Z"/>
+    </symbol>
+    <symbol id="h-check" viewBox="0 0 24 24">
+        <path d="m6 12.5 4 4 8-9"/>
+    </symbol>
+    <symbol id="h-arrow" viewBox="0 0 24 24">
+        <path d="M5 12h14M13 6l6 6-6 6"/>
+    </symbol>
+    <symbol id="h-calendar" viewBox="0 0 24 24">
+        <rect x="3.5" y="5" width="17" height="15.5" rx="3"/>
+        <path d="M8 3v4M16 3v4M3.5 10h17"/>
+    </symbol>
+    <symbol id="h-clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>
+    </symbol>
+    <symbol id="h-drop" viewBox="0 0 24 24">
+        <path d="M12 3.5s6 6.4 6 10.8a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5Z"/>
+    </symbol>
+    <symbol id="h-scissors" viewBox="0 0 24 24">
+        <circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/>
+        <path d="M8 8l12 12M8 16 20 4"/>
+    </symbol>
+    <symbol id="h-syringe" viewBox="0 0 24 24">
+        <path d="m15 3 6 6M18 6l-9.5 9.5M13.5 6.5l4 4M7 13l4 4M5.5 18.5 3 21M8.5 15.5l-3 3"/>
+    </symbol>
+    <symbol id="h-sparkle" viewBox="0 0 24 24">
+        <path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7Z"/>
+    </symbol>
+    <symbol id="h-bag" viewBox="0 0 24 24">
+        <path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+    </symbol>
+    <symbol id="h-chevron" viewBox="0 0 24 24">
+        <path d="m9 6 6 6-6 6"/>
+    </symbol>
+    <symbol id="h-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14"/>
+    </symbol>
+    <symbol id="h-close" viewBox="0 0 24 24">
+        <path d="M6 6l12 12M18 6 6 18"/>
+    </symbol>
+    <symbol id="h-ai" viewBox="0 0 24 24">
+        <rect x="5" y="7" width="14" height="11" rx="3.5"/>
+        <path d="M12 3.5V7M9.5 12h.01M14.5 12h.01M9.5 15h5M3 11v3M21 11v3"/>
+    </symbol>
+</svg>
+
+<main class="hm-main">
+
+    {! ============================== 1. INICIO (HERO) ==============================
+       El texto queda en el centro y las mascotas lo rodean (izquierda, derecha y abajo).
+       Imagen: META-INF/resources/img/usuario/PerritosAlrededor.webp (PNG de respaldo), sin fondo. !}
+    <section class="hm-hero" aria-labelledby="hero-titulo">
+
+        {! Brillos suaves en las esquinas !}
+        <div class="hm-hero__deco" aria-hidden="true">
+            <svg class="hm-sparkle hm-sparkle--1"><use href="#h-sparkle"/></svg>
+            <svg class="hm-sparkle hm-sparkle--2"><use href="#h-sparkle"/></svg>
+            <svg class="hm-sparkle hm-sparkle--3"><use href="#h-sparkle"/></svg>
+            <svg class="hm-sparkle hm-sparkle--4"><use href="#h-sparkle"/></svg>
+        </div>
+
+        <div class="hm-hero__stage">
+            {! Marco de mascotas (va detrás del texto) !}
+            <picture class="hm-hero__frame">
+                <source srcset="/img/usuario/PerritosAlrededor.png" type="image/webp">
+                <img src="/img/usuario/PerritosAlrededor.png" width="1600" height="900" fetchpriority="high"
+                     alt="Perros y gatos felices asomándose alrededor: golden, husky, gato atigrado, bichón, corgi, bulldog francés, jack russell, gato siamés y labrador">
+            </picture>
+
+            <div class="hm-hero__content">
+                <h1 id="hero-titulo" class="hm-hero__title">
+                    Mucho más que estética,
+                    <span class="hm-script">cuidado</span>
+                    para quienes más quieres.
+                </h1>
+
+                <p class="hm-hero__lead">
+                    Consentimos a tu compañero de cuatro patas con servicios profesionales
+                    de baño, peluquería y vacunación.
+                </p>
+
+                <div class="hm-hero__actions">
+                    <a class="hm-btn hm-btn--primary" href="/citas">
+                        <svg class="hm-ico" aria-hidden="true"><use href="#h-calendar"/></svg>
+                        Agendar una cita
+                        <svg class="hm-ico" aria-hidden="true"><use href="#h-arrow"/></svg>
+                    </a>
+                    <a class="hm-btn hm-btn--ghost" href="#servicios">
+                        Conocer nuestros servicios
+                        <span class="hm-btn__round" aria-hidden="true">
+                            <svg class="hm-ico"><use href="#h-chevron"/></svg>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {! ============================== 2. CONFIANZA ============================== !}
+    <section class="hm-section hm-section--tight" aria-labelledby="familia-titulo">
+        <div class="hm-container">
+            <div class="hm-trust hm-pattern">
+                <div class="hm-trust__text">
+                    <h2 id="familia-titulo" class="hm-h2">
+                        Ellos son parte de nuestra familia
+                        <svg class="hm-ico hm-ico--fill hm-heart-red" aria-hidden="true"><use href="#h-heart"/></svg>
+                    </h2>
+                    <p class="hm-muted">
+                        Brindamos un servicio con amor, profesionalismo y el mayor cuidado para tu peludito.
+                    </p>
+                </div>
+
+                <ul class="hm-trust__list">
+                    <li class="hm-trust__item">
+                        <span class="hm-trust__icon"><svg class="hm-ico hm-ico--fill" aria-hidden="true"><use href="#h-paw"/></svg></span>
+                        <strong>Cuidado integral</strong>
+                        <span>Baño, peluquería y salud en un solo lugar.</span>
+                    </li>
+                    <li class="hm-trust__item">
+                        <span class="hm-trust__icon"><svg class="hm-ico" aria-hidden="true"><use href="#h-shield"/></svg></span>
+                        <strong>Instalaciones higiénicas</strong>
+                        <span>Limpieza y desinfección diaria de cada área.</span>
+                    </li>
+                    <li class="hm-trust__item">
+                        <span class="hm-trust__icon"><svg class="hm-ico" aria-hidden="true"><use href="#h-heart"/></svg></span>
+                        <strong>Profesionales comprometidos</strong>
+                        <span>Paciencia y cariño con cada mascota.</span>
+                    </li>
+                </ul>
+                <svg class="hm-sparkle hm-sparkle--trust" aria-hidden="true"><use href="#h-sparkle"/></svg>
+            </div>
+        </div>
+    </section>
+
+    {! ============================== 3. SERVICIOS ============================== !}
+    <section class="hm-section" id="servicios" aria-labelledby="servicios-titulo">
+        <div class="hm-container hm-services">
+
+            <div class="hm-services__intro">
+                <h2 id="servicios-titulo" class="hm-h2">Todo lo que necesita para estar increíble.</h2>
+                <p class="hm-muted">Un cuidado completo para que tu compañero esté limpio, feliz y saludable.</p>
+
+                {! Decoración de la columna: huellitas caminando y un hueso !}
+                <div class="hm-services__deco" aria-hidden="true">
+                    <div class="hm-paw-trail hm-paw-trail--diag">
+                        <svg><use href="#h-paw"/></svg><svg><use href="#h-paw"/></svg>
+                        <svg><use href="#h-paw"/></svg><svg><use href="#h-paw"/></svg>
+                    </div>
+                    <svg class="hm-services__bone"><use href="#h-bone"/></svg>
+                </div>
+            </div>
+
+            <div class="hm-services__cards">
+                <article class="hm-card hm-service">
+                    <div class="hm-stage hm-stage--bano">
+                        <span class="hm-stage__bubble" aria-hidden="true"></span>
+                        <span class="hm-stage__bubble" aria-hidden="true"></span>
+                        <span class="hm-stage__bubble" aria-hidden="true"></span>
+                        <img class="hm-stage__pet" src="/img/usuario/BichónMaltés.png"
+                             alt="Bichón maltés recién bañado" loading="lazy">
+                    </div>
+                    <div class="hm-service__body">
+                        <span class="hm-service__num">01</span>
+                        <h3 class="hm-h3">Baño</h3>
+                        <p class="hm-muted">Un baño especial con productos adecuados para su cuidado y bienestar.</p>
+                        <ul class="hm-checks">
+                            <li><svg class="hm-ico" aria-hidden="true"><use href="#h-check"/></svg>Limpieza profunda</li>
+                            <li><svg class="hm-ico" aria-hidden="true"><use href="#h-check"/></svg>Normal, medicado o antipulgas</li>
+                            <li><svg class="hm-ico" aria-hidden="true"><use href="#h-check"/></svg>Secado y acabado</li>
+                        </ul>
+                        <a class="hm-btn hm-btn--primary hm-btn--sm" href="/citas">
+                            Reservar servicio
+                            <svg class="hm-ico" aria-hidden="true"><use href="#h-arrow"/></svg>
+                        </a>
+                    </div>
+                </article>
+
+                <article class="hm-card hm-service">
+                    <div class="hm-stage hm-stage--peluqueria">
+                        <svg class="hm-stage__spark" aria-hidden="true"><use href="#h-sparkle"/></svg>
+                        <svg class="hm-stage__spark" aria-hidden="true"><use href="#h-sparkle"/></svg>
+                        <svg class="hm-stage__tool" aria-hidden="true"><use href="#h-scissors"/></svg>
+                        <img class="hm-stage__pet" src="/img/usuario/YorkshireTerrier.png"
+                             alt="Yorkshire terrier con su moño después del corte" loading="lazy">
+                    </div>
+                    <div class="hm-service__body">
+                        <span class="hm-service__num">02</span>
+                        <h3 class="hm-h3">Peluquería</h3>
+                        <p class="hm-muted">Un estilo pensado para resaltar su personalidad.</p>
+                        <ul class="hm-checks">
+                            <li><svg class="hm-ico" aria-hidden="true"><use href="#h-check"/></svg>Corte de pelo</li>
+                            <li><svg class="hm-ico" aria-hidden="true"><use href="#h-check"/></svg>Cepillado</li>
+                            <li><svg class="hm-ico" aria-hidden="true"><use href="#h-check"/></svg>Desenredado</li>
+                        </ul>
+                        <a class="hm-btn hm-btn--primary hm-btn--sm" href="/citas">
+                            Reservar servicio
+                            <svg class="hm-ico" aria-hidden="true"><use href="#h-arrow"/></svg>
+                        </a>
+                    </div>
+                </article>
+
+                <article class="hm-card hm-service">
+                    <div class="hm-stage hm-stage--vacunacion">
+                        <svg class="hm-stage__heart" aria-hidden="true"><use href="#h-heart"/></svg>
+                        <svg class="hm-stage__heart" aria-hidden="true"><use href="#h-heart"/></svg>
+                        <svg class="hm-stage__tool" aria-hidden="true"><use href="#h-shield"/></svg>
+                        <img class="hm-stage__pet" src="/img/usuario/beagle.png"
+                             alt="Beagle tranquilo listo para su vacuna" loading="lazy">
+                    </div>
+                    <div class="hm-service__body">
+                        <span class="hm-service__num">03</span>
+                        <h3 class="hm-h3">Vacunación</h3>
+                        <p class="hm-muted">Atención responsable para su salud y bienestar.</p>
+                        <ul class="hm-checks">
+                            <li><svg class="hm-ico" aria-hidden="true"><use href="#h-check"/></svg>Aplicación segura</li>
+                            <li><svg class="hm-ico" aria-hidden="true"><use href="#h-check"/></svg>Registro en su carnet</li>
+                            <li><svg class="hm-ico" aria-hidden="true"><use href="#h-check"/></svg>Recordatorio de refuerzos</li>
+                        </ul>
+                        <a class="hm-btn hm-btn--primary hm-btn--sm" href="/citas">
+                            Reservar servicio
+                            <svg class="hm-ico" aria-hidden="true"><use href="#h-arrow"/></svg>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    {! ============================== 4. AGENDA TU CITA (PROTAGONISTA, CENTRADA) ============================== !}
+    <section class="hm-section hm-agenda" id="agendar" aria-labelledby="agenda-titulo">
+
+        {! Decoración suave en azul pastel: camino punteado, huellitas, corazones y destellos !}
+        <div class="hm-agenda__deco" aria-hidden="true">
+            <span class="hm-agenda__trail"></span>
+            <svg class="hm-float hm-float--1"><use href="#h-paw"/></svg>
+            <svg class="hm-float hm-float--2"><use href="#h-bone"/></svg>
+            <svg class="hm-float hm-float--3"><use href="#h-heart"/></svg>
+            <svg class="hm-float hm-float--4"><use href="#h-sparkle"/></svg>
+            <svg class="hm-float hm-float--5"><use href="#h-paw"/></svg>
+            <svg class="hm-float hm-float--6"><use href="#h-heart"/></svg>
+            <svg class="hm-float hm-float--7"><use href="#h-sparkle"/></svg>
+            <svg class="hm-float hm-float--8"><use href="#h-paw"/></svg>
+        </div>
+
+        <div class="hm-container hm-agenda__inner">
+            <header class="hm-agenda__head">
+                <h2 id="agenda-titulo" class="hm-h2 hm-agenda__title">
+                    Agenda tu cita <span class="hm-script">hoy</span>
+                </h2>
+                <p class="hm-agenda__highlight">¡No importa si tienes más de un peludito!</p>
+                <p class="hm-muted hm-agenda__lead">
+                    Puedes agendar los servicios de todas tus mascotas en una misma solicitud,
+                    de manera fácil y rápida.
+                </p>
+            </header>
+
+            {! Vista previa del flujo: los pasos se pueden recorrer; el agendamiento real está en /citas !}
+            <div class="hm-booking" data-booking>
+                <div class="hm-booking__ribbon" aria-hidden="true">
+                    <svg class="hm-ico hm-ico--fill"><use href="#h-paw"/></svg>
+                </div>
+
+                <ol class="hm-steps" role="tablist" aria-label="Pasos para agendar una cita">
+                    <li><button type="button" class="hm-step is-active" role="tab" aria-selected="true" data-step="0">
+                        <span class="hm-step__dot">1</span><span class="hm-step__label">Mascotas</span></button></li>
+                    <li><button type="button" class="hm-step" role="tab" aria-selected="false" data-step="1">
+                        <span class="hm-step__dot">2</span><span class="hm-step__label">Servicio</span></button></li>
+                    <li><button type="button" class="hm-step" role="tab" aria-selected="false" data-step="2">
+                        <span class="hm-step__dot">3</span><span class="hm-step__label">Fecha</span></button></li>
+                    <li><button type="button" class="hm-step" role="tab" aria-selected="false" data-step="3">
+                        <span class="hm-step__dot">4</span><span class="hm-step__label">Confirmar</span></button></li>
+                </ol>
+                <div class="hm-steps__bar" aria-hidden="true"><span data-bar></span></div>
+
+                <div class="hm-panes">
+                    <div class="hm-pane is-active" role="tabpanel" data-pane="0">
+                        <h3 class="hm-pane__title">¿Quiénes vienen a consentirse?</h3>
+                        <p class="hm-muted">Elige una o varias de tus mascotas registradas.</p>
+                        <div class="hm-pets">
+                            <span class="hm-pet is-on">
+                                <svg class="hm-ico hm-ico--fill" aria-hidden="true"><use href="#h-paw"/></svg>Tu peludito
+                            </span>
+                            <a class="hm-pet hm-pet--add" href="/citas">
+                                <svg class="hm-ico" aria-hidden="true"><use href="#h-plus"/></svg>
+                                Agregar otro peludito
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="hm-pane" role="tabpanel" data-pane="1" hidden>
+                        <h3 class="hm-pane__title">¿Qué servicio necesita?</h3>
+                        <div class="hm-chips">
+                            <span class="hm-chip"><svg class="hm-ico" aria-hidden="true"><use href="#h-drop"/></svg>Baño</span>
+                            <span class="hm-chip"><svg class="hm-ico" aria-hidden="true"><use href="#h-scissors"/></svg>Peluquería</span>
+                            <span class="hm-chip"><svg class="hm-ico" aria-hidden="true"><use href="#h-syringe"/></svg>Vacunación</span>
+                        </div>
+                        <p class="hm-muted hm-pane__note">Según su raza y pelaje te indicamos cuánto tarda:</p>
+                        <div class="hm-durations">
+                            <span class="hm-duration hm-duration--baja"><strong>Baja</strong>hasta 2 h</span>
+                            <span class="hm-duration hm-duration--media"><strong>Media</strong>de 2 a 4 h</span>
+                            <span class="hm-duration hm-duration--alta"><strong>Alta</strong>más de 4 h</span>
+                        </div>
+                    </div>
+
+                    <div class="hm-pane" role="tabpanel" data-pane="2" hidden>
+                        <h3 class="hm-pane__title">Escoge el día y la hora</h3>
+                        <p class="hm-muted">Te mostramos solo los espacios que tienen cupo.</p>
+                        <div class="hm-slots">
+                            <span class="hm-slot">8:30 a. m.</span>
+                            <span class="hm-slot is-on">10:30 a. m.</span>
+                            <span class="hm-slot">1:30 p. m.</span>
+                            <span class="hm-slot is-off">3:30 p. m.</span>
+                        </div>
+                        <p class="hm-muted hm-pane__note">Si un horario está lleno, te sugerimos el siguiente disponible.</p>
+                    </div>
+
+                    <div class="hm-pane" role="tabpanel" data-pane="3" hidden>
+                        <h3 class="hm-pane__title">¡Listo para consentirlo!</h3>
+                        <p class="hm-muted">Revisa los datos y confirma. Te esperamos con tu peludito.</p>
+                        <div class="hm-confirm">
+                            <svg class="hm-ico hm-ico--fill" aria-hidden="true"><use href="#h-heart"/></svg>
+                            <span>El precio lo acordamos contigo en la peluquería, después de revisar a tu mascota.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hm-booking__actions">
+                    <button type="button" class="hm-btn hm-btn--soft hm-btn--sm" data-prev disabled>Atrás</button>
+                    <button type="button" class="hm-btn hm-btn--sky hm-btn--sm" data-next>
+                        Continuar
+                        <svg class="hm-ico" aria-hidden="true"><use href="#h-arrow"/></svg>
+                    </button>
+                    <a class="hm-btn hm-btn--sky hm-btn--sm" href="/citas" data-go hidden>
+                        Agendar ahora
+                        <svg class="hm-ico" aria-hidden="true"><use href="#h-arrow"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <ul class="hm-agenda__facts">
+                <li>
+                    <svg class="hm-ico" aria-hidden="true"><use href="#h-clock"/></svg>
+                    <span><strong>Lunes a sábado</strong> · 8:30 a. m. a 5:30 p. m.</span>
+                </li>
+                <li>
+                    <svg class="hm-ico" aria-hidden="true"><use href="#h-ai"/></svg>
+                    <span>Calculamos la <strong>duración</strong> según su raza y pelaje</span>
+                </li>
+                <li>
+                    <svg class="hm-ico" aria-hidden="true"><use href="#h-heart"/></svg>
+                    <span>El valor se define en persona</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    {! ============================== 5. CATÁLOGO (SIN PRECIOS NI CARRITO) ============================== !}
+    <section class="hm-section" id="catalogo" aria-labelledby="catalogo-titulo">
+        <div class="hm-container hm-shop">
+
+            <div class="hm-shop__intro hm-pattern hm-pattern--soft">
+                <h2 id="catalogo-titulo" class="hm-h2">
+                    Todo para <span class="hm-script">consentirlo.</span>
+                </h2>
+                <p class="hm-muted">
+                    Descubre los productos que encuentras en nuestra peluquería para hacer más feliz su día a día.
+                </p>
+                <p class="hm-shop__note">
+                    <svg class="hm-ico" aria-hidden="true"><use href="#h-bag"/></svg>
+                    Pregunta por ellos en tu próxima visita.
+                </p>
+
+                {! Golden descansando sobre un cojín, con destellos !}
+                <div class="hm-shop__pet" aria-hidden="true">
+                    <span class="hm-shop__cushion"></span>
+                    <img src="/img/usuario/Golden.png" alt="" loading="lazy">
+                    <svg class="hm-sparkle hm-sparkle--shop-a"><use href="#h-sparkle"/></svg>
+                    <svg class="hm-sparkle hm-sparkle--shop-b"><use href="#h-sparkle"/></svg>
+                </div>
+            </div>
+
+            <div class="hm-shop__rail">
+                {! Los productos se cargan desde /api/catalogo (nombre, marca y descripción; NUNCA precio) !}
+                <div class="hm-products" id="productos" aria-live="polite" aria-busy="true">
+                    <div class="hm-product hm-product--skeleton" aria-hidden="true"></div>
+                    <div class="hm-product hm-product--skeleton" aria-hidden="true"></div>
+                    <div class="hm-product hm-product--skeleton" aria-hidden="true"></div>
+                </div>
+                <div class="hm-shop__state" id="productos-estado" hidden></div>
+                <div class="hm-shop__arrows">
+                    <button type="button" class="hm-arrow" data-scroll="-1" aria-label="Ver productos anteriores">
+                        <svg class="hm-ico hm-ico--flip"><use href="#h-chevron"/></svg>
+                    </button>
+                    <button type="button" class="hm-arrow" data-scroll="1" aria-label="Ver más productos">
+                        <svg class="hm-ico"><use href="#h-chevron"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
 </main>
 
+{! ============================== VENTANA "VER DETALLES" DEL PRODUCTO (SIN PRECIO) ============================== !}
+<dialog class="hm-modal" id="detalle-producto" aria-labelledby="detalle-nombre">
+    <button type="button" class="hm-modal__close" data-cerrar aria-label="Cerrar">
+        <svg class="hm-ico"><use href="#h-close"/></svg>
+    </button>
+    <div class="hm-modal__img" id="detalle-img"></div>
+    <div class="hm-modal__body">
+        <span class="hm-product__cat" id="detalle-categoria"></span>
+        <h3 class="hm-modal__title" id="detalle-nombre"></h3>
+        <p class="hm-modal__brand" id="detalle-marca"></p>
+        <p class="hm-muted" id="detalle-descripcion"></p>
+        <dl class="hm-modal__data">
+            <div><dt>Gama</dt><dd id="detalle-tipo"></dd></div>
+            <div><dt>Disponibilidad</dt><dd id="detalle-stock"></dd></div>
+        </dl>
+        <p class="hm-modal__note">
+            <svg class="hm-ico" aria-hidden="true"><use href="#h-bag"/></svg>
+            Consúltalo con nuestro equipo en tu próxima visita.
+        </p>
+    </div>
+</dialog>
+
+{! ============================== PIE DE PÁGINA ============================== !}
+<footer class="hm-footer">
+    <div class="hm-footer__wave" aria-hidden="true"></div>
+    {! Trío de perritos asomándose sobre la onda del pie de página !}
+    <img class="hm-footer__pets" src="/img/usuario/TrioColin.png" alt="" aria-hidden="true" loading="lazy">
+
+    <div class="hm-container hm-footer__grid">
+        <div class="hm-footer__brand">
+            <a class="hm-footer__logo" href="/">
+                <img src="/img/usuario/logo.png" alt="" width="52" height="52">
+                <span><strong>Yazka's</strong><small>Peluquería canina y felina</small></span>
+            </a>
+            <p>Cuidamos con amor, porque ellos lo merecen.</p>
+        </div>
+
+        <nav class="hm-footer__col" aria-label="Navegación del pie de página">
+            <h3>Navegación</h3>
+            <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/servicios">Servicios</a></li>
+                <li><a href="/nosotros">Nosotros</a></li>
+                <li><a href="/contacto">Contacto</a></li>
+            </ul>
+        </nav>
+
+        <div class="hm-footer__col">
+            <h3>Servicios</h3>
+            <ul>
+                <li><a href="#servicios">Baño</a></li>
+                <li><a href="#servicios">Peluquería</a></li>
+                <li><a href="#servicios">Vacunación</a></li>
+            </ul>
+        </div>
+    </div>
+    <p class="hm-footer__copy">
+        © <span id="anio">2026</span> Yazka's · Peluquería canina y felina. Todos los derechos reservados.
+    </p>
+</footer>
+
 <script src="/js/usuario/Navbar.js"></script>
+<script src="/js/usuario/home.js"></script>
 </body>
 </html>

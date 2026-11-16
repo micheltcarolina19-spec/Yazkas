@@ -32,6 +32,6 @@ public class UsuarioEntity {
     @Column(nullable = false)
     private RolUsuario rol;
 
-    @Column(name = "contrasena", nullable = false)
+    @Column(name = "contrasena", nullable = false, length = 255)
     private String contrasena;
 }

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Catálogo de productos - Yazka's</title>
+    <meta name="description" content="Conoce los alimentos, juguetes, accesorios y productos de aseo que encuentras en Yazka's, peluquería canina y felina.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/usuarios/Navbar.css" rel="stylesheet">
+    {! home.css aporta los colores, botones, ventana de detalles y pie de página; catalogo.css lo propio de esta página !}
+    <link href="/css/usuarios/home.css" rel="stylesheet">
+    <link href="/css/usuarios/catalogo.css" rel="stylesheet">
+</head>
+<body class="hm-body">
+
+{#include usuarios/components/nav active='catalogo' /}
+
+{! Iconos de la página: se usan con <use href="#c-..."> !}
+<svg class="hm-sprite" aria-hidden="true" focusable="false">
+    <symbol id="c-paw" viewBox="0 0 48 48">
+        <ellipse cx="24" cy="31" rx="10.5" ry="8.5"/>
+        <ellipse cx="9.5" cy="22" rx="4.2" ry="5.6" transform="rotate(-18 9.5 22)"/>
+        <ellipse cx="18" cy="12.5" rx="4.4" ry="6" transform="rotate(-6 18 12.5)"/>
+        <ellipse cx="30" cy="12.5" rx="4.4" ry="6" transform="rotate(6 30 12.5)"/>
+        <ellipse cx="38.5" cy="22" rx="4.2" ry="5.6" transform="rotate(18 38.5 22)"/>
+    </symbol>
+    <symbol id="c-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+    <symbol id="c-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="c-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.8"/></symbol>
+    <symbol id="c-bowl" viewBox="0 0 24 24"><path d="M3.5 11.5h17a8.5 8.5 0 0 1-17 0Z"/><path d="M8 8.5c.6-1 1.8-1.6 3-1.3M13 7.6c1-.9 2.6-1 3.6 0"/></symbol>
+    <symbol id="c-ball" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M5.2 7.5c3.6 1.2 4.8 5 3.6 9.3M18.8 7.5c-3.6 1.2-4.8 5-3.6 9.3"/></symbol>
+    <symbol id="c-tag" viewBox="0 0 24 24"><path d="M3.5 12V4.8c0-.7.6-1.3 1.3-1.3H12l8.5 8.5-8.5 8.5L3.5 12Z"/><circle cx="8" cy="8" r="1.5"/></symbol>
+    <symbol id="c-drop" viewBox="0 0 24 24"><path d="M12 3.5s6 6.4 6 10.8a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5Z"/><path d="M9.5 14.5a2.6 2.6 0 0 0 2.5 2.4"/></symbol>
+    <symbol id="c-health" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/><path d="M12 10.5v5M9.5 13h5"/></symbol>
+    <symbol id="c-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/></symbol>
+    <symbol id="c-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></symbol>
+    <symbol id="c-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="c-sparkle" viewBox="0 0 24 24"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7Z"/></symbol>
+    <symbol id="c-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></symbol>
+</svg>
+
+<main class="hm-main ct-main">
+
+    {! ============================== CABECERA: TÍTULO + BÚSQUEDA ============================== !}
+    <section class="hm-container ct-hero" aria-labelledby="ct-titulo">
+        <div class="ct-hero__card">
+            <div class="ct-hero__text">
+                <h1 id="ct-titulo" class="ct-hero__title">
+                    Todo lo que necesitas para tu <span class="hm-script">mascota</span>
+                </h1>
+                <p class="ct-hero__lead">
+                    Conoce los productos que encuentras en Yazka's. Pregunta por ellos en tu próxima visita.
+                </p>
+
+                {! Búsqueda: filtra por nombre, marca, categoría o descripción mientras escribes !}
+                <form class="ct-search" role="search" data-busqueda>
+                    <label class="visually-hidden" for="ct-buscar">Buscar productos</label>
+                    <svg class="hm-ico ct-search__ico" aria-hidden="true"><use href="#c-search"/></svg>
+                    <input id="ct-buscar" class="ct-search__input" type="search" autocomplete="off"
+                           placeholder="¿Qué estás buscando para tu mascota?">
+                    <button type="button" class="ct-search__clear" data-limpiar-busqueda hidden aria-label="Borrar búsqueda">
+                        <svg class="hm-ico"><use href="#c-close"/></svg>
+                    </button>
+                </form>
+            </div>
+
+            {! Golden asomado, con brillos (decorativo) !}
+            <div class="ct-hero__pet" aria-hidden="true">
+                <img src="/META-INF/resources/img/usuario/Golden.png" alt="" loading="eager">
+                <svg class="ct-spark ct-spark--1"><use href="#c-sparkle"/></svg>
+                <svg class="ct-spark ct-spark--2"><use href="#c-sparkle"/></svg>
+                <svg class="ct-spark ct-spark--3"><use href="#c-sparkle"/></svg>
+            </div>
+        </div>
+    </section>
+
+    {! ============================== FILTROS POR CATEGORÍA ============================== !}
+    <section class="hm-container ct-filters" aria-label="Filtrar por categoría">
+        <div class="ct-pills" role="group" aria-label="Categorías" data-filtros>
+            <button type="button" class="ct-pill is-active" data-grupo="todos" aria-pressed="true">
+                <svg class="hm-ico" aria-hidden="true"><use href="#c-grid"/></svg>Todos los productos<span class="ct-pill__count" data-cuenta="todos">0</span>
+            </button>
+            <button type="button" class="ct-pill" data-grupo="alimentos" aria-pressed="false">
+                <svg class="hm-ico" aria-hidden="true"><use href="#c-bowl"/></svg>Alimentos<span class="ct-pill__count" data-cuenta="alimentos">0</span>
+            </button>
+            <button type="button" class="ct-pill" data-grupo="juguetes" aria-pressed="false">
+                <svg class="hm-ico" aria-hidden="true"><use href="#c-ball"/></svg>Juguetes<span class="ct-pill__count" data-cuenta="juguetes">0</span>
+            </button>
+            <button type="button" class="ct-pill" data-grupo="accesorios" aria-pressed="false">
+                <svg class="hm-ico" aria-hidden="true"><use href="#c-tag"/></svg>Accesorios<span class="ct-pill__count" data-cuenta="accesorios">0</span>
+            </button>
+            <button type="button" class="ct-pill" data-grupo="higiene" aria-pressed="false">
+                <svg class="hm-ico" aria-hidden="true"><use href="#c-drop"/></svg>Higiene y cuidado<span class="ct-pill__count" data-cuenta="higiene">0</span>
+            </button>
+            <button type="button" class="ct-pill" data-grupo="salud" aria-pressed="false">
+                <svg class="hm-ico" aria-hidden="true"><use href="#c-health"/></svg>Salud y bienestar<span class="ct-pill__count" data-cuenta="salud">0</span>
+            </button>
+            <button type="button" class="ct-pill ct-pill--fav" data-grupo="favoritos" aria-pressed="false">
+                <svg class="hm-ico hm-ico--fill" aria-hidden="true"><use href="#c-heart"/></svg>Mis favoritos<span class="ct-pill__count" data-cuenta="favoritos">0</span>
+            </button>
+        </div>
+
+        <div class="ct-toolbar">
+            <p class="ct-toolbar__result" id="ct-resultado" aria-live="polite">Cargando productos…</p>
+            <label class="ct-sort">
+                <span>Ordenar por</span>
+                <select id="ct-orden">
+                    <option value="nombre-asc">Nombre (A–Z)</option>
+                    <option value="nombre-desc">Nombre (Z–A)</option>
+                    <option value="marca">Marca</option>
+                    <option value="categoria">Categoría</option>
+                </select>
+            </label>
+        </div>
+    </section>
+
+    {! ============================== GRILLA DE PRODUCTOS ============================== !}
+    <section class="hm-container ct-catalog" aria-labelledby="ct-titulo">
+        {! Los productos se cargan desde /api/catalogo: nombre, marca, categoría, descripción y foto. Sin precios ni stock. !}
+        <div class="ct-grid" id="ct-grid" aria-busy="true">
+            <div class="ct-card ct-card--skeleton" aria-hidden="true"></div>
+            <div class="ct-card ct-card--skeleton" aria-hidden="true"></div>
+            <div class="ct-card ct-card--skeleton" aria-hidden="true"></div>
+            <div class="ct-card ct-card--skeleton" aria-hidden="true"></div>
+            <div class="ct-card ct-card--skeleton" aria-hidden="true"></div>
+            <div class="ct-card ct-card--skeleton" aria-hidden="true"></div>
+            <div class="ct-card ct-card--skeleton" aria-hidden="true"></div>
+            <div class="ct-card ct-card--skeleton" aria-hidden="true"></div>
+        </div>
+
+        {! Estados: sin resultados, sin favoritos o error de conexión (los llena catalogo.js) !}
+        <div class="ct-empty" id="ct-vacio" hidden>
+            <span class="ct-empty__icon" aria-hidden="true"><svg class="hm-ico hm-ico--fill"><use href="#c-paw"/></svg></span>
+            <h2 class="ct-empty__title" id="ct-vacio-titulo"></h2>
+            <p class="hm-muted" id="ct-vacio-texto"></p>
+            <button type="button" class="hm-btn hm-btn--primary hm-btn--sm" id="ct-vacio-accion"></button>
+        </div>
+    </section>
+</main>
+
+{! ============================== VENTANA "VER DETALLES" (SIN PRECIO NI STOCK) ============================== !}
+<dialog class="hm-modal ct-modal" id="ct-detalle" aria-labelledby="ct-detalle-nombre">
+    <button type="button" class="hm-modal__close" data-cerrar aria-label="Cerrar">
+        <svg class="hm-ico"><use href="#c-close"/></svg>
+    </button>
+    <div class="hm-modal__img" id="ct-detalle-img"></div>
+    <div class="hm-modal__body">
+        <span class="ct-badge" id="ct-detalle-categoria"></span>
+        <p class="ct-brand" id="ct-detalle-marca"></p>
+        <h2 class="hm-modal__title" id="ct-detalle-nombre"></h2>
+        <p class="hm-muted ct-modal__desc" id="ct-detalle-descripcion"></p>
+        <div class="ct-modal__actions">
+            <button type="button" class="ct-fav ct-fav--inline" id="ct-detalle-fav" aria-pressed="false">
+                <svg class="hm-ico" aria-hidden="true"><use href="#c-heart"/></svg>
+                <span>Agregar a favoritos</span>
+            </button>
+        </div>
+        <p class="hm-modal__note">
+            <svg class="hm-ico" aria-hidden="true"><use href="#c-bag"/></svg>
+            Consúltalo con nuestro equipo en tu próxima visita.
+        </p>
+    </div>
+</dialog>
+
+{! ============================== PIE DE PÁGINA (igual al del home) ============================== !}
+<footer class="hm-footer">
+    <div class="hm-footer__wave" aria-hidden="true"></div>
+    <img class="hm-footer__pets" src="/META-INF/resources/img/usuario/TrioColin.png" alt="" aria-hidden="true" loading="lazy">
+
+    <div class="hm-container hm-footer__grid">
+        <div class="hm-footer__brand">
+            <a class="hm-footer__logo" href="/">
+                <img src="/META-INF/resources/img/usuario/logo.png" alt="" width="52" height="52">
+                <span><strong>Yazka's</strong><small>Peluquería canina y felina</small></span>
+            </a>
+            <p>Cuidamos con amor, porque ellos lo merecen.</p>
+        </div>
+
+        <nav class="hm-footer__col" aria-label="Navegación del pie de página">
+            <h3>Navegación</h3>
+            <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/servicios">Servicios</a></li>
+                <li><a href="/catalogo">Catálogo</a></li>
+                <li><a href="/nosotros">Nosotros</a></li>
+                <li><a href="/contacto">Contacto</a></li>
+            </ul>
+        </nav>
+
+        <div class="hm-footer__col">
+            <h3>Servicios</h3>
+            <ul>
+                <li><a href="/#servicios">Baño</a></li>
+                <li><a href="/#servicios">Peluquería</a></li>
+                <li><a href="/#servicios">Vacunación</a></li>
+            </ul>
+        </div>
+    </div>
+    <p class="hm-footer__copy">
+        © <span id="anio">2026</span> Yazka's · Peluquería canina y felina. Todos los derechos reservados.
+    </p>
+</footer>
+
+<script src="/js/usuario/Navbar.js"></script>
+<script src="/js/usuario/catalogo.js"></script>
+</body>
+</html>

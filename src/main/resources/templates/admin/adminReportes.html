@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reportes | YAZKAS Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin/admin-reportes.css">
+    <link rel="stylesheet" href="/css/admin/admin-sidebar.css">
+</head>
+<body class="app-shell">
+
+{! Iconos reutilizables (se usan con <svg class="i"><use href="#i-nombre"/></svg>) !}
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-paw" viewBox="0 0 24 24"><g fill="currentColor" stroke="none"><ellipse cx="5.2" cy="11.2" rx="2.1" ry="2.8"/><ellipse cx="9.6" cy="6.2" rx="2.1" ry="2.9"/><ellipse cx="14.4" cy="6.2" rx="2.1" ry="2.9"/><ellipse cx="18.8" cy="11.2" rx="2.1" ry="2.8"/><path d="M12 11c-3 0-6 3.2-6 6 0 2 1.6 3 3.3 3 1 0 1.8-.5 2.7-.5s1.7.5 2.7.5c1.7 0 3.3-1 3.3-3 0-2.8-3-6-6-6z"/></g></symbol>
+</svg>
+
+{! Sidebar: el valor de 'active' debe coincidir con el que espera tu componente !}
+    {#include admin/components/sidebar active='reportes' /}
+
+<main class="rp">
+
+    {! ====================== Encabezado ====================== !}
+    <header class="hero">
+        <div class="hero__text">
+            <span class="pill-label">
+                <svg class="i"><use href="#i-file"/></svg>
+                Reportes
+            </span>
+            <h1>Historial clínico</h1>
+            <p>Busca una mascota o a su propietario y descarga su historial completo: historia clínica, vacunas y desparasitaciones.</p>
+        </div>
+        <img class="hero__mascot" src="/img/mascota-principal-dash.png" alt="" aria-hidden="true">
+    </header>
+
+    {! ====================== Totales ====================== !}
+    <section class="stats" aria-label="Totales">
+        <article class="stat">
+            <span class="stat__icon"><svg class="i"><use href="#i-users"/></svg></span>
+            <div>
+                <strong class="stat__value">{totalClientes}</strong>
+                <span class="stat__label">Clientes registrados</span>
+            </div>
+        </article>
+        <article class="stat">
+            <span class="stat__icon"><svg class="i"><use href="#i-paw"/></svg></span>
+            <div>
+                <strong class="stat__value">{totalMascotas}</strong>
+                <span class="stat__label">Mascotas registradas</span>
+            </div>
+        </article>
+        <article class="stat">
+            <span class="stat__icon"><svg class="i"><use href="#i-eye"/></svg></span>
+            <div>
+                <strong class="stat__value" id="stat-mostrando">{totalMascotas}</strong>
+                <span class="stat__label">Mostrando ahora</span>
+            </div>
+        </article>
+    </section>
+
+    {! ====================== Listado ====================== !}
+    <section class="panel list" aria-label="Mascotas y propietarios">
+
+        <div class="search">
+            <svg class="i search__icon"><use href="#i-search"/></svg>
+            <input id="buscador" type="search" placeholder="Buscar por mascota o propietario…"
+                   autocomplete="off" aria-label="Buscar por mascota o propietario">
+            <button type="button" class="search__clear" id="buscador-limpiar" aria-label="Borrar búsqueda" hidden>
+                <svg class="i"><use href="#i-x"/></svg>
+            </button>
+        </div>
+
+        <div class="chips" id="chips" role="group" aria-label="Filtrar por tipo de mascota">
+            <button type="button" class="chip is-active" data-tipo="">
+                <svg class="i"><use href="#i-paw"/></svg> Todas
+            </button>
+        </div>
+
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Mascota</th>
+                    <th>Tipo</th>
+                    <th>Propietario</th>
+                    <th>Contacto</th>
+                    <th class="th-action">Historial</th>
+                </tr>
+                </thead>
+                <tbody id="cuerpoTabla">
+                {#for f in filas}
+                    <tr data-busqueda="{f.busqueda}" data-tipo="{f.tipo}">
+                        <td data-label="Mascota">
+                            <div class="pet">
+                                <div class="avatar" data-seed="{f.mascota}"><svg class="i"><use href="#i-paw"/></svg></div>
+                                <div class="pet__info">
+                                    <p class="pet__name">{f.mascota}</p>
+                                    <p class="pet__breed">{f.raza}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td data-label="Tipo"><span class="tag fmt-enum">{f.tipo}</span></td>
+                        <td data-label="Propietario"><span class="owner">{f.propietario}</span></td>
+                        <td data-label="Contacto">
+                            <p class="contact"><svg class="i i--sm"><use href="#i-phone"/></svg>{f.celular}</p>
+                            <p class="contact"><svg class="i i--sm"><use href="#i-mail"/></svg>{f.correo}</p>
+                        </td>
+                        <td data-label="Historial" class="td-action">
+                            <a class="btn-pdf" href="/admin/reportes/mascotas/{f.id}/historial.pdf" download
+                               aria-label="Descargar historial de {f.mascota} en PDF">
+                                <svg class="i"><use href="#i-download"/></svg> Descargar PDF
+                            </a>
+                        </td>
+                    </tr>
+                {/for}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty" id="sin-resultados" hidden>
+            <svg class="i"><use href="#i-search"/></svg>
+            <p><strong>No encontramos mascotas</strong></p>
+            <p>Prueba con otro nombre o cambia el tipo de mascota.</p>
+        </div>
+
+        <footer class="list__foot">
+            <span class="pill-label pill-label--soft">
+                <svg class="i"><use href="#i-shield"/></svg>
+                Información clínica confidencial
+            </span>
+            <span class="summary" id="resumen" aria-live="polite">{totalMascotas} mascotas</span>
+        </footer>
+    </section>
+</main>
+
+<script src="/js/admin/admin-sidebar.js"></script>
+<script src="/js/admin/admin-reportes.js" defer></script>
+</body>
+</html>

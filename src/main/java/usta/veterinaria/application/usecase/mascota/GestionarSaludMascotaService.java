@@ -39,9 +39,19 @@ public class GestionarSaludMascotaService implements GestionarSaludMascotaUseCas
     public Vacunacion registrarVacunacion(Long mascotaId, String nombreVacuna, LocalDate fechaAplicacion,
                                           LocalDate fechaRefuerzo, String numeroLote, Integer numeroDosis,
                                           String observaciones) {
+        return guardarVacunacion(null, mascotaId, nombreVacuna, fechaAplicacion, fechaRefuerzo, numeroLote,
+                numeroDosis, observaciones);
+    }
+
+    @Override
+    @Transactional
+    public Vacunacion guardarVacunacion(Long id, Long mascotaId, String nombreVacuna, LocalDate fechaAplicacion,
+                                        LocalDate fechaRefuerzo, String numeroLote, Integer numeroDosis,
+                                        String observaciones) {
         Mascota mascota = mascotas.buscarPorId(mascotaId);
 
         Vacunacion vacunacion = Vacunacion.builder()
+                .id(id)
                 .mascota(mascota)
                 .nombreVacuna(nombreVacuna)
                 .fechaAplicacion(fechaAplicacion)
@@ -59,9 +69,18 @@ public class GestionarSaludMascotaService implements GestionarSaludMascotaUseCas
     public Desparasitacion registrarDesparasitacion(Long mascotaId, String marca, LocalDate fechaAplicacion,
                                                     TipoDesparasitacion tipo, String numeroLote,
                                                     String observaciones) {
+        return guardarDesparasitacion(null, mascotaId, marca, fechaAplicacion, tipo, numeroLote, observaciones);
+    }
+
+    @Override
+    @Transactional
+    public Desparasitacion guardarDesparasitacion(Long id, Long mascotaId, String marca, LocalDate fechaAplicacion,
+                                                  TipoDesparasitacion tipo, String numeroLote,
+                                                  String observaciones) {
         Mascota mascota = mascotas.buscarPorId(mascotaId);
 
         Desparasitacion desparasitacion = Desparasitacion.builder()
+                .id(id)
                 .mascota(mascota)
                 .marca(marca)
                 .fechaAplicacion(fechaAplicacion)
@@ -71,6 +90,18 @@ public class GestionarSaludMascotaService implements GestionarSaludMascotaUseCas
                 .build();
 
         return desparasitacionRepository.save(saludService.registrarDesparasitacion(desparasitacion));
+    }
+
+    @Override
+    @Transactional
+    public void eliminarVacunacion(Long id) {
+        vacunacionRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void eliminarDesparasitacion(Long id) {
+        desparasitacionRepository.deleteById(id);
     }
 
     @Override

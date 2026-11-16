@@ -14,6 +14,8 @@ import usta.veterinaria.infrastructure.adapter.out.persistence.ia.client.dto.Ope
 import usta.veterinaria.domain.model.mascota.Mascota;
 import usta.veterinaria.domain.model.usuario.DuracionCita;
 
+import java.util.Optional;
+
 @ApplicationScoped
 public class EstimadorDuracionCitaGptAdapter implements EstimadorDuracionCitaPort {
 
@@ -30,17 +32,21 @@ public class EstimadorDuracionCitaGptAdapter implements EstimadorDuracionCitaPor
     OpenAiClient client;
 
     @ConfigProperty(name = "openai.api-key")
-    String apiKey;
+    Optional<String> apiKey;
 
     @ConfigProperty(name = "openai.model")
     String model;
 
     @Override
     public DuracionCita estimar(Mascota mascota) {
-        if (apiKey == null || apiKey.isBlank()) {
+
+        if (apiKey == null || apiKey.isEmpty() || apiKey.get().isBlank()) {
             LOG.warn("OPENAI_API_KEY no configurada; se usa MEDIA por defecto");
             return DuracionCita.MEDIA;
         }
+
+        // Aquí continúa tu lógica de OpenAI
+
         try {
             // AJUSTA los getters a los campos reales de Mascota
             String userPrompt = """

@@ -77,12 +77,29 @@ public class UsuarioResource {
         //         mascota.energia());
         // ============================================================================================
         Usuario usuario = usuarios.registrarCliente(
-                request.nombre(), request.apellido(), request.celular(), request.correo(),
-                mascota.nombre(), mascota.fechaNacimiento(), mascota.tipo(), mascota.raza(),
-                mascota.sexo(), mascota.tamano(), mascota.peso(), mascota.color(), mascota.pelaje(),
-                mascota.observaciones(), mascota.fotoMascota(), mascota.temperamento(),
-                mascota.nivelAgresividad(), mascota.usaBozal(), mascota.fobias(), mascota.sociable(),
-                mascota.energia());
+                request.nombre(),
+                request.apellido(),
+                request.celular(),
+                request.correo(),
+                request.contrasena(), // Nuevo parámetro
+                mascota.nombre(),
+                mascota.fechaNacimiento(),
+                mascota.tipo(),
+                mascota.raza(),
+                mascota.sexo(),
+                mascota.tamano(),
+                mascota.peso(),
+                mascota.color(),
+                mascota.pelaje(),
+                mascota.observaciones(),
+                mascota.fotoMascota(),
+                mascota.temperamento(),
+                mascota.nivelAgresividad(),
+                mascota.usaBozal(),
+                mascota.fobias(),
+                mascota.sociable(),
+                mascota.energia()
+        );
         // ============================================================================================
 
         return Response.status(Response.Status.CREATED).entity(UsuarioRestMapper.toResponse(usuario)).build();
@@ -107,9 +124,12 @@ public class UsuarioResource {
         //         request.contrasena());
         // ============================================================================================
         Usuario usuario = usuarios.registrarAdministrador(
-                request.nombre(), request.apellido(), request.celular(), request.correo());
-        // ============================================================================================
-
+                request.nombre(),
+                request.apellido(),
+                request.celular(),
+                request.correo(),
+                request.contrasena()
+        );
         return Response.status(Response.Status.CREATED).entity(UsuarioRestMapper.toResponse(usuario)).build();
     }
 

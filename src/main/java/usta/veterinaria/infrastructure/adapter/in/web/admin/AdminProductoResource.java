@@ -19,7 +19,7 @@ import usta.veterinaria.application.port.in.admin.GestionarProductosUseCase;
 import usta.veterinaria.domain.model.admin.CategoriaProducto;
 import usta.veterinaria.domain.model.admin.Producto;
 import usta.veterinaria.domain.model.admin.TipoProducto;
-import usta.veterinaria.infrastructure.adapter.in.web.ImagenProductoStorage;
+import usta.veterinaria.infrastructure.adapter.in.web.ImagenStorage;
 
 import java.util.Comparator;
 import java.util.List;
@@ -47,7 +47,7 @@ public class AdminProductoResource {
     GestionarProductosUseCase productos;
 
     @Inject
-    ImagenProductoStorage imagenes;
+    ImagenStorage imagenes;
 
     // ---------------------------------------------------------------- Página
 

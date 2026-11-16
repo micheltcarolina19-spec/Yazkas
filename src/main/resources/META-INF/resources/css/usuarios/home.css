@@ -1,0 +1,1114 @@
+/* ==========================================================
+   YAZKAS · Home (index)
+   Prefijo hm- para no chocar con Bootstrap ni con el navbar (pc-).
+   Usa las mismas variables de color del navbar (--pc-*).
+   ========================================================== */
+
+:root {
+    --hm-navy: var(--pc-navy, #0b3a63);
+    --hm-navy-700: var(--pc-navy-700, #0a2f52);
+    --hm-ink: var(--pc-ink, #0f2d4a);
+    --hm-sky: var(--pc-sky, #2f95e0);
+    --hm-sky-600: var(--pc-sky-600, #1f7fc8);
+    --hm-sky-100: var(--pc-sky-100, #e6f3fe);
+    --hm-sky-200: var(--pc-sky-200, #cfe7fa);
+    --hm-sky-script: #4fb3f5;
+    --hm-muted: #4a6683;
+    --hm-pink: #ff8fb1;
+    --hm-red: #e5394f;
+    --hm-yellow: #ffd76a;
+    --hm-white: #ffffff;
+    --hm-card: rgba(255, 255, 255, .86);
+    --hm-border: rgba(47, 149, 224, .16);
+    --hm-shadow: 0 18px 50px -22px rgba(11, 58, 99, .35);
+    --hm-shadow-sm: 0 10px 30px -18px rgba(11, 58, 99, .4);
+    --hm-radius: 28px;
+    --hm-radius-sm: 18px;
+    --hm-ease: var(--pc-ease, cubic-bezier(.22, .8, .3, 1));
+    --hm-font: var(--pc-font, "Poppins", "Segoe UI", system-ui, sans-serif);
+    --hm-script: "Caveat", "Segoe Script", cursive;
+    /* Espacio entre secciones: amplio para que el home no se vea cargado */
+    --hm-section-gap: clamp(88px, 11vw, 150px);
+    /* Huellita en SVG para máscaras y patrones de fondo */
+    --hm-paw-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cellipse cx='24' cy='31' rx='10.5' ry='8.5'/%3E%3Cellipse cx='9.5' cy='22' rx='4.2' ry='5.6' transform='rotate(-18 9.5 22)'/%3E%3Cellipse cx='18' cy='12.5' rx='4.4' ry='6' transform='rotate(-6 18 12.5)'/%3E%3Cellipse cx='30' cy='12.5' rx='4.4' ry='6' transform='rotate(6 30 12.5)'/%3E%3Cellipse cx='38.5' cy='22' rx='4.2' ry='5.6' transform='rotate(18 38.5 22)'/%3E%3C/svg%3E");
+    --hm-paw-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cg fill='%232f95e0'%3E%3Cg transform='translate(18 20) rotate(-18 14 14) scale(.6)'%3E%3Cellipse cx='24' cy='31' rx='10.5' ry='8.5'/%3E%3Cellipse cx='9.5' cy='22' rx='4.2' ry='5.6'/%3E%3Cellipse cx='18' cy='12.5' rx='4.4' ry='6'/%3E%3Cellipse cx='30' cy='12.5' rx='4.4' ry='6'/%3E%3Cellipse cx='38.5' cy='22' rx='4.2' ry='5.6'/%3E%3C/g%3E%3Cg transform='translate(112 104) rotate(22 14 14) scale(.48)'%3E%3Cellipse cx='24' cy='31' rx='10.5' ry='8.5'/%3E%3Cellipse cx='9.5' cy='22' rx='4.2' ry='5.6'/%3E%3Cellipse cx='18' cy='12.5' rx='4.4' ry='6'/%3E%3Cellipse cx='30' cy='12.5' rx='4.4' ry='6'/%3E%3Cellipse cx='38.5' cy='22' rx='4.2' ry='5.6'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ---------- Base ---------- */
+.hm-body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--hm-font);
+    color: var(--hm-ink);
+    background:
+        radial-gradient(1200px 600px at 85% -10%, #bfe2ff 0%, transparent 60%),
+        radial-gradient(900px 500px at -10% 30%, #e1f1ff 0%, transparent 60%),
+        linear-gradient(180deg, #d8eeff 0%, #eef7ff 45%, #f6fbff 100%);
+    overflow-x: hidden;
+}
+
+.hm-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* El home no depende de Bootstrap para medir los anchos */
+.hm-main, .hm-main *, .hm-main *::before, .hm-main *::after,
+.hm-footer, .hm-footer *, .hm-footer *::before, .hm-footer *::after,
+.hm-modal, .hm-modal * { box-sizing: border-box; }
+
+/* Los adornos que sobresalen nunca generan scroll horizontal */
+.hm-hero, .hm-footer { overflow-x: clip; }
+
+/* El atributo hidden siempre gana sobre los estilos de botones y bloques */
+.hm-main [hidden], .hm-footer [hidden] { display: none !important; }
+
+.hm-main { padding-bottom: var(--hm-section-gap); }
+
+.hm-container {
+    width: min(1180px, 100% - 2rem);
+    margin-inline: auto;
+}
+
+.hm-section { margin-top: var(--hm-section-gap); scroll-margin-top: 110px; }
+.hm-section--tight { margin-top: clamp(56px, 7vw, 96px); }
+
+/* ---------- Iconos ---------- */
+.hm-ico {
+    width: 1.1em;
+    height: 1.1em;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: -0.15em;
+}
+.hm-ico--fill { fill: currentColor; stroke: none; }
+.hm-ico--lg { width: 1.7em; height: 1.7em; }
+.hm-ico--flip { transform: scaleX(-1); }
+
+/* ---------- Tipografía ---------- */
+.hm-h2 {
+    margin: .9rem 0 1rem;
+    font-size: clamp(1.75rem, 1.2rem + 1.8vw, 2.55rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    color: var(--hm-navy);
+}
+.hm-h2--light { color: var(--hm-white); }
+.hm-h3 { margin: .3rem 0 .5rem; font-size: 1.35rem; font-weight: 700; color: var(--hm-navy); }
+.hm-muted { margin: 0; color: var(--hm-muted); line-height: 1.65; }
+
+.hm-script {
+    font-family: var(--hm-script);
+    font-weight: 700;
+    font-size: 1.22em;
+    line-height: .9;
+    color: var(--hm-sky-script);
+    position: relative;
+    white-space: nowrap;
+}
+.hm-script::after {
+    content: "";
+    position: absolute;
+    left: 4%;
+    right: 2%;
+    bottom: -.08em;
+    height: .14em;
+    border-radius: 99px;
+    background: linear-gradient(90deg, rgba(79, 179, 245, .55), rgba(79, 179, 245, 0));
+}
+.hm-script--light { color: var(--hm-yellow); }
+.hm-script--light::after { background: linear-gradient(90deg, rgba(255, 215, 106, .7), rgba(255, 215, 106, 0)); }
+
+.hm-heart-red { color: var(--hm-red); width: .85em; height: .85em; vertical-align: -0.05em; }
+
+.hm-pill,
+.hm-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .38rem .9rem;
+    border-radius: 99px;
+    font-size: .74rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--hm-sky-600);
+    background: var(--hm-white);
+    border: 1px solid var(--hm-sky-200);
+    box-shadow: 0 6px 16px -10px rgba(31, 127, 200, .6);
+}
+.hm-tag--light {
+    color: var(--hm-white);
+    background: rgba(255, 255, 255, .16);
+    border-color: rgba(255, 255, 255, .35);
+    box-shadow: none;
+}
+
+/* ---------- Botones ---------- */
+.hm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    padding: .9rem 1.45rem;
+    border: 0;
+    border-radius: 99px;
+    font: 600 .98rem/1 var(--hm-font);
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .25s var(--hm-ease), box-shadow .25s var(--hm-ease), background-color .25s;
+}
+.hm-btn:hover { transform: translateY(-2px); }
+.hm-btn:focus-visible { outline: 3px solid var(--hm-sky); outline-offset: 3px; }
+.hm-btn[disabled] { opacity: .45; cursor: not-allowed; transform: none; }
+.hm-btn--sm { padding: .72rem 1.15rem; font-size: .9rem; }
+
+.hm-btn--primary {
+    color: var(--hm-white);
+    background: var(--hm-navy);
+    box-shadow: 0 12px 24px -12px rgba(11, 58, 99, .8);
+}
+.hm-btn--primary:hover { color: var(--hm-white); background: var(--hm-navy-700); }
+
+.hm-btn--ghost {
+    color: var(--hm-navy);
+    background: rgba(255, 255, 255, .7);
+    border: 1.5px solid var(--hm-navy);
+    padding-right: .5rem;
+}
+.hm-btn--ghost:hover { color: var(--hm-navy); background: var(--hm-white); }
+.hm-btn__round {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: var(--hm-white);
+    background: var(--hm-navy);
+}
+
+.hm-btn--white { color: var(--hm-navy); background: var(--hm-white); box-shadow: 0 14px 28px -14px rgba(0, 0, 0, .45); }
+.hm-btn--white:hover { color: var(--hm-navy); }
+.hm-btn--sky { color: var(--hm-white); background: linear-gradient(90deg, #45b0f2, var(--hm-sky-600)); }
+.hm-btn--sky:hover { color: var(--hm-white); box-shadow: 0 12px 24px -12px rgba(31, 127, 200, .9); }
+.hm-btn--soft { color: var(--hm-navy); background: var(--hm-sky-100); }
+
+/* ==========================================================
+   1. HERO
+   ========================================================== */
+/* El texto va en el centro y las mascotas lo rodean (imagen PerritosAlrededor).
+   El hueco libre de la imagen va del 23 % al 77 % del ancho y del 0 % al 60 % del alto:
+   el contenido se mide con unidades del contenedor (cqi) para que siempre quepa ahí. */
+.hm-hero {
+    position: relative;
+    padding-top: clamp(20px, 3vw, 40px);
+    text-align: center;
+    isolation: isolate;
+}
+.hm-hero__stage {
+    position: relative;
+    display: grid;
+    width: min(1600px, 100%);
+    margin-inline: auto;
+    container-type: inline-size;
+}
+.hm-hero__frame,
+.hm-hero__content { grid-area: 1 / 1; }
+
+.hm-hero__frame { position: relative; z-index: 0; pointer-events: none; }
+.hm-hero__frame::before {
+    /* Luz blanca suave detrás del texto */
+    content: "";
+    position: absolute;
+    left: 22%;
+    right: 22%;
+    top: 2%;
+    height: 62%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, .7), rgba(255, 255, 255, 0) 70%);
+}
+.hm-hero__frame img {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    /* Bordes suaves: los lados y la parte de abajo se funden con el fondo azul */
+    -webkit-mask-image:
+        linear-gradient(90deg, transparent 0, #000 3%, #000 97%, transparent 100%),
+        linear-gradient(180deg, #000 90%, transparent 100%);
+    -webkit-mask-composite: source-in;
+            mask-image:
+        linear-gradient(90deg, transparent 0, #000 3%, #000 97%, transparent 100%),
+        linear-gradient(180deg, #000 90%, transparent 100%);
+            mask-composite: intersect;
+    animation: hm-rise .9s var(--hm-ease) both .1s;
+}
+
+.hm-hero__content {
+    position: relative;
+    z-index: 2;
+    align-self: start;
+    justify-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 52cqi;
+    padding-top: 4cqi;
+}
+.hm-hero__title {
+    margin: 0 auto 1.2rem;
+    font-size: clamp(2rem, 3.9cqi, 4.1rem);
+    font-weight: 800;
+    line-height: 1.06;
+    letter-spacing: -.03em;
+    color: var(--hm-navy);
+    text-wrap: balance;
+}
+.hm-hero__lead {
+    max-width: 34rem;
+    margin: 0 auto;
+    font-size: clamp(.95rem, 1.2cqi, 1.15rem);
+    line-height: 1.65;
+    color: var(--hm-muted);
+    text-wrap: balance;
+}
+.hm-hero__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .9rem; margin-top: clamp(1.2rem, 2cqi, 2rem); }
+
+/* ==========================================================
+   2. CONFIANZA
+   ========================================================== */
+.hm-trust {
+    display: grid;
+    grid-template-columns: .9fr 1.1fr;
+    align-items: center;
+    gap: clamp(2rem, 4vw, 3.5rem);
+    padding: clamp(2rem, 4vw, 3rem);
+    border-radius: var(--hm-radius);
+    background: var(--hm-card);
+    border: 1px solid var(--hm-border);
+    box-shadow: var(--hm-shadow);
+    backdrop-filter: blur(10px);
+}
+.hm-trust__text .hm-h2 { font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.2rem); }
+.hm-trust__list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.hm-trust__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .45rem;
+    padding: 1.4rem 1rem;
+    text-align: center;
+    border-radius: var(--hm-radius-sm);
+    background: linear-gradient(180deg, var(--hm-sky-100), rgba(230, 243, 254, .3));
+    transition: transform .3s var(--hm-ease);
+}
+.hm-trust__item:hover { transform: translateY(-4px); }
+.hm-trust__item strong { font-size: .95rem; color: var(--hm-navy); }
+.hm-trust__item span:last-child { font-size: .82rem; line-height: 1.45; color: var(--hm-muted); }
+.hm-trust__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: .3rem;
+    border-radius: 18px;
+    font-size: 1.6rem;
+    color: var(--hm-sky-600);
+    background: var(--hm-white);
+    box-shadow: var(--hm-shadow-sm);
+}
+
+/* ==========================================================
+   3. SERVICIOS
+   ========================================================== */
+.hm-services {
+    display: grid;
+    grid-template-columns: .75fr 2.25fr;
+    align-items: start;
+    gap: clamp(2rem, 4vw, 3.5rem);
+}
+.hm-services__intro { position: sticky; top: 120px; padding-top: 1rem; }
+.hm-services__cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem; }
+
+.hm-card {
+    border-radius: var(--hm-radius);
+    background: var(--hm-card);
+    border: 1px solid var(--hm-border);
+    box-shadow: var(--hm-shadow);
+    overflow: hidden;
+    transition: transform .35s var(--hm-ease), box-shadow .35s var(--hm-ease);
+}
+.hm-card:hover { transform: translateY(-6px); box-shadow: 0 26px 60px -24px rgba(11, 58, 99, .45); }
+
+.hm-service { display: flex; flex-direction: column; }
+.hm-service__body { display: flex; flex: 1; flex-direction: column; gap: .4rem; padding: 1.4rem 1.5rem 1.6rem; }
+.hm-service__num {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    margin-top: -2.8rem;
+    border-radius: 50%;
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--hm-white);
+    background: var(--hm-navy);
+    border: 4px solid var(--hm-white);
+    position: relative;
+}
+.hm-checks { display: grid; gap: .45rem; margin: .8rem 0 1.4rem; padding: 0; list-style: none; font-size: .88rem; }
+.hm-checks li { display: flex; align-items: center; gap: .5rem; color: var(--hm-ink); }
+.hm-checks .hm-ico {
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: .2rem;
+    border-radius: 50%;
+    color: var(--hm-white);
+    background: var(--hm-sky);
+    stroke-width: 3;
+}
+.hm-service .hm-btn { margin-top: auto; align-self: flex-start; }
+
+/* ==========================================================
+   4. AGENDA TU CITA (protagonista, centrada, decoración pastel)
+   ========================================================== */
+.hm-agenda {
+    position: relative;
+    padding: clamp(4.5rem, 8vw, 7rem) 0;
+    background:
+        radial-gradient(520px 320px at 12% 20%, rgba(255, 255, 255, .9), transparent 70%),
+        radial-gradient(520px 340px at 88% 80%, rgba(255, 214, 230, .45), transparent 70%),
+        linear-gradient(180deg, #e3f2ff 0%, #d2eaff 50%, #e6f4ff 100%);
+    isolation: isolate;
+    overflow: hidden;
+    /* Bordes difuminados: la sección se funde con el fondo de la página */
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 90px, #000 calc(100% - 90px), transparent 100%);
+            mask-image: linear-gradient(180deg, transparent 0, #000 90px, #000 calc(100% - 90px), transparent 100%);
+}
+
+/* Decoración: camino punteado, huellitas, corazones y destellos */
+.hm-agenda__deco { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.hm-agenda__trail {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: min(1100px, 120%);
+    height: 420px;
+    border: 3px dashed rgba(47, 149, 224, .22);
+    border-color: rgba(47, 149, 224, .22) transparent transparent transparent;
+    border-radius: 50%;
+    transform: translateX(-50%);
+}
+.hm-float { position: absolute; fill: #9fd2fb; opacity: .75; animation: hm-float 7s ease-in-out infinite; }
+.hm-float--1 { width: 64px; height: 64px; top: 18%; left: 8%; transform: rotate(-20deg); }
+.hm-float--2 { width: 90px; height: 40px; bottom: 22%; left: 6%; fill: #bfe2ff; animation-delay: -2s; }
+.hm-float--3 { width: 34px; height: 34px; top: 26%; right: 12%; fill: #ffb3c9; animation-delay: -1s; }
+.hm-float--4 { width: 30px; height: 30px; top: 14%; right: 24%; fill: #7cc6ff; animation: hm-twinkle 2.6s ease-in-out infinite; }
+.hm-float--5 { width: 52px; height: 52px; bottom: 16%; right: 7%; transform: rotate(25deg); animation-delay: -3s; }
+.hm-float--6 { width: 24px; height: 24px; bottom: 34%; left: 18%; fill: #ffc4d6; animation-delay: -4s; }
+.hm-float--7 { width: 24px; height: 24px; bottom: 12%; left: 30%; fill: #7cc6ff; animation: hm-twinkle 3.4s ease-in-out infinite; }
+.hm-float--8 { width: 38px; height: 38px; top: 52%; right: 20%; fill: #cfe7fa; transform: rotate(-12deg); animation-delay: -5s; }
+
+.hm-agenda__inner { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.hm-agenda__head { max-width: 40rem; }
+.hm-agenda__title { font-size: clamp(2rem, 1.3rem + 2.4vw, 3rem); }
+.hm-agenda__highlight { margin: 0 0 .6rem; font-size: 1.15rem; font-weight: 600; color: var(--hm-sky-600); }
+.hm-agenda__lead { max-width: 32rem; margin-inline: auto; }
+
+.hm-agenda__facts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .8rem 1rem;
+    margin: 2.4rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+.hm-agenda__facts li {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .55rem 1rem .55rem .55rem;
+    border-radius: 99px;
+    font-size: .88rem;
+    color: var(--hm-navy);
+    background: rgba(255, 255, 255, .8);
+    box-shadow: 0 8px 20px -14px rgba(11, 58, 99, .5);
+}
+.hm-agenda__facts .hm-ico {
+    width: 1.9rem;
+    height: 1.9rem;
+    padding: .4rem;
+    border-radius: 50%;
+    color: var(--hm-sky-600);
+    background: var(--hm-sky-100);
+}
+
+/* Tarjeta del widget: centrada y con un halo suave */
+.hm-booking {
+    position: relative;
+    width: min(100%, 640px);
+    margin-top: 3rem;
+    padding: 2.6rem 2.2rem 1.9rem;
+    border-radius: 32px;
+    text-align: left;
+    color: var(--hm-ink);
+    background: var(--hm-white);
+    box-shadow:
+        0 0 0 10px rgba(255, 255, 255, .55),
+        0 0 0 22px rgba(191, 226, 255, .35),
+        0 40px 70px -30px rgba(11, 58, 99, .45);
+}
+.hm-booking__ribbon {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 1.4rem;
+    color: var(--hm-white);
+    background: linear-gradient(135deg, var(--hm-pink), #ff6f9a);
+    box-shadow: 0 10px 20px -8px rgba(255, 111, 154, .9);
+    transform: translateX(-50%);
+}
+
+.hm-steps { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0; padding: 0; list-style: none; }
+.hm-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .4rem;
+    width: 100%;
+    padding: .2rem;
+    border: 0;
+    font: 500 .8rem var(--hm-font);
+    color: var(--hm-muted);
+    background: none;
+    cursor: pointer;
+}
+.hm-step:focus-visible { outline: 3px solid var(--hm-sky); outline-offset: 2px; border-radius: 12px; }
+.hm-step__dot {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    font-weight: 700;
+    color: var(--hm-sky-600);
+    background: var(--hm-sky-100);
+    border: 2px solid var(--hm-sky-200);
+    transition: all .3s var(--hm-ease);
+}
+.hm-step.is-active .hm-step__dot,
+.hm-step.is-done .hm-step__dot { color: var(--hm-white); background: var(--hm-sky-600); border-color: var(--hm-sky-600); }
+.hm-step.is-active { color: var(--hm-navy); font-weight: 700; }
+.hm-step.is-active .hm-step__dot { box-shadow: 0 0 0 6px rgba(47, 149, 224, .18); }
+
+.hm-steps__bar { height: 6px; margin: 1.1rem .6rem 0; border-radius: 99px; background: var(--hm-sky-100); overflow: hidden; }
+.hm-steps__bar span {
+    display: block;
+    width: 25%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #45b0f2, var(--hm-sky-600));
+    transition: width .45s var(--hm-ease);
+}
+
+.hm-panes { min-height: 215px; margin-top: 1.5rem; }
+.hm-pane { animation: hm-fade .4s var(--hm-ease); }
+.hm-pane__title { margin: 0 0 .35rem; font-size: 1.1rem; font-weight: 700; color: var(--hm-navy); }
+.hm-pane__note { margin-top: 1rem; font-size: .85rem; }
+
+.hm-pets, .hm-chips, .hm-slots, .hm-durations { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1rem; }
+.hm-pet, .hm-chip, .hm-slot {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .6rem 1rem;
+    border-radius: 14px;
+    font-size: .88rem;
+    font-weight: 500;
+    color: var(--hm-navy);
+    background: var(--hm-sky-100);
+    border: 1.5px solid transparent;
+}
+.hm-pet.is-on, .hm-slot.is-on { color: var(--hm-white); background: var(--hm-sky-600); }
+.hm-pet--add { width: 100%; justify-content: center; color: var(--hm-sky-600); background: transparent; border: 1.5px dashed var(--hm-sky-200); text-decoration: none; transition: background-color .2s, border-color .2s; }
+.hm-pet--add:hover { color: var(--hm-sky-600); background: var(--hm-sky-100); border-color: var(--hm-sky); }
+.hm-slot.is-off { color: #9bb0c4; text-decoration: line-through; background: #f1f5f9; }
+.hm-duration {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 90px;
+    padding: .6rem .8rem;
+    border-radius: 14px;
+    font-size: .78rem;
+    color: var(--hm-muted);
+}
+.hm-duration strong { font-size: .95rem; color: var(--hm-navy); }
+.hm-duration--baja { background: #e6f9ef; }
+.hm-duration--media { background: #fff6dc; }
+.hm-duration--alta { background: #ffe8ef; }
+.hm-confirm {
+    display: flex;
+    gap: .7rem;
+    margin-top: 1.1rem;
+    padding: 1rem;
+    border-radius: 16px;
+    font-size: .88rem;
+    line-height: 1.5;
+    color: var(--hm-navy);
+    background: linear-gradient(135deg, #fff0f5, var(--hm-sky-100));
+}
+.hm-confirm .hm-ico { color: var(--hm-pink); width: 1.4rem; height: 1.4rem; }
+
+.hm-booking__actions { display: flex; justify-content: space-between; gap: .8rem; margin-top: 1.4rem; }
+.hm-booking__actions .hm-btn--sky { flex: 1; }
+
+/* ==========================================================
+   5. CATÁLOGO
+   ========================================================== */
+.hm-shop {
+    display: grid;
+    grid-template-columns: .8fr 2.2fr;
+    align-items: center;
+    gap: clamp(2rem, 4vw, 3.5rem);
+}
+.hm-shop__note {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 1.4rem 0 0;
+    padding: .6rem 1rem;
+    border-radius: 14px;
+    font-size: .88rem;
+    font-weight: 500;
+    color: var(--hm-navy);
+    background: var(--hm-white);
+    box-shadow: var(--hm-shadow-sm);
+}
+.hm-shop__note .hm-ico { color: var(--hm-sky-600); }
+.hm-shop__rail { position: relative; min-width: 0; }
+
+.hm-products {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 2 * 1.5rem) / 3);
+    gap: 1.5rem;
+    padding: .6rem .3rem 1.8rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+}
+.hm-products::-webkit-scrollbar { display: none; }
+
+.hm-product {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 420px;
+    border-radius: 26px;
+    background: var(--hm-white);
+    border: 1px solid var(--hm-border);
+    box-shadow: var(--hm-shadow-sm);
+    overflow: hidden;
+    scroll-snap-align: start;
+    transition: transform .35s var(--hm-ease), box-shadow .35s var(--hm-ease);
+}
+.hm-product:hover { transform: translateY(-6px); box-shadow: 0 24px 50px -24px rgba(11, 58, 99, .45); }
+/* Las fotos de producto suelen venir con fondo blanco: se muestran completas sobre blanco */
+.hm-product__img {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 250px;
+    padding: 1.2rem;
+    overflow: hidden;
+    background: var(--hm-white);
+    border-bottom: 1px solid var(--hm-sky-100);
+}
+.hm-product__img::after {
+    /* Huellita pequeña en la esquina, como sello de la marca */
+    content: "";
+    position: absolute;
+    right: 14px;
+    bottom: 12px;
+    width: 22px;
+    height: 22px;
+    background: var(--hm-sky-200);
+    -webkit-mask: var(--hm-paw-mask) center / contain no-repeat;
+            mask: var(--hm-paw-mask) center / contain no-repeat;
+    opacity: .7;
+}
+.hm-product__img img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transition: transform .5s var(--hm-ease);
+}
+.hm-product:hover .hm-product__img img { transform: scale(1.04); }
+.hm-product__img--empty { background: linear-gradient(180deg, var(--hm-sky-100), #f7fbff); }
+.hm-product__img .hm-ico { width: 56px; height: 56px; color: var(--hm-sky); opacity: .6; }
+.hm-product__chip {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 1;
+    padding: .3rem .7rem;
+    border-radius: 99px;
+    font-size: .66rem;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--hm-sky-600);
+    background: rgba(230, 243, 254, .92);
+    backdrop-filter: blur(4px);
+}
+.hm-product__body { display: flex; flex: 1; flex-direction: column; gap: .35rem; padding: 1.1rem 1.25rem 1.25rem; }
+.hm-product__cat { font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--hm-sky-600); }
+.hm-product__name { margin: 0; font-size: 1.04rem; font-weight: 700; line-height: 1.3; color: var(--hm-navy); }
+.hm-product__brand { font-size: .82rem; font-weight: 500; color: var(--hm-sky-600); }
+.hm-product__desc {
+    margin: .2rem 0 0;
+    font-size: .84rem;
+    line-height: 1.55;
+    color: var(--hm-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.hm-product__stock {
+    align-self: flex-start;
+    margin-top: auto;
+    padding: .3rem .7rem;
+    border-radius: 99px;
+    font-size: .74rem;
+    font-weight: 600;
+    color: #138a52;
+    background: #e6f9ef;
+}
+.hm-product__stock.is-out { color: #a8530e; background: #fff3e2; }
+.hm-product__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; margin-top: auto; padding-top: .9rem; }
+.hm-product__foot .hm-product__stock { margin-top: 0; }
+.hm-product__more {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    padding: .35rem .2rem;
+    border: 0;
+    font: 600 .8rem var(--hm-font);
+    color: var(--hm-sky-600);
+    background: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.hm-product__more:hover { color: var(--hm-navy); }
+.hm-product__more:focus-visible { outline: 3px solid var(--hm-sky); outline-offset: 2px; border-radius: 8px; }
+.hm-product__more .hm-ico { width: .95em; height: .95em; transition: transform .25s var(--hm-ease); }
+.hm-product__more:hover .hm-ico { transform: translateX(3px); }
+
+/* ---------- Ventana "Ver detalles" (sin precio) ---------- */
+.hm-modal {
+    width: min(92vw, 760px);
+    max-height: 90vh;
+    padding: 0;
+    border: 0;
+    border-radius: 28px;
+    color: var(--hm-ink);
+    background: var(--hm-white);
+    box-shadow: 0 40px 90px -30px rgba(11, 58, 99, .6);
+    overflow: auto;
+    font-family: var(--hm-font);
+}
+.hm-modal[open] { display: grid; grid-template-columns: 1fr 1.15fr; animation: hm-pop .35s var(--hm-ease); }
+.hm-modal::backdrop { background: rgba(11, 58, 99, .45); backdrop-filter: blur(4px); }
+.hm-modal__close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    color: var(--hm-navy);
+    background: var(--hm-sky-100);
+    cursor: pointer;
+}
+.hm-modal__close:hover { background: var(--hm-sky-200); }
+.hm-modal__close:focus-visible { outline: 3px solid var(--hm-sky); outline-offset: 2px; }
+.hm-modal__img {
+    display: grid;
+    place-items: center;
+    min-height: 280px;
+    padding: 2rem;
+    background: linear-gradient(160deg, var(--hm-sky-100), #f7fbff);
+}
+.hm-modal__img img { max-width: 100%; max-height: 320px; object-fit: contain; }
+.hm-modal__img .hm-ico { width: 84px; height: 84px; color: var(--hm-sky); opacity: .55; }
+.hm-modal__body { display: flex; flex-direction: column; gap: .5rem; padding: 2.4rem 2rem 2rem; }
+.hm-modal__title { margin: 0; padding-right: 2.5rem; font-size: 1.45rem; font-weight: 700; line-height: 1.25; color: var(--hm-navy); }
+.hm-modal__brand { margin: 0; font-weight: 500; color: var(--hm-muted); }
+.hm-modal__brand:empty { display: none; }
+.hm-modal__data { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin: .8rem 0 0; }
+.hm-modal__data div { padding: .7rem .9rem; border-radius: 14px; background: var(--hm-sky-100); }
+.hm-modal__data dt { font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--hm-muted); }
+.hm-modal__data dd { margin: .15rem 0 0; font-weight: 600; color: var(--hm-navy); }
+.hm-modal__note {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 1rem 0 0;
+    padding: .8rem 1rem;
+    border-radius: 14px;
+    font-size: .88rem;
+    color: var(--hm-navy);
+    background: linear-gradient(135deg, #fff0f5, var(--hm-sky-100));
+}
+.hm-modal__note .hm-ico { color: var(--hm-sky-600); }
+
+.hm-product--skeleton {
+    background: linear-gradient(100deg, #eef6fe 30%, #f9fcff 50%, #eef6fe 70%) 0 0 / 200% 100%;
+    animation: hm-shimmer 1.4s linear infinite;
+}
+
+.hm-shop__state {
+    padding: 2.2rem;
+    border-radius: 24px;
+    text-align: center;
+    color: var(--hm-muted);
+    background: var(--hm-card);
+    border: 1px dashed var(--hm-sky-200);
+}
+.hm-shop__arrows { display: flex; justify-content: flex-end; gap: .6rem; }
+.hm-arrow {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 0;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    color: var(--hm-navy);
+    background: var(--hm-white);
+    box-shadow: var(--hm-shadow-sm);
+    cursor: pointer;
+    transition: transform .25s var(--hm-ease), opacity .25s;
+}
+.hm-arrow:hover { transform: scale(1.08); }
+.hm-arrow:disabled { opacity: .35; cursor: default; transform: none; }
+.hm-arrow:focus-visible { outline: 3px solid var(--hm-sky); outline-offset: 2px; }
+
+/* ==========================================================
+   PIE DE PÁGINA
+   ========================================================== */
+.hm-footer { position: relative; color: rgba(255, 255, 255, .85); background: var(--hm-navy); }
+.hm-footer__wave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -60px;
+    height: 61px;
+    background: var(--hm-navy);
+    -webkit-mask: radial-gradient(120% 120px at 50% 120px, #000 98%, transparent 100%);
+            mask: radial-gradient(120% 120px at 50% 120px, #000 98%, transparent 100%);
+}
+.hm-footer__grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    gap: 2.5rem;
+    padding: 3.5rem 0 2.5rem;
+}
+.hm-footer__logo { display: inline-flex; align-items: center; gap: .75rem; color: var(--hm-white); text-decoration: none; }
+.hm-footer__logo img { width: 52px; height: 52px; object-fit: contain; border-radius: 14px; background: var(--hm-white); padding: 4px; }
+.hm-footer__logo strong { display: block; font-size: 1.4rem; letter-spacing: .04em; }
+.hm-footer__logo small { display: block; font-size: .78rem; opacity: .8; }
+.hm-footer__brand p { max-width: 16rem; margin: 1.1rem 0 0; line-height: 1.6; }
+.hm-footer__col h3 { margin: .3rem 0 1rem; font-size: 1rem; font-weight: 600; color: var(--hm-white); }
+.hm-footer__col ul { display: grid; gap: .55rem; margin: 0; padding: 0; list-style: none; }
+.hm-footer__col a:not(.hm-btn) { color: rgba(255, 255, 255, .78); text-decoration: none; font-size: .92rem; transition: color .2s; }
+.hm-footer__col a:not(.hm-btn):hover { color: var(--hm-white); }
+.hm-footer__hours { display: flex; gap: .7rem; margin: 0 0 1.3rem; font-size: .92rem; line-height: 1.6; }
+.hm-footer__hours .hm-ico { width: 1.4rem; height: 1.4rem; margin-top: .15rem; color: #7cc6ff; }
+.hm-footer__hours strong { color: var(--hm-white); }
+.hm-footer__copy {
+    margin: 0;
+    padding: 1.2rem 1rem 1.6rem;
+    text-align: center;
+    font-size: .82rem;
+    border-top: 1px solid rgba(255, 255, 255, .12);
+}
+
+/* ==========================================================
+   MASCOTAS Y DECORACIÓN (huellitas, brillos, burbujas)
+   Las fotos de mascotas son PNG transparentes y pequeños:
+   se muestran cerca de su tamaño real para que no se pixelen.
+   ========================================================== */
+
+/* ---------- Hero: brillos en las esquinas ---------- */
+.hm-hero__deco { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.hm-sparkle { position: absolute; fill: var(--hm-white); filter: drop-shadow(0 0 6px rgba(255, 255, 255, .9)); animation: hm-twinkle 3s ease-in-out infinite; }
+.hm-sparkle--1 { width: 34px; height: 34px; top: 9%; left: 9%; }
+.hm-sparkle--2 { width: 22px; height: 22px; top: 6%; right: 13%; fill: var(--hm-yellow); animation-delay: -1s; }
+.hm-sparkle--3 { width: 16px; height: 16px; top: 34%; left: 15%; fill: #7cc6ff; animation-delay: -2s; }
+.hm-sparkle--4 { width: 26px; height: 26px; top: 30%; right: 9%; animation-delay: -.5s; }
+
+/* ---------- Camino de huellitas ---------- */
+.hm-paw-trail { display: flex; gap: 1.6rem; pointer-events: none; }
+.hm-paw-trail svg { width: 26px; height: 26px; fill: var(--hm-sky-200); }
+.hm-paw-trail svg:nth-child(odd) { transform: translateY(-10px) rotate(-12deg); }
+.hm-paw-trail svg:nth-child(even) { transform: translateY(8px) rotate(12deg); }
+.hm-paw-trail--diag { flex-direction: column; gap: .9rem; align-items: flex-start; }
+.hm-paw-trail--diag svg { width: 24px; height: 24px; }
+.hm-paw-trail--diag svg:nth-child(odd) { transform: translateX(0) rotate(160deg); }
+.hm-paw-trail--diag svg:nth-child(even) { transform: translateX(26px) rotate(200deg); }
+
+/* ---------- Fondo de huellitas para bloques con poco contenido ---------- */
+.hm-pattern { position: relative; isolation: isolate; }
+.hm-pattern::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--hm-paw-pattern) 0 0 / 180px 180px;
+    opacity: .06;
+    -webkit-mask-image: linear-gradient(115deg, transparent 10%, #000 60%);
+            mask-image: linear-gradient(115deg, transparent 10%, #000 60%);
+    pointer-events: none;
+}
+.hm-pattern--soft::before { opacity: .07; -webkit-mask-image: radial-gradient(closest-side, #000, transparent); mask-image: radial-gradient(closest-side, #000, transparent); inset: -8% 0; }
+.hm-sparkle--trust { width: 28px; height: 28px; top: -12px; right: 8%; fill: var(--hm-yellow); }
+
+/* ---------- Servicios: escenario de cada mascota ---------- */
+.hm-services__deco { position: relative; display: flex; align-items: flex-end; gap: 2rem; margin-top: 2.6rem; }
+.hm-services__bone { width: 70px; height: 32px; fill: var(--hm-sky-200); transform: rotate(-18deg); animation: hm-float 7s ease-in-out infinite; }
+
+.hm-stage {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 230px;
+    overflow: hidden;
+    border-radius: 0 0 46% 0 / 0 0 20% 0;
+}
+.hm-stage::before {
+    /* Círculo de luz detrás de la mascota */
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -22%;
+    width: 78%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0) 68%);
+    transform: translateX(-50%);
+}
+.hm-stage--bano { background: linear-gradient(160deg, #e3f4ff 0%, #b9e0fd 100%); }
+.hm-stage--peluqueria { background: linear-gradient(160deg, #fff3e3 0%, #ffd9e4 100%); }
+.hm-stage--vacunacion { background: linear-gradient(160deg, #e7f9f0 0%, #c4ecdc 100%); }
+
+.hm-stage__pet {
+    position: relative;
+    z-index: 1;
+    height: 88%;
+    width: auto;
+    max-width: 80%;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 14px rgba(11, 58, 99, .22));
+    transition: transform .5s var(--hm-ease);
+}
+.hm-service:hover .hm-stage__pet { transform: translateY(-6px) rotate(-2deg); }
+
+.hm-stage__bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .95), rgba(255, 255, 255, .3) 45%, rgba(159, 210, 251, .3) 70%);
+    border: 1px solid rgba(255, 255, 255, .9);
+    animation: hm-float 6s ease-in-out infinite;
+}
+.hm-stage__bubble:nth-child(1) { width: 38px; height: 38px; top: 14%; left: 12%; }
+.hm-stage__bubble:nth-child(2) { width: 22px; height: 22px; top: 36%; right: 14%; animation-delay: -2s; }
+.hm-stage__bubble:nth-child(3) { width: 14px; height: 14px; top: 12%; right: 30%; animation-delay: -4s; }
+
+.hm-stage__spark { position: absolute; width: 22px; height: 22px; fill: #ffb347; animation: hm-twinkle 2.8s ease-in-out infinite; }
+.hm-stage__spark:nth-of-type(1) { top: 16%; left: 14%; }
+.hm-stage__spark:nth-of-type(2) { top: 34%; right: 16%; width: 16px; height: 16px; fill: var(--hm-pink); animation-delay: -1.2s; }
+
+.hm-stage__heart { position: absolute; fill: #5cc79a; opacity: .75; animation: hm-float 6s ease-in-out infinite; }
+.hm-stage__heart:nth-of-type(1) { width: 24px; height: 24px; top: 16%; left: 14%; }
+.hm-stage__heart:nth-of-type(2) { width: 16px; height: 16px; top: 38%; right: 16%; animation-delay: -3s; }
+
+.hm-stage__tool {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    padding: 9px;
+    border-radius: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    background: rgba(255, 255, 255, .75);
+}
+.hm-stage--peluqueria .hm-stage__tool { color: #e3793a; }
+.hm-stage--vacunacion .hm-stage__tool { color: #2f9e6e; }
+
+/* ---------- Catálogo: golden descansando ---------- */
+.hm-shop__intro { padding: 1rem 0; }
+.hm-shop__pet { position: relative; width: 250px; max-width: 100%; margin-top: 2.4rem; }
+.hm-shop__pet img { position: relative; z-index: 1; display: block; width: 100%; height: auto; filter: drop-shadow(0 16px 16px rgba(11, 58, 99, .2)); }
+.hm-shop__cushion {
+    position: absolute;
+    left: 4%;
+    right: -6%;
+    bottom: -14px;
+    height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #cfe7fa, #a9d5f7);
+    box-shadow: inset 0 6px 10px rgba(255, 255, 255, .7), 0 14px 22px -14px rgba(11, 58, 99, .5);
+}
+.hm-sparkle--shop-a { width: 26px; height: 26px; top: -6%; right: 4%; fill: var(--hm-yellow); z-index: 2; }
+.hm-sparkle--shop-b { width: 16px; height: 16px; top: 18%; left: -4%; fill: var(--hm-sky); z-index: 2; animation-delay: -1.5s; }
+
+/* ---------- Pie de página: perritos asomados y huellitas ---------- */
+.hm-footer { isolation: isolate; }
+.hm-footer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--hm-paw-pattern) 0 0 / 200px 200px;
+    opacity: .05;
+    filter: brightness(3);
+    pointer-events: none;
+}
+.hm-footer__pets {
+    position: absolute;
+    right: max(4%, calc((100% - 1180px) / 2));
+    top: -200px;
+    z-index: 1;
+    width: 230px;
+    height: auto;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .18));
+}
+/* La onda tapa la parte de abajo de los perritos para que parezca que se asoman */
+.hm-footer__wave { z-index: 2; }
+
+@keyframes hm-spin { to { rotate: 360deg; } }
+
+/* ==========================================================
+   ANIMACIONES
+   ========================================================== */
+@keyframes hm-morph {
+    0%   { border-radius: 46% 54% 42% 58% / 52% 44% 56% 48%; }
+    100% { border-radius: 56% 44% 54% 46% / 44% 56% 46% 54%; }
+}
+@keyframes hm-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+@keyframes hm-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -14px; } }
+@keyframes hm-twinkle { 0%, 100% { opacity: 1; scale: 1; } 50% { opacity: .35; scale: .7; } }
+@keyframes hm-fade { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+@keyframes hm-shimmer { to { background-position: -200% 0; } }
+@keyframes hm-rise { from { opacity: 0; translate: 0 40px; } to { opacity: 1; translate: 0 0; } }
+@keyframes hm-pop { from { opacity: 0; scale: .96; } to { opacity: 1; scale: 1; } }
+
+/* Aparición suave al hacer scroll (home.js agrega .is-visible) */
+.hm-reveal { opacity: 0; translate: 0 26px; transition: opacity .7s var(--hm-ease), translate .7s var(--hm-ease); }
+.hm-reveal.is-visible { opacity: 1; translate: 0 0; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .hm-reveal { opacity: 1; translate: 0 0; }
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+@media (max-width: 1100px) {
+    .hm-services { grid-template-columns: 1fr; }
+    .hm-services__intro { position: static; max-width: 40rem; }
+    .hm-products { grid-auto-columns: calc((100% - 1.5rem) / 2); }
+}
+
+@media (max-width: 900px) {
+    .hm-shop__intro { text-align: center; }
+    .hm-shop__pet { margin-inline: auto; }
+    .hm-services__deco { display: none; }
+
+    .hm-trust { grid-template-columns: 1fr; text-align: center; }
+    .hm-services__cards { grid-template-columns: repeat(2, 1fr); }
+    .hm-shop { grid-template-columns: 1fr; }
+    .hm-footer__grid { grid-template-columns: 1fr 1fr; }
+    .hm-footer__brand { grid-column: 1 / -1; }
+}
+
+/* Tablet: el marco se agranda un poco (los lados se recortan) para que el texto
+   siga cabiendo en el hueco central */
+@media (max-width: 1024px) and (min-width: 641px) {
+    .hm-hero__stage { width: 135%; margin-left: -17.5%; }
+    .hm-hero__content { width: 50cqi; padding-top: 3cqi; }
+    .hm-hero__title { font-size: 4.4cqi; }
+    .hm-hero__lead { font-size: max(.95rem, 1.45cqi); }
+    .hm-hero__frame img {
+        -webkit-mask-image: linear-gradient(180deg, #000 90%, transparent 100%);
+                mask-image: linear-gradient(180deg, #000 90%, transparent 100%);
+    }
+}
+
+/* Celular: el texto va arriba y el marco sube por detrás de los botones,
+   así la fila de mascotas los rodea sin dejar espacio vacío */
+@media (max-width: 640px) {
+    .hm-hero { padding-top: 36px; }
+    .hm-hero__stage { display: flex; flex-direction: column; container-type: normal; }
+    .hm-hero__content { order: 1; width: min(100% - 2rem, 30rem); margin-inline: auto; padding-top: 0; }
+    .hm-hero__title { font-size: clamp(2.1rem, 1.2rem + 4.6vw, 2.6rem); }
+    .hm-hero__lead { font-size: 1rem; max-width: 24rem; }
+    .hm-hero__frame { order: 2; width: 150%; margin: -10.5rem 0 0 -25%; }
+    .hm-hero__frame::before { display: none; }
+    .hm-hero__frame img {
+        -webkit-mask-image: linear-gradient(180deg, #000 88%, transparent 100%);
+                mask-image: linear-gradient(180deg, #000 88%, transparent 100%);
+    }
+}
+
+@media (max-width: 640px) {
+    :root { --hm-section-gap: 84px; }
+    .hm-hero__deco { display: none; }
+    .hm-trust__list { grid-template-columns: 1fr; }
+    .hm-services__cards { grid-template-columns: 1fr; }
+    .hm-booking { margin-top: 2.4rem; box-shadow: 0 0 0 8px rgba(255, 255, 255, .55), 0 30px 60px -30px rgba(11, 58, 99, .45); }
+    .hm-agenda__facts li { width: 100%; justify-content: flex-start; text-align: left; }
+    .hm-booking { padding: 2rem 1.1rem 1.3rem; }
+    .hm-step__label { font-size: .7rem; }
+    .hm-products { grid-auto-columns: 82%; }
+    .hm-footer__pets { width: 170px; top: -150px; }
+    .hm-stage { height: 210px; }
+    .hm-footer__grid { grid-template-columns: 1fr; gap: 2rem; }
+    .hm-modal[open] { grid-template-columns: 1fr; }
+    .hm-modal__img { min-height: 200px; }
+    .hm-modal__data { grid-template-columns: 1fr; }
+}

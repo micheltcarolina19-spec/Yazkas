@@ -14,7 +14,7 @@ import java.util.List;
 public interface GestionarUsuariosUseCase {
 
     // Registra un cliente junto con su primera mascota (un cliente siempre debe tener al menos una)
-    Usuario registrarCliente(String nombre, String apellido, String celular, String correo,
+    Usuario registrarCliente(String nombre, String apellido, String celular, String correo, String constrasena,
                              String nombreMascota, LocalDate fechaNacimientoMascota, TipoMascota tipoMascota,
                              String razaMascota, Sexo sexoMascota, Float tamanoMascota, Float pesoMascota,
                              String colorMascota, Pelaje pelajeMascota, String observacionesMascota,
@@ -23,8 +23,13 @@ public interface GestionarUsuariosUseCase {
                              String fobiasMascota, Boolean sociableMascota, Energia energiaMascota);
 
     // Registra un administrador (no necesita mascotas)
-    Usuario registrarAdministrador(String nombre, String apellido, String celular, String correo);
-
+    Usuario registrarAdministrador(
+            String nombre,
+            String apellido,
+            String celular,
+            String correo,
+            String contrasena
+    );
     // Actualiza los datos personales; el rol no se puede cambiar
     Usuario actualizar(Long id, String nombre, String apellido, String celular, String correo);
 

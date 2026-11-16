@@ -11,6 +11,9 @@ public interface VacunacionRepository {
 
     List<Vacunacion> findByMascotaId(Long mascotaId);
 
+    // Borra una vacunación (la usa la bitácora cuando se desmarca "Vacunación")
+    void deleteById(Long id);
+
     // Vacunas que tienen fecha de refuerzo (para los recordatorios)
     List<Vacunacion> findConRefuerzo();
 }

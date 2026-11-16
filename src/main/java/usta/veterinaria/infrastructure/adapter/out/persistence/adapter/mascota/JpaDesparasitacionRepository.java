@@ -34,4 +34,13 @@ public class JpaDesparasitacionRepository implements DesparasitacionRepository {
                 .map(DesparasitacionEntityMapper::toDomain)
                 .toList();
     }
+
+    // Borra la desparasitación por su id (si no existe no hace nada)
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        if (id != null) {
+            repository.deleteById(id);
+        }
+    }
 }
