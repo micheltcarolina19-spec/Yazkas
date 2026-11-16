@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agregar Mascota · Yazkas Peluquería Canina</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="/css/usuarios/Navbar.css" rel="stylesheet">
+    <link href="/css/usuarios/nav-cliente.css" rel="stylesheet">
+    <link href="/css/usuarios/agregar-mascota.css" rel="stylesheet">
+</head>
+<body class="am-body">
+
+{! Navbar del área de cliente con "Mis Mascotas" resaltado !}
+{#include usuarios/components/nav-cliente active='mascotas' /}
+
+{! Iconos propios de esta vista (prefijo am-) !}
+<svg class="pc-sprite" aria-hidden="true" focusable="false">
+    <symbol id="am-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+    <symbol id="am-camera" viewBox="0 0 24 24">
+        <path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.4-2h4.6l1.4 2h1.8A2.5 2.5 0 0 1 20 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5v-9Z"/>
+        <circle cx="12" cy="13" r="3.6"/>
+    </symbol>
+    <symbol id="am-image" viewBox="0 0 24 24">
+        <rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/>
+        <circle cx="9" cy="9.5" r="1.6"/><path d="m4 17 5-5 4 4 2.5-2.5L20 18"/>
+    </symbol>
+    <symbol id="am-male" viewBox="0 0 24 24"><circle cx="10" cy="14" r="5.5"/><path d="M14 10l6-6M15 4h5v5"/></symbol>
+    <symbol id="am-female" viewBox="0 0 24 24"><circle cx="12" cy="9" r="5.5"/><path d="M12 14.5V21M9 18h6"/></symbol>
+    <symbol id="am-comb" viewBox="0 0 24 24">
+        <path d="M4 15.5 15.5 4 20 8.5 8.5 20 4 15.5Z"/><path d="m8 12 1.5 1.5M10.5 9.5 12 11M13 7l1.5 1.5"/>
+    </symbol>
+    <symbol id="am-ruler" viewBox="0 0 24 24">
+        <rect x="2.5" y="8" width="19" height="8" rx="1.8" transform="rotate(-35 12 12)"/>
+        <path d="m8.2 9.5 1.3 1.8M11 7.6l1.3 1.8M13.8 5.6l1.3 1.8"/>
+    </symbol>
+    <symbol id="am-palette" viewBox="0 0 24 24">
+        <path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.1 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7h2A4.5 4.5 0 0 0 20.5 10c0-3.6-3.8-6.5-8.5-6.5Z"/>
+        <circle cx="7.5" cy="11.5" r="1.1"/><circle cx="10" cy="7.6" r="1.1"/><circle cx="14.5" cy="7.6" r="1.1"/>
+    </symbol>
+    <symbol id="am-shield" viewBox="0 0 24 24">
+        <path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.3 7.5 9.5 4.3-1.2 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="M12 8v4.5M12 15.6v.1"/>
+    </symbol>
+    <symbol id="am-bolt" viewBox="0 0 24 24"><path d="M13 2.5 4.5 13.5H11l-1 8 8.5-11H12l1-8Z"/></symbol>
+    <symbol id="am-weight" viewBox="0 0 24 24">
+        <path d="M6.2 8h11.6a1.5 1.5 0 0 1 1.5 1.3l1.2 9.5a1.5 1.5 0 0 1-1.5 1.7H5a1.5 1.5 0 0 1-1.5-1.7l1.2-9.5A1.5 1.5 0 0 1 6.2 8Z"/>
+        <circle cx="12" cy="5.5" r="2.3"/><path d="M12 12v4M10 14h4"/>
+    </symbol>
+    <symbol id="am-doc" viewBox="0 0 24 24">
+        <rect x="4.5" y="3" width="15" height="18" rx="2.5"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4.5"/>
+    </symbol>
+    <symbol id="am-chat" viewBox="0 0 24 24">
+        <path d="M4 12a8 8 0 1 1 3.4 6.5L4 19.5l1-3.3A7.9 7.9 0 0 1 4 12Z"/><path d="M8.5 12h.1M12 12h.1M15.5 12h.1"/>
+    </symbol>
+    <symbol id="am-refresh" viewBox="0 0 24 24">
+        <path d="M20 11a8 8 0 0 0-14.3-4.5L4 8.5"/><path d="M4 4v4.5h4.5"/>
+        <path d="M4 13a8 8 0 0 0 14.3 4.5L20 15.5"/><path d="M20 20v-4.5h-4.5"/>
+    </symbol>
+    <symbol id="am-calendar" viewBox="0 0 24 24">
+        <rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>
+    </symbol>
+    <symbol id="am-smile" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5"/><path d="M8.5 14.2a4.2 4.2 0 0 0 7 0M9 9.8h.1M15 9.8h.1"/>
+    </symbol>
+    <symbol id="am-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="am-i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.4v.1"/></symbol>
+    <symbol id="am-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg>
+
+<main class="am" id="contenido">
+
+    {! Huellas decorativas de fondo !}
+    <svg class="am-deco am-deco--top" aria-hidden="true"><use href="#i-paw-solid"/></svg>
+    <svg class="am-deco am-deco--bottom" aria-hidden="true"><use href="#i-paw-solid"/></svg>
+
+    <a class="am-back" href="/mascotas" data-am-back>
+        <svg class="am-ico" aria-hidden="true"><use href="#am-arrow-left"/></svg>
+        Volver
+    </a>
+
+    <header class="am-hero">
+        <svg class="am-hero__paw" aria-hidden="true"><use href="#i-paw"/></svg>
+        <div>
+            <h1 class="am-hero__title">Agregar Mascota</h1>
+            <p class="am-hero__sub">Completa la información de tu mascota para registrarla en Yazkas.</p>
+        </div>
+    </header>
+
+    {! Mensajes del formulario (éxito / error del servidor) !}
+    <div class="am-alert" id="am-alert" role="alert" hidden>
+        <svg class="am-ico am-alert__ico" aria-hidden="true"><use href="#am-i-alert"/></svg>
+        <div class="am-alert__body"></div>
+        <button class="am-alert__close" type="button" aria-label="Cerrar mensaje">
+            <svg class="am-ico" aria-hidden="true"><use href="#am-close"/></svg>
+        </button>
+    </div>
+
+    <form class="am-form" id="am-form" novalidate
+          data-usuario-id="{usuarioId ?: ''}"
+          data-redirect="/mascotas">
+
+        <div class="am-layout">
+
+            {! ===== Columna izquierda: foto ===== !}
+            <section class="am-card am-photo" aria-labelledby="am-photo-title">
+                <h2 class="am-card__title" id="am-photo-title">
+                    <span class="am-card__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-camera"/></svg></span>
+                    Foto de la Mascota
+                </h2>
+
+                <label class="am-drop" id="am-drop" for="am-foto">
+                    <span class="am-drop__empty">
+                        <svg class="am-drop__paw" aria-hidden="true"><use href="#i-paw-solid"/></svg>
+                        <strong>Arrastra una foto aquí</strong>
+                        <span>o selecciona un archivo</span>
+                    </span>
+                    <img class="am-drop__preview" id="am-preview" alt="Vista previa de la foto de la mascota" hidden>
+                </label>
+                <input class="am-visually-hidden" type="file" id="am-foto" name="foto"
+                       accept="image/jpeg,image/png,image/webp">
+
+                <div class="am-photo__actions">
+                    <label class="am-btn am-btn--outline am-btn--sm" for="am-foto">
+                        <svg class="am-ico" aria-hidden="true"><use href="#am-image"/></svg>
+                        <span id="am-foto-label">Seleccionar imagen</span>
+                    </label>
+                    <button class="am-link" type="button" id="am-foto-quitar" hidden>Quitar foto</button>
+                </div>
+                <p class="am-hint" id="am-foto-hint">JPG, PNG o WebP · máximo 2 MB</p>
+                <p class="am-error" id="am-foto-error" role="alert" hidden></p>
+            </section>
+
+            {! ===== Columna derecha: datos ===== !}
+            <div class="am-stack">
+
+                {! ---- Información básica ---- !}
+                <section class="am-card" aria-labelledby="am-basica-title">
+                    <h2 class="am-card__title" id="am-basica-title">
+                        <span class="am-card__ico"><svg class="am-ico am-ico--solid" aria-hidden="true"><use href="#i-paw-solid"/></svg></span>
+                        Información Básica
+                    </h2>
+
+                    <div class="am-grid am-grid--2">
+                        <div class="am-field">
+                            <label class="am-label" for="am-nombre">Nombre de la Mascota <span class="am-req" aria-hidden="true">*</span></label>
+                            <div class="am-control">
+                                <span class="am-control__ico"><svg class="am-ico am-ico--solid" aria-hidden="true"><use href="#i-paw-solid"/></svg></span>
+                                <input id="am-nombre" name="nombre" type="text" placeholder="Ej. Max"
+                                       maxlength="255" autocomplete="off" required
+                                       data-msg="Escribe el nombre de tu mascota">
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </div>
+
+                        <fieldset class="am-field">
+                            <legend class="am-label">Tipo de Mascota <span class="am-req" aria-hidden="true">*</span></legend>
+                            <div class="am-segment" role="radiogroup">
+                                <label class="am-segment__opt">
+                                    <input type="radio" name="tipo" value="PERRO" checked required
+                                           data-msg="Selecciona el tipo de mascota">
+                                    <span><span class="am-segment__emoji" aria-hidden="true">🐶</span>Perro</span>
+                                </label>
+                                <label class="am-segment__opt">
+                                    <input type="radio" name="tipo" value="GATO">
+                                    <span><span class="am-segment__emoji" aria-hidden="true">🐱</span>Gato</span>
+                                </label>
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </fieldset>
+
+                        <div class="am-field">
+                            <label class="am-label" for="am-sexo">Sexo <span class="am-req" aria-hidden="true">*</span></label>
+                            <div class="am-control am-control--select">
+                                <span class="am-control__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-male" id="am-sexo-ico"/></svg></span>
+                                <select id="am-sexo" name="sexo" required data-msg="Selecciona el sexo">
+                                    <option value="" disabled selected>Selecciona</option>
+                                    <option value="MACHO">Macho</option>
+                                    <option value="HEMBRA">Hembra</option>
+                                </select>
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </div>
+
+                        <div class="am-field">
+                            <label class="am-label" for="am-raza">Raza <span class="am-req" aria-hidden="true">*</span></label>
+                            <div class="am-control">
+                                <span class="am-control__ico"><svg class="am-ico am-ico--solid" aria-hidden="true"><use href="#i-paw-solid"/></svg></span>
+                                <input id="am-raza" name="raza" type="text" placeholder="Ej. Golden Retriever"
+                                       maxlength="255" autocomplete="off" required
+                                       data-msg="Escribe la raza (si no tiene, escribe Criollo)">
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </div>
+
+                        <div class="am-field">
+                            <label class="am-label" for="am-fecha">Fecha de Nacimiento <span class="am-req" aria-hidden="true">*</span></label>
+                            <div class="am-control">
+                                <span class="am-control__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-calendar"/></svg></span>
+                                {! El máximo (hoy) lo pone agregar-mascota.js !}
+                                <input id="am-fecha" name="fechaNacimiento" type="date" min="1990-01-01" required
+                                       data-msg="Selecciona la fecha de nacimiento">
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </div>
+
+                        <div class="am-field">
+                            <label class="am-label" for="am-color">Color <span class="am-req" aria-hidden="true">*</span></label>
+                            <div class="am-control">
+                                <span class="am-control__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-palette"/></svg></span>
+                                <input id="am-color" name="color" type="text" placeholder="Ej. Dorado"
+                                       maxlength="255" autocomplete="off" required
+                                       data-msg="Escribe el color de tu mascota">
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </div>
+                    </div>
+                </section>
+
+                {! ---- Características ---- !}
+                <section class="am-card" aria-labelledby="am-carac-title">
+                    <h2 class="am-card__title" id="am-carac-title">
+                        <span class="am-card__ico"><svg class="am-ico am-ico--solid" aria-hidden="true"><use href="#i-paw-solid"/></svg></span>
+                        Características
+                    </h2>
+
+                    <div class="am-grid am-grid--3">
+                        <div class="am-field">
+                            <label class="am-label" for="am-pelaje">Pelaje <span class="am-req" aria-hidden="true">*</span></label>
+                            <div class="am-control am-control--select">
+                                <span class="am-control__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-comb"/></svg></span>
+                                <select id="am-pelaje" name="pelaje" required data-msg="Selecciona el tipo de pelaje">
+                                    <option value="" disabled selected>Selecciona</option>
+                                    <option value="CORTO">Corto</option>
+                                    <option value="MEDIO">Medio</option>
+                                    <option value="LARGO">Largo</option>
+                                </select>
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </div>
+
+                        <div class="am-field">
+                            <label class="am-label" for="am-tamano">Tamaño <span class="am-req" aria-hidden="true">*</span></label>
+                            <div class="am-control am-control--select">
+                                <span class="am-control__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-ruler"/></svg></span>
+                                {! El backend guarda el tamaño como número (cm de altura aprox.) !}
+                                <select id="am-tamano" name="tamano" required data-msg="Selecciona el tamaño">
+                                    <option value="" disabled selected>Selecciona</option>
+                                    <option value="25">Pequeño</option>
+                                    <option value="45">Mediano</option>
+                                    <option value="60">Grande</option>
+                                    <option value="75">Gigante</option>
+                                </select>
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </div>
+
+                        <div class="am-field">
+                            <label class="am-label" for="am-peso">Peso <span class="am-req" aria-hidden="true">*</span></label>
+                            <div class="am-control">
+                                <span class="am-control__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-weight"/></svg></span>
+                                <input id="am-peso" name="peso" type="number" inputmode="decimal"
+                                       min="0.1" max="150" step="0.1" placeholder="Ej. 28" required
+                                       data-msg="Escribe el peso de tu mascota">
+                                <span class="am-control__suffix" aria-hidden="true">kg</span>
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </div>
+                    </div>
+                </section>
+
+                {! ---- Comportamiento ---- !}
+                <section class="am-card" aria-labelledby="am-comp-title">
+                    <h2 class="am-card__title" id="am-comp-title">
+                        <span class="am-card__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-smile"/></svg></span>
+                        Comportamiento
+                    </h2>
+
+                    <div class="am-grid am-grid--3">
+                        <div class="am-field">
+                            <label class="am-label" for="am-temperamento">Temperamento <span class="am-req" aria-hidden="true">*</span></label>
+                            <div class="am-control">
+                                <span class="am-control__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-smile"/></svg></span>
+                                <input id="am-temperamento" name="temperamento" type="text" list="am-temperamentos"
+                                       placeholder="Ej. Juguetón" maxlength="255" autocomplete="off" required
+                                       data-msg="Describe el temperamento de tu mascota">
+                                <datalist id="am-temperamentos">
+                                    <option value="Tranquilo"></option>
+                                    <option value="Juguetón"></option>
+                                    <option value="Cariñoso"></option>
+                                    <option value="Tímido"></option>
+                                    <option value="Nervioso"></option>
+                                    <option value="Protector"></option>
+                                    <option value="Independiente"></option>
+                                </datalist>
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </div>
+
+                        <div class="am-field">
+                            <label class="am-label" for="am-agresividad">Nivel de Agresividad <span class="am-req" aria-hidden="true">*</span></label>
+                            <div class="am-control am-control--select">
+                                <span class="am-control__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-shield"/></svg></span>
+                                <select id="am-agresividad" name="nivelAgresividad" required data-msg="Selecciona el nivel de agresividad">
+                                    <option value="" disabled selected>Selecciona</option>
+                                    <option value="BAJA">Baja</option>
+                                    <option value="MEDIA">Media</option>
+                                    <option value="ALTA">Alta</option>
+                                </select>
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </div>
+
+                        <div class="am-field">
+                            <label class="am-label" for="am-energia">Nivel de Energía <span class="am-req" aria-hidden="true">*</span></label>
+                            <div class="am-control am-control--select">
+                                <span class="am-control__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-bolt"/></svg></span>
+                                <select id="am-energia" name="energia" required data-msg="Selecciona el nivel de energía">
+                                    <option value="" disabled selected>Selecciona</option>
+                                    <option value="BAJA">Baja</option>
+                                    <option value="MEDIA">Media</option>
+                                    <option value="ALTA">Alta</option>
+                                </select>
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </div>
+                    </div>
+
+                    <div class="am-grid am-grid--2">
+                        <fieldset class="am-field">
+                            <legend class="am-label">¿Usa Bozal? <span class="am-req" aria-hidden="true">*</span></legend>
+                            <div class="am-segment" role="radiogroup">
+                                <label class="am-segment__opt">
+                                    <input type="radio" name="usaBozal" value="true" required
+                                           data-msg="Indica si tu mascota usa bozal">
+                                    <span>Sí</span>
+                                </label>
+                                <label class="am-segment__opt">
+                                    <input type="radio" name="usaBozal" value="false">
+                                    <span>No</span>
+                                </label>
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </fieldset>
+
+                        <fieldset class="am-field">
+                            <legend class="am-label">¿Es Sociable? <span class="am-req" aria-hidden="true">*</span></legend>
+                            <div class="am-segment" role="radiogroup">
+                                <label class="am-segment__opt">
+                                    <input type="radio" name="sociable" value="true" required
+                                           data-msg="Indica si tu mascota es sociable">
+                                    <span>Sí</span>
+                                </label>
+                                <label class="am-segment__opt">
+                                    <input type="radio" name="sociable" value="false">
+                                    <span>No</span>
+                                </label>
+                            </div>
+                            <p class="am-error" hidden></p>
+                        </fieldset>
+                    </div>
+
+                    <div class="am-grid">
+                        <div class="am-field">
+                            <label class="am-label" for="am-fobias">Fobias <span class="am-optional">(Opcional)</span></label>
+                            <div class="am-control am-control--area">
+                                <span class="am-control__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-i-alert"/></svg></span>
+                                <textarea id="am-fobias" name="fobias" rows="2" maxlength="1000" data-contador="am-fobias-count"
+                                          placeholder="Ej. Ruidos fuertes, el secador, otros perros..."></textarea>
+                            </div>
+                            <p class="am-hint am-hint--right"><span id="am-fobias-count">0</span>/1000</p>
+                        </div>
+                    </div>
+                </section>
+
+                {! ---- Información adicional ---- !}
+                <section class="am-card" aria-labelledby="am-adicional-title">
+                    <h2 class="am-card__title" id="am-adicional-title">
+                        <span class="am-card__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-doc"/></svg></span>
+                        Información Adicional
+                    </h2>
+
+                    <div class="am-field">
+                        <label class="am-label" for="am-observaciones">Observaciones <span class="am-optional">(Opcional)</span></label>
+                        <div class="am-control am-control--area">
+                            <span class="am-control__ico"><svg class="am-ico" aria-hidden="true"><use href="#am-chat"/></svg></span>
+                            <textarea id="am-observaciones" name="observaciones" rows="2" maxlength="1000" data-contador="am-obs-count"
+                                      placeholder="Escribe alguna observación relevante sobre tu mascota..."></textarea>
+                        </div>
+                        <p class="am-hint am-hint--right"><span id="am-obs-count">0</span>/1000</p>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+        {! ===== Acciones ===== !}
+        <div class="am-actions">
+            <button class="am-btn am-btn--outline" type="reset">
+                <svg class="am-ico" aria-hidden="true"><use href="#am-refresh"/></svg>
+                Limpiar Formulario
+            </button>
+            <button class="am-btn am-btn--primary" type="submit" id="am-submit">
+                <svg class="am-ico" aria-hidden="true"><use href="#am-check"/></svg>
+                <span>Guardar Mascota</span>
+            </button>
+        </div>
+    </form>
+</main>
+
+<script src="/js/usuario/Navbar.js"></script>
+<script src="/js/usuario/agregar-mascota.js"></script>
+</body>
+</html>

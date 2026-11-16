@@ -1,0 +1,64 @@
+/* ==========================================================
+   Navbar del área de cliente (complementa Navbar.css)
+   Solo aplica a .pc-nav--cliente: no altera el navbar público.
+   ========================================================== */
+
+/* Iconos visibles en todos los enlaces */
+.pc-nav--cliente .pc-link .pc-ico { display: block; color: var(--pc-navy); }
+.pc-nav--cliente .pc-ico--solid { stroke: none; }
+
+/* Página activa: píldora azul clara rellena */
+.pc-nav--cliente .pc-link[aria-current="page"] {
+    background: linear-gradient(180deg, #e3f2fe, #cfe7fa);
+    border-color: transparent;
+    color: var(--pc-navy);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 6px 14px -8px rgba(47, 149, 224, .55);
+}
+.pc-nav--cliente .pc-link[aria-current="page"] .pc-ico { color: var(--pc-sky-600); }
+
+/* Campana y usuario */
+.pc-actions--cliente { justify-content: flex-start; gap: 1rem; }
+
+.pc-bell {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--pc-navy);
+    cursor: pointer;
+    transition: background .2s;
+}
+.pc-bell .pc-ico { width: 22px; height: 22px; }
+.pc-bell:hover { background: rgba(47, 149, 224, .1); }
+.pc-bell:focus-visible { outline: 3px solid rgba(47, 149, 224, .55); outline-offset: 2px; }
+
+.pc-user { display: inline-flex; align-items: center; gap: .55rem; font-family: var(--pc-font); }
+.pc-user__avatar {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #bfe1fb, #8fc9f4);
+    color: #fff;
+}
+.pc-user__avatar .pc-ico { width: 22px; height: 22px; stroke-width: 2; }
+.pc-user__name { font-size: .9rem; font-weight: 600; color: var(--pc-ink); }
+
+@media (min-width: 901px) {
+    .pc-actions--cliente {
+        padding-left: 1rem;
+        border-left: 1px solid var(--pc-sky-200);
+    }
+    .pc-nav--cliente .pc-links { gap: .15rem; }
+    .pc-nav--cliente .pc-link { padding: .6rem .95rem; }
+}
+
+@media (min-width: 901px) and (max-width: 1100px) {
+    .pc-nav--cliente .pc-link { padding: .55rem .7rem; font-size: .85rem; }
+    .pc-user__name { display: none; }
+}
