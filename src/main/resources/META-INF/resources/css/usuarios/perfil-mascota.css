@@ -1,0 +1,227 @@
+/* ==========================================================
+   Vista "Perfil de Mascota" (área de cliente)
+   Se carga después de agregar-mascota.css y reutiliza su base
+   (am-body, am-hero, am-card, am-btn, am-alert). Prefijo pm-.
+   ========================================================== */
+
+.pm-hero { margin-top: .4rem; }
+
+/* Mensaje informativo (azul) */
+.am-alert.is-info { border-color: #bfdcf5; background: #eef7fe; color: var(--am-title); }
+
+/* ---------- Estado de carga / error ---------- */
+.pm-status {
+    display: flex; flex-direction: column; align-items: center; gap: .8rem;
+    padding: 3.5rem 1rem;
+    text-align: center;
+    background: rgba(255, 255, 255, .85);
+    border-radius: var(--am-radius);
+    box-shadow: var(--am-shadow);
+}
+.pm-status[hidden] { display: none; }
+.pm-status__paw { width: 64px; height: 64px; animation: pm-pulse 1.4s ease-in-out infinite; }
+.pm-status__text { margin: 0; font-weight: 500; color: var(--am-title); }
+.pm-status.is-error .pm-status__paw { animation: none; opacity: .5; }
+@keyframes pm-pulse { 50% { transform: scale(.9); opacity: .6; } }
+
+/* ---------- Layout ---------- */
+.pm-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+}
+.pm-layout[hidden] { display: none; }
+.pm-main { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+
+@media (max-width: 900px) {
+    .pm-photo { aspect-ratio: auto; height: clamp(220px, 50vw, 340px); }
+}
+
+@media (min-width: 901px) {
+    .pm-layout { grid-template-columns: minmax(280px, 350px) minmax(0, 1fr); }
+    .pm-side { position: sticky; top: 104px; }
+}
+
+/* ---------- Columna izquierda ---------- */
+.pm-side { display: flex; flex-direction: column; align-items: center; padding: 1.1rem 1.25rem 1.4rem; }
+
+.pm-photo {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.3 / 1;
+    border-radius: 14px;
+    overflow: hidden;
+    background: linear-gradient(160deg, #eaf5fe, #d3eafc);
+}
+.pm-photo__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pm-photo__img[hidden] { display: none; }
+.pm-photo__empty {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .5rem;
+    color: #a9d4f6;
+}
+.pm-photo__empty[hidden] { display: none; }
+.pm-photo__empty svg { width: 96px; height: 96px; }
+.pm-photo__empty span { font-size: .82rem; font-weight: 500; color: var(--am-muted); }
+
+.pm-photo__edit {
+    position: absolute; top: .65rem; right: .65rem;
+    display: grid; place-items: center;
+    width: 40px; height: 40px;
+    border: 2px solid #fff; border-radius: 50%;
+    background: linear-gradient(180deg, #3aa3ea, var(--am-blue-2));
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 6px 14px -4px rgba(27, 111, 194, .6);
+    transition: transform .2s var(--pc-ease);
+}
+.pm-photo__edit:hover { transform: scale(1.08); }
+.pm-photo__edit .am-ico { width: 18px; height: 18px; }
+
+.pm-name {
+    display: flex; align-items: center; gap: .45rem;
+    margin: .9rem 0 .35rem;
+    font-size: 1.7rem; font-weight: 700; line-height: 1.1;
+    color: var(--am-title);
+    text-align: center;
+    word-break: break-word;
+}
+.pm-name__sex { width: 1.6rem; height: 1.6rem; stroke-width: 2.2; color: var(--am-blue-2); }
+
+.pm-badge {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .25rem .8rem;
+    border-radius: 999px;
+    background: var(--am-soft);
+    color: var(--am-title);
+    font-size: .78rem; font-weight: 500;
+}
+.pm-badge .am-ico { width: 14px; height: 14px; stroke-width: 2.4; color: var(--am-blue-2); }
+
+.pm-side__actions { display: flex; flex-direction: column; gap: .7rem; width: 100%; margin-top: 1.1rem; }
+.pm-btn-block { width: 100%; }
+.pm-btn-two { line-height: 1.2; text-align: center; }
+.am-btn--primary.pm-btn-block { min-height: 54px; }
+.am-btn--outline .am-ico--solid { color: var(--am-blue-2); }
+
+/* ---------- Tarjetas de información ---------- */
+.pm-card { padding: 1rem 1.4rem 1.2rem; }
+.pm-card__title { margin-bottom: .6rem; }
+.pm-card__ico { display: inline-grid; place-items: center; width: 40px; color: var(--am-blue-2); }
+.pm-card__ico .am-ico { width: 28px; height: 28px; }
+
+.pm-circle {
+    display: inline-grid; place-items: center; flex: none;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: var(--am-soft);
+    color: var(--am-blue-2);
+}
+.pm-circle .am-ico { width: 22px; height: 22px; }
+.pm-circle--sm { width: 40px; height: 40px; }
+.pm-ico-bold { stroke-width: 2.3; }
+
+.pm-info {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .55rem 1.5rem;
+}
+@media (min-width: 640px) {
+    .pm-info { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.pm-item {
+    display: grid;
+    grid-template-columns: 46px minmax(70px, auto) minmax(0, 1fr);
+    align-items: center;
+    gap: .9rem;
+    min-height: 46px;
+}
+.pm-k { font-size: .95rem; color: var(--am-title); }
+.pm-v { font-size: .95rem; font-weight: 500; color: var(--am-title); overflow-wrap: anywhere; }
+
+/* Etiqueta y valor en dos líneas ("Tipo de Mascota:", "Nivel de Agresividad:") */
+.pm-item--stack { grid-template-columns: 46px minmax(0, 1fr); grid-template-rows: auto auto; row-gap: 0; }
+.pm-item--stack .pm-circle { grid-row: 1 / 3; }
+.pm-item--stack .pm-k,
+.pm-item--stack .pm-v { grid-column: 2; line-height: 1.25; }
+
+/* Ocupa todo el ancho (fobias, observaciones) y respeta los saltos de línea del texto */
+.pm-item--wide { grid-column: 1 / -1; }
+.pm-v--text { font-weight: 400; white-space: pre-line; }
+
+.pm-sep { grid-column: 1 / -1; width: 100%; margin: .15rem 0; border: 0; border-top: 1px solid var(--am-line); }
+
+/* ---------- Dueño ---------- */
+.pm-owner { display: flex; align-items: center; gap: 1.4rem; }
+.pm-owner__avatar {
+    display: grid; place-items: end center; flex: none;
+    width: 78px; height: 78px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(180deg, #d8ecfc, #bfe0fa);
+    color: var(--am-blue-2);
+}
+.pm-owner__avatar svg { width: 64px; height: 64px; fill: currentColor; transform: translateY(6px); }
+
+.pm-owner__data {
+    flex: 1; min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .8rem;
+    margin: 0;
+}
+.pm-owner__col { display: flex; align-items: flex-start; gap: .8rem; min-width: 0; }
+.pm-owner__col .pm-k { display: block; font-size: .82rem; }
+.pm-owner__col > div { min-width: 0; }
+.pm-owner__col [data-dueno="celular"] { white-space: nowrap; }
+.pm-owner__col .pm-v { display: block; margin-top: .2rem; font-size: .95rem; font-weight: 400; overflow-wrap: break-word; }
+.pm-owner__ico { width: 22px; height: 22px; margin-top: .1rem; color: var(--am-blue-2); }
+
+@media (min-width: 760px) {
+    .pm-owner__data { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr); gap: 0; }
+    .pm-owner__col { padding: .2rem 1.1rem; }
+    .pm-owner__col:first-child { padding-left: 0; }
+    .pm-owner__col + .pm-owner__col { border-left: 1px solid var(--am-line); }
+}
+
+/* ---------- Agregar otra mascota ---------- */
+.pm-add { width: 100%; min-height: 50px; margin-top: .4rem; font-size: .95rem; }
+.pm-add .am-ico { width: 1.35em; height: 1.35em; stroke-width: 2.2; }
+
+/* ---------- Móvil ---------- */
+@media (max-width: 600px) {
+    .pm-card { padding: .9rem 1rem 1rem; }
+    .pm-item { grid-template-columns: 40px minmax(70px, auto) minmax(0, 1fr); gap: .7rem; }
+    .pm-item--stack { grid-template-columns: 40px minmax(0, 1fr); }
+    .pm-circle { width: 40px; height: 40px; }
+    .pm-owner { flex-direction: column; align-items: flex-start; }
+}
+
+/* ---------- Historia clínica imprimible ---------- */
+.pm-print { display: none; }
+
+@media print {
+    @page { margin: 16mm; }
+    body.am-body { background: #fff !important; }
+    .pc-header, .pc-sprite, main.pm { display: none !important; }
+    .pm-print { display: block; font-family: var(--pc-font); color: #10233a; font-size: 11pt; }
+
+    .pm-print h1 { margin: 0; font-size: 18pt; color: #0d2f6e; }
+    .pm-print__sub { margin: .2rem 0 1rem; color: #4d6680; font-size: 10pt; }
+    .pm-print h2 {
+        margin: 1.1rem 0 .4rem; padding-bottom: .25rem;
+        border-bottom: 1.5px solid #2f95e0;
+        font-size: 12pt; color: #0d2f6e;
+    }
+    .pm-print table { width: 100%; border-collapse: collapse; }
+    .pm-print th, .pm-print td { padding: .35rem .5rem; border-bottom: 1px solid #dbe7f2; text-align: left; vertical-align: top; }
+    .pm-print th { width: 38%; font-weight: 600; color: #0d2f6e; }
+    .pm-print__foot { margin-top: 1.4rem; font-size: 9pt; color: #6b8299; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pm-status__paw { animation: none; }
+    .pm-photo__edit { transition: none; }
+}

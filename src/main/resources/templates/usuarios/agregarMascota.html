@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Agregar Mascota · Yazkas Peluquería Canina</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/css/usuarios/Navbar.css" rel="stylesheet">
+    <link href="/css/usuarios/nav-cliente.css" rel="stylesheet">
+    <link href="/css/usuarios/agregar-mascota.css" rel="stylesheet">
+    <link href="/css/usuarios/agregar-mascota-pasos.css" rel="stylesheet">
+</head>
+<body class="am-body">
+
+{! Navbar del área de cliente con "Mis Mascotas" resaltado !}
+{#include usuarios/components/nav-cliente active='mascotas' /}
+
+<main class="amw" id="contenido">
+
+    {! Huellas decorativas de fondo !}
+    <span class="paw paw--1"><svg><use href="#i-paw-solid"/></svg></span>
+    <span class="paw paw--2"><svg><use href="#i-paw-solid"/></svg></span>
+    <span class="paw paw--3"><svg><use href="#i-paw-solid"/></svg></span>
+
+    <section class="card">
+        <header class="top">
+            <div>
+                <h1 id="titulo">Agregar mascota</h1>
+                <p id="subtitulo">Cuéntanos sobre tu peludo para brindarle el mejor cuidado</p>
+            </div>
+            <a class="ghost" href="/mascotas"><i class="bi bi-arrow-left"></i> Volver a mis mascotas</a>
+        </header>
+
+        <ol class="stepper" id="stepper" style="--n:3">
+            <li class="active" data-s="1"><b>1</b><span>Tu mascota</span></li>
+            <li data-s="2"><b>2</b><span>Cuidados especiales</span></li>
+            <li data-s="3"><b>3</b><span>Historial clínico</span></li>
+            <div class="bar"><i id="bar"></i></div>
+        </ol>
+
+        <div class="alert" id="alert" role="alert" hidden><i class="bi bi-exclamation-triangle-fill"></i><span></span></div>
+
+        <form id="form" novalidate autocomplete="off" data-usuario-id="{usuarioId ?: ''}">
+
+            <!-- PASO 1: datos de la mascota -->
+            <div class="step active" data-step="1">
+                <div class="step-head"><i class="bi bi-balloon-heart-fill"></i>
+                    <div><h2>Paso 1. Conoce a tu mascota</h2><p>Registra la información de tu mascota</p></div></div>
+                <div class="grid">
+                    <div class="field"><label for="mNombre">Nombre de la mascota *</label>
+                        <div class="in"><i class="bi bi-tag"></i><input id="mNombre" data-req maxlength="255" placeholder="Ej. Max"></div><small></small></div>
+                    <div class="field"><label for="mFecha">Fecha de nacimiento *</label>
+                        <div class="in"><i class="bi bi-calendar-event"></i><input id="mFecha" data-req type="date"></div><small></small></div>
+
+                    <div class="field"><label>Tipo de mascota *</label>
+                        <div class="seg" id="tipoSeg">
+                            {#for t in tipos}
+                                <label><input type="radio" name="tipo" value="{t}" {#if t_isFirst}checked{/if}><span><i class="bi"></i><em data-pretty>{t}</em></span></label>
+                            {/for}
+                        </div></div>
+                    <div class="field"><label for="mRaza">Raza *</label>
+                        <div class="in"><i class="bi bi-award"></i><input id="mRaza" data-req maxlength="255" list="razas" placeholder="Escribe o elige (si no tiene: Criollo)"></div>
+                        <datalist id="razas"></datalist><small></small></div>
+
+                    <div class="field"><label for="mSexo">Sexo *</label>
+                        <div class="in"><i class="bi bi-gender-ambiguous"></i>
+                            <select id="mSexo" data-req>{#for s in sexos}<option value="{s}" data-pretty>{s}</option>{/for}</select></div><small></small></div>
+                    <div class="field"><label for="mColor">Color *</label>
+                        <div class="in"><i class="bi bi-palette"></i><input id="mColor" data-req maxlength="255" placeholder="Ej. Dorado"></div><small></small></div>
+
+                    <div class="field"><label for="mTamano">Tamaño (cm) *</label>
+                        <div class="in"><i class="bi bi-rulers"></i><input id="mTamano" data-req data-num inputmode="decimal" placeholder="Ej. 45"></div><small></small></div>
+                    <div class="field"><label for="mPeso">Peso (kg) *</label>
+                        <div class="in"><i class="bi bi-speedometer2"></i><input id="mPeso" data-req data-num inputmode="decimal" placeholder="Ej. 12.5"></div><small></small></div>
+
+                    <div class="field full"><label for="mPelaje">Tipo de pelaje *</label>
+                        <div class="in"><i class="bi bi-scissors"></i>
+                            <select id="mPelaje" data-req>{#for p in pelajes}<option value="{p}" data-pretty>{p}</option>{/for}</select></div><small></small></div>
+                </div>
+            </div>
+
+            <!-- PASO 2: cuidados especiales -->
+            <div class="step" data-step="2">
+                <div class="step-head"><i class="bi bi-heart-pulse-fill"></i>
+                    <div><h2>Paso 2. Cuidados especiales</h2><p>Cuéntanos más para brindarle el mejor cuidado</p></div></div>
+                <div class="grid">
+                    <div class="field full"><label><i class="bi bi-emoji-smile"></i> Temperamento (puedes elegir varios)</label>
+                        <div class="chips" id="temp">
+                            <button type="button" class="chip" data-v="Tranquilo"><i class="bi bi-flower1"></i> Tranquilo</button>
+                            <button type="button" class="chip" data-v="Juguetón"><i class="bi bi-balloon"></i> Juguetón</button>
+                            <button type="button" class="chip" data-v="Tímido"><i class="bi bi-cloud"></i> Tímido</button>
+                            <button type="button" class="chip" data-v="Curioso"><i class="bi bi-search"></i> Curioso</button>
+                            <button type="button" class="chip" data-v="Sociable"><i class="bi bi-heart"></i> Sociable</button>
+                        </div></div>
+
+                    <div class="field"><label for="mEnergia"><i class="bi bi-lightning-charge"></i> Nivel de energía *</label>
+                        <div class="in"><i class="bi bi-lightning"></i>
+                            <select id="mEnergia">{#for e in energias}<option value="{e}" data-pretty>{e}</option>{/for}</select></div></div>
+                    <div class="field"><label for="mAgr"><i class="bi bi-shield-exclamation"></i> Nivel de agresividad *</label>
+                        <div class="in"><i class="bi bi-shield"></i>
+                            <select id="mAgr">{#for a in agresividades}<option value="{a}" data-pretty>{a}</option>{/for}</select></div></div>
+
+                    <div class="field switches full">
+                        <label class="switch"><input type="checkbox" id="mSociable" checked><span class="slider"></span><b><i class="bi bi-people"></i> ¿Es sociable?</b><em>Sí</em></label>
+                        <label class="switch"><input type="checkbox" id="mBozal"><span class="slider"></span><b><i class="bi bi-emoji-neutral"></i> ¿Usa bozal?</b><em>No</em></label>
+                        <label class="switch"><input type="checkbox" id="mEspecial"><span class="slider"></span><b><i class="bi bi-bandaid"></i> ¿Requiere cuidados especiales?</b><em>No</em></label>
+                    </div>
+
+                    <div class="field full"><label><i class="bi bi-exclamation-circle"></i> Fobias (opcional)</label>
+                        <div class="chips" id="fobias">
+                            <button type="button" class="chip" data-v="Ruidos fuertes"><i class="bi bi-volume-up"></i> Ruidos fuertes</button>
+                            <button type="button" class="chip" data-v="Otros perros"><i class="bi bi-people"></i> Otros perros</button>
+                            <button type="button" class="chip" data-v="Gatos"><i class="bi bi-emoji-angry"></i> Gatos</button>
+                            <button type="button" class="chip" data-v="Agua"><i class="bi bi-droplet"></i> Agua</button>
+                            <button type="button" class="chip" data-v="Veterinario"><i class="bi bi-hospital"></i> Veterinario</button>
+                        </div>
+                        <div class="in mt"><i class="bi bi-pencil"></i><input id="fobiaOtra" maxlength="200" placeholder="Otra fobia…"></div></div>
+
+                    <div class="field full"><label for="mObs"><i class="bi bi-journal-text"></i> Observaciones adicionales</label>
+                        <textarea id="mObs" rows="3" maxlength="900" placeholder="Escribe aquí alguna observación importante…"></textarea></div>
+
+                    <div class="field full">
+                        <div class="drop" id="drop" tabindex="0">
+                            <input type="file" id="foto" accept="image/jpeg,image/png,image/webp" hidden>
+                            <div class="drop-body" id="dropBody"><i class="bi bi-cloud-arrow-up"></i>
+                                <b>Fotografía de tu mascota</b>
+                                <small>Arrastra una imagen o haz clic para seleccionarla (JPG, PNG, WebP · máx. 5 MB)</small></div>
+                            <div class="preview" id="preview" hidden><img id="prevImg" alt="Vista previa">
+                                <button type="button" id="quitarFoto" aria-label="Quitar foto"><i class="bi bi-x-lg"></i></button>
+                                <span class="up" id="upState"></span></div>
+                        </div></div>
+                </div>
+            </div>
+
+            <!-- PASO 3: historial clínico (opcional) -->
+            <div class="step" data-step="3">
+                <div class="step-head"><i class="bi bi-clipboard2-pulse-fill"></i>
+                    <div><h2>Paso 3. Historial clínico</h2><p>Opcional · puedes completarlo después</p></div></div>
+                <div class="note soft"><i class="bi bi-patch-check-fill"></i>
+                    <div><b>¿Para qué lo pedimos?</b><br>Para elegir productos y técnicas seguras para su piel y su salud.</div></div>
+                <div class="grid">
+                    <div class="field"><label><i class="bi bi-scissors"></i> ¿Está esterilizado?</label>
+                        <div class="seg tri">
+                            <label><input type="radio" name="esterilizacion" value="si"><span>Sí</span></label>
+                            <label><input type="radio" name="esterilizacion" value="no"><span>No</span></label>
+                            <label><input type="radio" name="esterilizacion" value="ns" checked><span>No sé</span></label>
+                        </div></div>
+                    <div class="field"><label><i class="bi bi-bug"></i> ¿Ha tenido pulgas o garrapatas?</label>
+                        <div class="seg tri">
+                            <label><input type="radio" name="presenciaParasitos" value="si"><span>Sí</span></label>
+                            <label><input type="radio" name="presenciaParasitos" value="no"><span>No</span></label>
+                            <label><input type="radio" name="presenciaParasitos" value="ns" checked><span>No sé</span></label>
+                        </div></div>
+
+                    <div class="field full"><label><i class="bi bi-heart-pulse"></i> ¿Tiene antecedentes de salud?</label>
+                        <div class="choice">
+                            <label><input type="radio" name="hc" value="no" checked><span><i class="bi bi-emoji-smile"></i><b>No que yo sepa</b><small>Está sano, puedes finalizar</small></span></label>
+                            <label><input type="radio" name="hc" value="si"><span><i class="bi bi-clipboard2-heart"></i><b>Sí, quiero contarlo</b><small>Alergias, cirugías, condiciones…</small></span></label>
+                        </div></div>
+
+                    <div class="full" id="hcDetalle" hidden>
+                        <details class="acc" open><summary><i class="bi bi-capsule"></i>Alergias<em class="cnt"></em></summary>
+                            <div class="acc-body">
+                                <div><label for="h1">A medicamentos</label><input id="h1" data-h="alergiasMedicamentos" placeholder="Ej. Penicilina"></div>
+                                <div><label for="h2">A cosméticos (shampoo, perfumes)</label><input id="h2" data-h="alergiasCosmeticas" placeholder="Ej. Shampoo con avena"></div>
+                                <div><label for="h3">A alimentos</label><input id="h3" data-h="alergiasAlimenticias" placeholder="Ej. Pollo"></div>
+                            </div></details>
+                        <details class="acc"><summary><i class="bi bi-activity"></i>Salud general<em class="cnt"></em></summary>
+                            <div class="acc-body">
+                                <div><label for="h4">Enfermedades crónicas</label><input id="h4" data-h="enfermedadesCronicas" placeholder="Ej. Diabetes"></div>
+                                <div><label for="h5">Problemas cardíacos</label><input id="h5" data-h="problemasCardiacos" placeholder="Ej. Soplo cardíaco"></div>
+                                <div><label for="h6">Problemas ortopédicos</label><input id="h6" data-h="problemasOrtopedicos" placeholder="Ej. Displasia de cadera"></div>
+                            </div></details>
+                        <details class="acc"><summary><i class="bi bi-droplet"></i>Piel y condición física<em class="cnt"></em></summary>
+                            <div class="acc-body">
+                                <div><label for="h7">Diagnóstico dermatológico</label><input id="h7" data-h="diagnosticoDermatologico" placeholder="Ej. Dermatitis atópica"></div>
+                                <div><label for="h8">Condiciones físicas</label><input id="h8" data-h="condicionesFisicas" placeholder="Ej. Sobrepeso, sordera parcial"></div>
+                            </div></details>
+                        <details class="acc"><summary><i class="bi bi-bandaid"></i>Cirugías y lesiones<em class="cnt"></em></summary>
+                            <div class="acc-body">
+                                <div><label for="h9">Cirugías recientes</label><input id="h9" data-h="cirugiasRecientes" placeholder="Ej. Castración hace 2 meses"></div>
+                                <div><label for="h10">Lesiones</label><input id="h10" data-h="lesiones" placeholder="Ej. Herida en la pata derecha"></div>
+                            </div></details>
+                        <div class="field"><label for="h11"><i class="bi bi-journal-text"></i> Observaciones</label>
+                            <textarea id="h11" data-h="observaciones" rows="3" placeholder="Algo más que debamos saber…"></textarea></div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="actions">
+                <button type="button" class="btn ghost" id="atras" hidden><i class="bi bi-arrow-left"></i> Atrás</button>
+                <button type="button" class="btn ghost" id="omitir" hidden>Omitir y guardar</button>
+                <button type="button" class="btn primary" id="siguiente">Continuar <i class="bi bi-arrow-right"></i></button>
+            </footer>
+        </form>
+
+        <!-- ÉXITO -->
+        <section class="done" id="done" hidden>
+            <i class="bi bi-check-circle-fill big"></i>
+            <h2 id="doneTitulo">¡Mascota registrada!</h2>
+            <p id="doneTexto"></p>
+            <ul class="added" id="added"></ul>
+            <div class="actions center">
+                <button type="button" class="btn ghost" id="otra"><i class="bi bi-plus-circle"></i> Agregar otra mascota</button>
+                <a class="btn primary" id="verPerfil" href="/mascotas">Ver perfil <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </section>
+    </section>
+</main>
+
+<script src="/js/usuario/Navbar.js"></script>
+<script src="/js/usuario/agregar-mascota.js" defer></script>
+</body>
+</html>
