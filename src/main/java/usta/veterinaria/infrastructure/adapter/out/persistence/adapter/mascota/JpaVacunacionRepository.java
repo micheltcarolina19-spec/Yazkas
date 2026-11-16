@@ -57,4 +57,13 @@ public class JpaVacunacionRepository implements VacunacionRepository {
                 .map(VacunacionEntityMapper::toDomain)
                 .toList();
     }
+
+    // Borra la vacunación por su id (si no existe no hace nada)
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        if (id != null) {
+            repository.deleteById(id);
+        }
+    }
 }

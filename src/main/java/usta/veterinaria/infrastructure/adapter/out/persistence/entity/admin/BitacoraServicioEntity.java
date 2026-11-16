@@ -14,7 +14,10 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import usta.veterinaria.domain.model.admin.TipoBano;
+import usta.veterinaria.infrastructure.adapter.out.persistence.entity.mascota.DesparasitacionEntity;
+import usta.veterinaria.infrastructure.adapter.out.persistence.entity.mascota.VacunacionEntity;
 import usta.veterinaria.infrastructure.adapter.out.persistence.entity.usuario.AgendamientoCitaEntity;
+import usta.veterinaria.infrastructure.adapter.out.persistence.entity.usuario.MascotaCitaEntity;
 
 import java.math.BigDecimal;
 
@@ -49,4 +52,20 @@ public class BitacoraServicioEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "agendamiento_cita_id", nullable = false)
     private AgendamientoCitaEntity agendamientoCita;
+
+    // Relación: cada mascota de la cita (mascota_citas) tiene su propia bitácora.
+    // Es opcional para no romper los registros que ya existían antes de este cambio.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mascota_cita_id")
+    private MascotaCitaEntity mascotaCita;
+
+    // Vacuna registrada desde la bitácora (opcional)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vacunacion_id")
+    private VacunacionEntity vacunacion;
+
+    // Desparasitación registrada desde la bitácora (opcional)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "desparasitacion_id")
+    private DesparasitacionEntity desparasitacion;
 }

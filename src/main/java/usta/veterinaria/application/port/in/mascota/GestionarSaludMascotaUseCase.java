@@ -17,6 +17,19 @@ public interface GestionarSaludMascotaUseCase {
     Desparasitacion registrarDesparasitacion(Long mascotaId, String marca, LocalDate fechaAplicacion,
                                              TipoDesparasitacion tipo, String numeroLote, String observaciones);
 
+    // Crea (id null) o actualiza (id existente) una vacunación. Lo usa la bitácora de la cita.
+    Vacunacion guardarVacunacion(Long id, Long mascotaId, String nombreVacuna, LocalDate fechaAplicacion,
+                                 LocalDate fechaRefuerzo, String numeroLote, Integer numeroDosis,
+                                 String observaciones);
+
+    // Crea (id null) o actualiza (id existente) una desparasitación. Lo usa la bitácora de la cita.
+    Desparasitacion guardarDesparasitacion(Long id, Long mascotaId, String marca, LocalDate fechaAplicacion,
+                                           TipoDesparasitacion tipo, String numeroLote, String observaciones);
+
+    void eliminarVacunacion(Long id);
+
+    void eliminarDesparasitacion(Long id);
+
     List<Vacunacion> listarVacunaciones(Long mascotaId);
 
     List<Desparasitacion> listarDesparasitaciones(Long mascotaId);

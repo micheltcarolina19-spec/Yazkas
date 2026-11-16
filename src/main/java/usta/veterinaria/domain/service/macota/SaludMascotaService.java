@@ -58,8 +58,13 @@ public class SaludMascotaService {
         if (desparasitacion.getTipo() == null) {
             throw new BusinessRuleException("Debe indicar el tipo de desparasitación");
         }
+        // La columna numero_lote es obligatoria en la tabla desparasitaciones
+        if (desparasitacion.getNumeroLote() == null || desparasitacion.getNumeroLote().isBlank()) {
+            throw new BusinessRuleException("El número de lote del desparasitante es obligatorio");
+        }
         validarFechaAplicacion(desparasitacion.getFechaAplicacion());
         desparasitacion.setMarca(desparasitacion.getMarca().trim());
+        desparasitacion.setNumeroLote(desparasitacion.getNumeroLote().trim());
         return desparasitacion;
     }
 

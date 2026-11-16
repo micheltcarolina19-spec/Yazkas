@@ -27,7 +27,7 @@
     </header>
 
     {#if ok}<div class="aviso ok" role="status">{ok}</div>{/if}
-    {#if error && !reprogramar && !cancelar}<div class="aviso error" role="alert">{error}</div>{/if}
+    {#if error && !reprogramar && !cancelar && !bitacora}<div class="aviso error" role="alert">{error}</div>{/if}
 
     <div class="citas-toolbar">
         <div class="citas-nav">
@@ -80,7 +80,7 @@
                             <a class="mes-num" href="{c.href}">{c.numero}</a>
                             {#for ch in c.chips}
                                 <a class="mes-chip cat-{ch.categoria}" href="{ch.href}" title="{ch.titulo}">
-                                    <i class="est-punto est-{ch.estadoClase}"></i>{ch.hora} · {ch.titulo}
+                                    <i class="est-punto est-{ch.estadoClase}"></i>{ch.hora} · {ch.titulo}{#if ch.total}<em class="mes-precio">{ch.total}</em>{/if}
                                 </a>
                             {/for}
                             {#if c.extra > 0}<a class="mes-mas" href="{c.href}">+{c.extra} más</a>{/if}
@@ -124,6 +124,7 @@
                                                 <span class="evento-servicio">{b.servicio}</span>
                                                 <small>{b.rango}</small>
                                                 <span class="evento-pill">{b.estadoTexto}</span>
+                                                {#if b.total}<span class="evento-precio {#if b.completada}final{/if}">{b.total}{#if !b.completada && b.varias}<small> · {b.progreso}</small>{/if}</span>{/if}
                                             </div>
                                         </div>
                                         <i class="evento-estado" title="{b.estadoTexto}"></i>
@@ -146,6 +147,21 @@
                                                         {#if m.celular}<p class="suave">Cel. {m.celular}</p>{/if}
                                                         <p class="suave">{m.duracion}</p>
                                                     </div>
+                                                    {#if b.conBitacora}
+                                                        <div class="tarjeta-bitacora {#if m.registrada}lista{/if}">
+                                                            <span class="tb-estado">
+                                                                {#if m.registrada}
+                                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{m.subtotal}
+                                                                {#else}
+                                                                    Bitácora pendiente
+                                                                {/if}
+                                                            </span>
+                                                            <a class="tb-btn" href="{m.hrefBitacora}">
+                                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3h6v3H9zM9 12l2 2 4-4"/></svg>
+                                                                {#if b.completada}Ver{#else if m.registrada}Editar{#else}Llenar bitácora{/if}
+                                                            </a>
+                                                        </div>
+                                                    {/if}
                                                 </div>
                                             {/for}
 
@@ -153,6 +169,13 @@
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
                                                 <span>{b.fechaLarga} • {b.rango}</span>
                                             </div>
+
+                                            {#if b.total}
+                                                <div class="tarjeta-total {#if b.completada}final{/if}">
+                                                    <span>{#if b.completada}Total de la cita{#else}Total parcial · {b.progreso} mascotas{/if}</span>
+                                                    <b>{b.total}</b>
+                                                </div>
+                                            {/if}
 
                                             {#if b.modificable}
                                                 <div class="tarjeta-botones">
@@ -233,7 +256,480 @@
     </div>
 {/if}
 
-    <script src="/js/admin/admin-sidebar.js"></script>
+{#if bitacora}
+    <div class="overlay overlay-bitacora">
+        <a class="overlay-fondo" href="{bitacora.hrefCerrar}" aria-label="Cerrar"></a>
+        <form class="bit-modal" id="form-bitacora" method="post" action="/admin/citas/bitacora"
+              data-otras="{bitacora.totalOtras}" data-cerrar="{bitacora.hrefCerrar}" novalidate>
+            <input type="hidden" name="agendamientoId" value="{bitacora.agendamientoId}">
+            <input type="hidden" name="mascotaCitaId" value="{bitacora.mascotaCitaId}">
+            <input type="hidden" name="vista" value="{vista}">
+            <input type="hidden" name="fecha" value="{fechaIso}">
+
+            <header class="bit-cab">
+                <div class="bit-cab-icono" aria-hidden="true">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 2.5h6v3H9z"/><path d="m9 13 2 2 4-4"/></svg>
+                </div>
+                <div class="bit-cab-texto">
+                    <h2>Bitácora de finalización</h2>
+                    <p>Registra los detalles de la atención realizada</p>
+                </div>
+                <a class="bit-cerrar" href="{bitacora.hrefCerrar}" aria-label="Cerrar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </a>
+            </header>
+
+            {#if bitacora.totalMascotas > 1}
+                <nav class="bit-pestanas" aria-label="Mascotas de la cita">
+                    {#for m in bitacora.mascotas}
+                        <a class="bit-pestana {#if m.mascotaCitaId == bitacora.mascotaCitaId}activa{/if} {#if m.registrada}lista{/if}" href="{m.hrefBitacora}">
+                            {#if m.foto}<img src="{m.foto}" alt="" loading="lazy">{#else}<span class="bit-pestana-ini">{m.inicial}</span>{/if}
+                            <span class="bit-pestana-txt">
+                                <b>{m.nombre}</b>
+                                <small>{#if m.registrada}{m.subtotal}{#else}Pendiente{/if}</small>
+                            </span>
+                            <i class="bit-pestana-check" aria-hidden="true">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                            </i>
+                        </a>
+                    {/for}
+                </nav>
+            {/if}
+
+            <div class="bit-cuerpo">
+                <section class="bit-mascota">
+                    {#if bitacora.foto}<img class="bit-mascota-foto" src="{bitacora.foto}" alt="{bitacora.nombre}">{#else}<span class="bit-mascota-foto">{bitacora.inicial}</span>{/if}
+                    <div class="bit-mascota-nombre">
+                        <strong>{bitacora.nombre} {#if bitacora.sexo}<em class="{#if bitacora.sexo == '♂'}macho{#else}hembra{/if}">{bitacora.sexo}</em>{/if}</strong>
+                        <span>{bitacora.raza}</span>
+                        {#if bitacora.duenio}<small>Dueño: {bitacora.duenio}</small>{/if}
+                    </div>
+                    <dl class="bit-mascota-datos">
+                        <div class="bit-dato bit-dato-cita">
+                            <dt>Cita {bitacora.codigo}</dt>
+                            <dd>{bitacora.fechaHora}</dd>
+                        </div>
+                        <div class="bit-dato"><dt>Especie</dt><dd>{bitacora.especie}</dd></div>
+                        <div class="bit-dato"><dt>Raza</dt><dd>{bitacora.raza}</dd></div>
+                        <div class="bit-dato"><dt>Edad</dt><dd>{bitacora.edad}</dd></div>
+                    </dl>
+                </section>
+
+                {#if bitacora.completada}
+                    <div class="bit-aviso ok">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                        Cita completada · Total {bitacora.totalCita}. La bitácora queda en modo consulta.
+                    </div>
+                {/if}
+                {#if error}<div class="bit-aviso error" role="alert">{error}</div>{/if}
+
+                <fieldset class="bit-campos" {#if !bitacora.editable}disabled{/if}>
+                    <div class="bit-grid">
+
+                        <section class="bit-card bit-ancho">
+                            <h3>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M5.6 5.6l2.1 2.1M3 12h3M18 12h3M16.3 7.7l2.1-2.1"/><circle cx="12" cy="14" r="5"/></svg>
+                                Tipo de servicio
+                            </h3>
+                            <p class="bit-ayuda">Selecciona todos los servicios realizados. Vacunación y desparasitación quedan en el carnet de la mascota:</p>
+                            <div class="bit-opciones cuatro">
+                                {#for op in bitacora.servicios}
+                                    <label class="bit-opcion srv-{op.clave}">
+                                        <input type="checkbox" name="servicios" value="{op.valor}" id="srv-{op.clave}" {#if op.marcada}checked{/if}>
+                                        <span class="bit-opcion-caja">
+                                            <i class="bit-opcion-check" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i>
+                                            {#if op.clave == 'bano'}
+                                                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16v2a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M6 12V5a2 2 0 0 1 4 0"/><path d="M7 19l-1 2M17 19l1 2"/></svg>
+                                            {#else if op.clave == 'pelu'}
+                                                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></svg>
+                                            {#else if op.clave == 'vacuna'}
+                                                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4M17 7l3-3M19 9 8.7 19.3a2.4 2.4 0 0 1-3.4 0l-.6-.6a2.4 2.4 0 0 1 0-3.4L15 5M9 11l4 4M5 19l-3 3M14 4l6 6"/></svg>
+                                            {#else}
+                                                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="7" rx="3.5" transform="rotate(-45 12 12.5)"/><path d="m9.5 10 5 5"/></svg>
+                                            {/if}
+                                            <b>{op.etiqueta}</b>
+                                        </span>
+                                    </label>
+                                {/for}
+                            </div>
+
+                            <div class="bit-bano" id="bit-bano">
+                                <p class="bit-ayuda">Tipo de baño realizado:</p>
+                                <div class="bit-segmento">
+                                    {#for op in bitacora.tiposBano}
+                                        <label>
+                                            <input type="radio" name="tipoBano" value="{op.valor}" {#if op.marcada}checked{/if}>
+                                            <span>{op.etiqueta}</span>
+                                        </label>
+                                    {/for}
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="bit-card bit-ancho bit-salud bit-vacuna" id="bit-vacuna">
+                            <h3>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4M17 7l3-3M19 9 8.7 19.3a2.4 2.4 0 0 1-3.4 0l-.6-.6a2.4 2.4 0 0 1 0-3.4L15 5M9 11l4 4M5 19l-3 3M14 4l6 6"/></svg>
+                                Datos de la vacunación
+                                <span class="bit-etiqueta">Carnet de {bitacora.nombre}</span>
+                            </h3>
+                            <p class="bit-ayuda">Se guardará en el historial de vacunas de la mascota.</p>
+                            <div class="bit-form">
+                                <label class="bit-campo bit-campo-2"><span>Vacuna aplicada <i>*</i></span>
+                                    <input class="bit-input" type="text" name="vacNombre" maxlength="150" value="{bitacora.vacuna.nombre}"
+                                           placeholder="Ej. Rabia, Parvovirus, Triple felina…" list="bit-vacunas" data-requerido-vacuna>
+                                </label>
+                                <label class="bit-campo">Dosis
+                                    <input class="bit-input" type="number" name="vacDosis" min="1" max="20" value="{bitacora.vacuna.dosis}">
+                                </label>
+                                <label class="bit-campo"><span>Fecha de aplicación <i>*</i></span>
+                                    <input class="bit-input" type="date" name="vacFecha" max="{bitacora.hoy}" value="{bitacora.vacuna.fechaAplicacion}" data-requerido-vacuna>
+                                </label>
+                                <label class="bit-campo">Próximo refuerzo
+                                    <input class="bit-input" type="date" name="vacRefuerzo" value="{bitacora.vacuna.fechaRefuerzo}">
+                                    <span class="bit-atajos" data-refuerzo>
+                                        <button type="button" data-meses="1">+1 mes</button>
+                                        <button type="button" data-meses="6">+6 meses</button>
+                                        <button type="button" data-meses="12">+1 año</button>
+                                    </span>
+                                </label>
+                                <label class="bit-campo">Número de lote
+                                    <input class="bit-input" type="text" name="vacLote" maxlength="100" value="{bitacora.vacuna.lote}" placeholder="Ej. LT-48213">
+                                </label>
+                                <label class="bit-campo bit-campo-full">Observaciones de la vacuna
+                                    <input class="bit-input" type="text" name="vacObservaciones" maxlength="300" value="{bitacora.vacuna.observaciones}" placeholder="Ej. Sin reacciones">
+                                </label>
+                            </div>
+                            <datalist id="bit-vacunas">
+                                <option value="Rabia"><option value="Parvovirus"><option value="Moquillo"><option value="Polivalente (Quíntuple)">
+                                <option value="Séxtuple"><option value="Leptospirosis"><option value="Bordetella (Tos de las perreras)">
+                                <option value="Triple felina"><option value="Leucemia felina">
+                            </datalist>
+                        </section>
+
+                        <section class="bit-card bit-ancho bit-salud bit-desparasita" id="bit-desparasita">
+                            <h3>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="7" rx="3.5" transform="rotate(-45 12 12.5)"/><path d="m9.5 10 5 5"/></svg>
+                                Datos de la desparasitación
+                                <span class="bit-etiqueta">Carnet de {bitacora.nombre}</span>
+                            </h3>
+                            <p class="bit-ayuda">Se guardará en el historial de desparasitaciones de la mascota.</p>
+                            <div class="bit-form">
+                                <label class="bit-campo bit-campo-2"><span>Marca del desparasitante <i>*</i></span>
+                                    <input class="bit-input" type="text" name="despMarca" maxlength="255" value="{bitacora.desparasitacion.marca}"
+                                           placeholder="Ej. NexGard, Bravecto, Drontal…" list="bit-marcas" data-requerido-desp>
+                                </label>
+                                <div class="bit-campo bit-campo-tipo"><span>Tipo <i>*</i></span>
+                                    <div class="bit-segmento">
+                                        {#for op in bitacora.tiposDesparasitacion}
+                                            <label>
+                                                <input type="radio" name="despTipo" value="{op.valor}" {#if op.marcada}checked{/if}>
+                                                <span>{op.etiqueta}</span>
+                                            </label>
+                                        {/for}
+                                    </div>
+                                </div>
+                                <label class="bit-campo"><span>Fecha de aplicación <i>*</i></span>
+                                    <input class="bit-input" type="date" name="despFecha" max="{bitacora.hoy}" value="{bitacora.desparasitacion.fechaAplicacion}" data-requerido-desp>
+                                </label>
+                                <label class="bit-campo"><span>Número de lote <i>*</i></span>
+                                    <input class="bit-input" type="text" name="despLote" maxlength="255" value="{bitacora.desparasitacion.lote}" placeholder="Ej. NX-7781" data-requerido-desp>
+                                </label>
+                                <label class="bit-campo bit-campo-full">Observaciones de la desparasitación
+                                    <input class="bit-input" type="text" name="despObservaciones" maxlength="300" value="{bitacora.desparasitacion.observaciones}" placeholder="Ej. Próxima dosis en 3 meses">
+                                </label>
+                            </div>
+                            <datalist id="bit-marcas">
+                                <option value="NexGard"><option value="NexGard Spectra"><option value="Bravecto"><option value="Simparica">
+                                <option value="Drontal"><option value="Milbemax"><option value="Frontline"><option value="Revolution">
+                            </datalist>
+                        </section>
+
+                        <section class="bit-card bit-card-precio">
+                            <h3>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/></svg>
+                                Subtotal de {bitacora.nombre}
+                            </h3>
+                            <p class="bit-ayuda">Precio cobrado por esta mascota (pesos colombianos):</p>
+                            <label class="bit-precio">
+                                <span class="bit-precio-signo">$</span>
+                                <input type="text" inputmode="numeric" autocomplete="off" name="precio" id="bit-precio"
+                                       value="{bitacora.precio}" placeholder="0" maxlength="13" aria-label="Precio del servicio" required>
+                                <span class="bit-precio-moneda">COP</span>
+                            </label>
+                            <div class="bit-total">
+                                <div>
+                                    <span>Total de la cita</span>
+                                    <small>{bitacora.registradas} de {bitacora.totalMascotas} {#if bitacora.totalMascotas == 1}mascota{#else}mascotas{/if} con bitácora</small>
+                                </div>
+                                <output id="bit-total">{bitacora.totalCita}</output>
+                            </div>
+                            {#if bitacora.editable}
+                                <p class="bit-nota">
+                                    {#if bitacora.totalMascotas > 1}
+                                        La cita se marcará como <b>completada</b> cuando las {bitacora.totalMascotas} mascotas tengan su precio.
+                                    {#else}
+                                        Al guardar con precio, la cita se marcará como <b>completada</b>.
+                                    {/if}
+                                </p>
+                            {/if}
+                        </section>
+
+                        <section class="bit-card">
+                            <h3>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                                Qué se encontró
+                            </h3>
+                            <p class="bit-ayuda">Selecciona todas las observaciones aplicables:</p>
+                            <div class="bit-checks">
+                                {#for op in bitacora.hallazgos}
+                                    <label class="bit-check">
+                                        <input type="checkbox" name="hallazgos" value="{op.valor}" id="hal-{op.clave}" {#if op.marcada}checked{/if}>
+                                        <span>{op.etiqueta}</span>
+                                    </label>
+                                {/for}
+                            </div>
+                            <input class="bit-input bit-otra" id="bit-otra" type="text" name="otroHallazgo" maxlength="120"
+                                   value="{bitacora.otroHallazgo}" placeholder="¿Qué otra cosa se encontró?">
+                        </section>
+
+                        <section class="bit-card">
+                            <h3>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+                                Observaciones generales
+                            </h3>
+                            <p class="bit-ayuda">Describe cualquier observación adicional del servicio:</p>
+                            <div class="bit-area">
+                                <textarea name="observaciones" maxlength="400" rows="4" data-contador
+                                          placeholder="Ej. Se observó mucha ansiedad, se recomienda seguimiento…">{bitacora.observaciones}</textarea>
+                                <small class="bit-contador">0/400</small>
+                            </div>
+                        </section>
+
+                        <section class="bit-card">
+                            <h3>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"/></svg>
+                                Recomendaciones
+                            </h3>
+                            <p class="bit-ayuda">Brinda indicaciones importantes para el dueño:</p>
+                            <div class="bit-area">
+                                <textarea name="recomendaciones" maxlength="400" rows="4" data-contador
+                                          placeholder="Ej. Usar shampoo medicado por 1 semana, evitar baños en casa…">{bitacora.recomendaciones}</textarea>
+                                <small class="bit-contador">0/400</small>
+                            </div>
+                        </section>
+
+                        <section class="bit-card bit-ancho">
+                            <h3>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h2l2-2h4l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>
+                                Foto de salida
+                            </h3>
+                            <p class="bit-ayuda">Así quedó la mascota al terminar el servicio:</p>
+                            <div class="bit-foto">
+                                <div class="bit-foto-vista {#if bitacora.fotoSalida}con-foto{/if}" id="bit-foto-vista">
+                                    <img id="bit-foto-img" {#if bitacora.fotoSalida}src="{bitacora.fotoSalida}"{/if} alt="Foto de salida de {bitacora.nombre}">
+                                    <span class="bit-foto-vacia">
+                                        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
+                                        Sin foto
+                                    </span>
+                                </div>
+                                <div class="bit-foto-acciones">
+                                    <label class="bit-subir" id="bit-subir">
+                                        <input type="file" id="bit-archivo" accept="image/jpeg,image/png,image/webp">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>
+                                        <span>Subir foto</span>
+                                    </label>
+                                    <input class="bit-input" type="text" name="fotoSalida" id="bit-foto-url" maxlength="255"
+                                           value="{bitacora.fotoSalida}" placeholder="…o pega la URL de la foto">
+                                    <small class="bit-foto-msg" id="bit-foto-msg">JPG, PNG o WebP · máx. 5 MB</small>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </fieldset>
+            </div>
+
+            <footer class="bit-pie">
+                <div class="bit-pie-total">
+                    <span>Total cita</span>
+                    <b id="bit-total-pie">{bitacora.totalCita}</b>
+                </div>
+                <div class="bit-pie-botones">
+                    <a class="bit-btn sec" href="{bitacora.hrefCerrar}">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                        {#if bitacora.editable}Cancelar{#else}Cerrar{/if}
+                    </a>
+                    {#if bitacora.editable}
+                        <button class="bit-btn pri" type="submit" id="bit-guardar">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+                            <span>Guardar bitácora</span>
+                        </button>
+                    {/if}
+                </div>
+            </footer>
+        </form>
+    </div>
+
+    {|
+    <script>
+    (function () {
+        const form = document.getElementById('form-bitacora');
+        if (!form) return;
+        const pesos = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
+        const otras = Number(form.dataset.otras || 0);
+        const precio = document.getElementById('bit-precio');
+        const total = document.getElementById('bit-total');
+        const totalPie = document.getElementById('bit-total-pie');
+
+        document.body.style.overflow = 'hidden';
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') location.href = form.dataset.cerrar; });
+
+        // Precio: separadores de miles mientras se escribe y total de la cita en vivo
+        const soloDigitos = v => (v || '').replace(/\D/g, '').replace(/^0+(?=\d)/, '');
+        function pintarPrecio() {
+            if (!precio) return;
+            const digitos = soloDigitos(precio.value).slice(0, 10);
+            const inicioDesdeFinal = precio.value.length - (precio.selectionStart || 0);
+            precio.value = digitos ? pesos.format(Number(digitos)) : '';
+            const pos = Math.max(0, precio.value.length - inicioDesdeFinal);
+            if (document.activeElement === precio) precio.setSelectionRange(pos, pos);
+            const suma = '$ ' + pesos.format(otras + Number(digitos || 0));
+            if (total) total.textContent = suma;
+            if (totalPie) totalPie.textContent = suma;
+            precio.closest('.bit-precio').classList.toggle('con-valor', !!digitos);
+        }
+        if (precio) { precio.addEventListener('input', pintarPrecio); pintarPrecio(); }
+
+        // Tipo de baño: solo se muestra si se marcó "Baño"
+        const bano = document.getElementById('srv-bano');
+        const cajaBano = document.getElementById('bit-bano');
+        const sincronizarBano = () => { if (bano && cajaBano) cajaBano.hidden = !bano.checked; };
+        if (bano) { bano.addEventListener('change', sincronizarBano); sincronizarBano(); }
+
+        // Vacunación / Desparasitación: muestran su formulario (tablas propias) solo si se marcan
+        const panelSalud = (idCheck, idPanel) => {
+            const ch = document.getElementById(idCheck);
+            const panel = document.getElementById(idPanel);
+            if (!ch || !panel) return;
+            const sync = () => { panel.hidden = !ch.checked; };
+            ch.addEventListener('change', () => {
+                sync();
+                if (ch.checked) {
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    const primero = panel.querySelector('input[type="text"]');
+                    if (primero && !primero.value) setTimeout(() => primero.focus(), 250);
+                }
+            });
+            sync();
+        };
+        panelSalud('srv-vacuna', 'bit-vacuna');
+        panelSalud('srv-desparasita', 'bit-desparasita');
+
+        // Atajos de refuerzo: fecha de aplicación + N meses
+        form.querySelectorAll('[data-refuerzo] button').forEach(b => b.addEventListener('click', () => {
+            const base = form.querySelector('input[name="vacFecha"]').value;
+            if (!base) return;
+            const [y, m, d] = base.split('-').map(Number);
+            const f = new Date(y, m - 1 + Number(b.dataset.meses), d);
+            form.querySelector('input[name="vacRefuerzo"]').value =
+                f.getFullYear() + '-' + String(f.getMonth() + 1).padStart(2, '0') + '-' + String(f.getDate()).padStart(2, '0');
+        }));
+
+        // "Otra": muestra el campo de texto
+        const otra = document.getElementById('hal-otra');
+        const campoOtra = document.getElementById('bit-otra');
+        const sincronizarOtra = () => { if (otra && campoOtra) campoOtra.hidden = !otra.checked; };
+        if (otra) { otra.addEventListener('change', () => { sincronizarOtra(); if (otra.checked) campoOtra.focus(); }); sincronizarOtra(); }
+
+        // "Sin novedades" excluye a los demás hallazgos (y viceversa)
+        const sinNovedades = document.getElementById('hal-h0');
+        form.querySelectorAll('input[name="hallazgos"]').forEach(ch => ch.addEventListener('change', () => {
+            if (!ch.checked) return;
+            if (ch === sinNovedades) {
+                form.querySelectorAll('input[name="hallazgos"]').forEach(o => { if (o !== ch) o.checked = false; });
+                sincronizarOtra();
+            } else if (sinNovedades) {
+                sinNovedades.checked = false;
+            }
+        }));
+
+        // Contadores de caracteres
+        form.querySelectorAll('textarea[data-contador]').forEach(t => {
+            const c = t.parentElement.querySelector('.bit-contador');
+            const pintar = () => { c.textContent = t.value.length + '/' + t.maxLength; };
+            t.addEventListener('input', pintar); pintar();
+        });
+
+        // Foto de salida: se sube al servidor y se guarda la URL que devuelve
+        const vista = document.getElementById('bit-foto-vista');
+        const img = document.getElementById('bit-foto-img');
+        const url = document.getElementById('bit-foto-url');
+        const archivo = document.getElementById('bit-archivo');
+        const msg = document.getElementById('bit-foto-msg');
+        const subir = document.getElementById('bit-subir');
+        function mostrarFoto(src) {
+            if (src) { img.src = src; vista.classList.add('con-foto'); } else { img.removeAttribute('src'); vista.classList.remove('con-foto'); }
+        }
+        img.addEventListener('error', () => vista.classList.remove('con-foto'));
+        if (url) url.addEventListener('change', () => mostrarFoto(url.value.trim()));
+        if (archivo) archivo.addEventListener('change', async () => {
+            const f = archivo.files[0];
+            if (!f) return;
+            if (f.size > 5 * 1024 * 1024) { msg.textContent = 'La imagen no puede superar 5 MB'; msg.className = 'bit-foto-msg error'; return; }
+            mostrarFoto(URL.createObjectURL(f));
+            subir.classList.add('cargando'); msg.textContent = 'Subiendo foto…'; msg.className = 'bit-foto-msg';
+            try {
+                const datos = new FormData();
+                datos.append('imagen', f);
+                const resp = await fetch('/uploads/mascotas', { method: 'POST', body: datos, credentials: 'same-origin', headers: { Accept: 'application/json' } });
+                const json = await resp.json().catch(() => ({}));
+                if (!resp.ok || !json.url) throw new Error(json.mensaje || 'No se pudo subir la foto');
+                url.value = json.url;
+                mostrarFoto(json.url);
+                msg.textContent = 'Foto subida correctamente'; msg.className = 'bit-foto-msg ok';
+            } catch (e) {
+                mostrarFoto(url.value.trim());
+                msg.textContent = e.message; msg.className = 'bit-foto-msg error';
+            } finally {
+                subir.classList.remove('cargando'); archivo.value = '';
+            }
+        });
+
+        // Validación rápida antes de enviar + estado "guardando"
+        form.addEventListener('submit', e => {
+            const avisos = [];
+            if (!form.querySelector('input[name="servicios"]:checked')) avisos.push('Selecciona al menos un tipo de servicio.');
+            if (bano && bano.checked && !form.querySelector('input[name="tipoBano"]:checked')) avisos.push('Selecciona el tipo de baño.');
+            const vacuna = document.getElementById('srv-vacuna');
+            const desp = document.getElementById('srv-desparasita');
+            const vacio = sel => [...form.querySelectorAll(sel)].some(i => !i.value.trim());
+            if (vacuna && vacuna.checked && vacio('[data-requerido-vacuna]')) avisos.push('Completa el nombre y la fecha de la vacuna.');
+            if (desp && desp.checked && (vacio('[data-requerido-desp]') || !form.querySelector('input[name="despTipo"]:checked'))) avisos.push('Completa marca, tipo, fecha y lote de la desparasitación.');
+            const fa = form.querySelector('input[name="vacFecha"]').value, fr = form.querySelector('input[name="vacRefuerzo"]').value;
+            if (vacuna && vacuna.checked && fa && fr && fr <= fa) avisos.push('El refuerzo debe ser posterior a la fecha de aplicación.');
+            if (!soloDigitos(precio && precio.value)) avisos.push('Escribe el precio (subtotal) de la mascota.');
+            if (subir && subir.classList.contains('cargando')) avisos.push('Espera a que termine de subir la foto.');
+            let caja = form.querySelector('.bit-aviso.error.js');
+            if (avisos.length) {
+                e.preventDefault();
+                if (!caja) {
+                    caja = document.createElement('div');
+                    caja.className = 'bit-aviso error js';
+                    caja.setAttribute('role', 'alert');
+                    form.querySelector('.bit-campos').before(caja);
+                }
+                caja.textContent = avisos.join(' ');
+                caja.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+            const btn = document.getElementById('bit-guardar');
+            if (btn) { btn.disabled = true; btn.classList.add('cargando'); btn.querySelector('span').textContent = 'Guardando…'; }
+        });
+    })();
+    </script>
+    |}
+{/if}
+
+<script src="/js/admin/admin-sidebar.js"></script>
 
 </body>
 </html>
