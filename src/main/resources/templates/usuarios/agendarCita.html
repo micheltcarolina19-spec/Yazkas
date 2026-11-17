@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Agenda tu cita · Yazkas Peluquería Canina</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="/css/usuarios/Navbar.css" rel="stylesheet">
+    <link href="/css/usuarios/nav-cliente.css" rel="stylesheet">
+    <link href="/css/usuarios/agendar-cita.css" rel="stylesheet">
+</head>
+<body class="ac-body">
+
+{#include usuarios/components/nav-cliente active='citas' /}
+
+{! Iconos propios de esta vista (prefijo ac-) !}
+<svg class="pc-sprite" aria-hidden="true" focusable="false">
+    <symbol id="ac-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17M8 14h2M14 14h2M8 17.5h2"/></symbol>
+    <symbol id="ac-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="ac-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/><path d="M8 8l12 12M8 16 20 4"/></symbol>
+    <symbol id="ac-bath" viewBox="0 0 24 24"><path d="M4 12h16v2a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M6 12V5a2 2 0 0 1 4 0"/><path d="M7 19l-1 2M17 19l1 2"/></symbol>
+    <symbol id="ac-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="ac-plus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></symbol>
+    <symbol id="ac-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+    <symbol id="ac-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="ac-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="ac-list" viewBox="0 0 24 24"><rect x="4.5" y="3" width="15" height="18" rx="2.5"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4.5"/></symbol>
+    <symbol id="ac-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></symbol>
+    <symbol id="ac-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.4v.1"/></symbol>
+    <symbol id="ac-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/></symbol>
+</svg>
+
+<main class="ac" id="contenido"
+      data-hoy="{hoy}" data-maximo="{maximoMascotas}">
+
+    <svg class="ac-deco ac-deco--1" aria-hidden="true"><use href="#i-paw-solid"/></svg>
+    <svg class="ac-deco ac-deco--2" aria-hidden="true"><use href="#i-paw-solid"/></svg>
+    <svg class="ac-deco ac-deco--3" aria-hidden="true"><use href="#i-paw-solid"/></svg>
+
+    {! ===== Encabezado ===== !}
+    <header class="ac-hero">
+        <span class="ac-hero__ico"><svg class="ac-ico" aria-hidden="true"><use href="#ac-cal"/></svg></span>
+        <div>
+            <h1 class="ac-hero__title">Agenda tu <em>cita</em>
+                <svg class="ac-hero__heart" aria-hidden="true"><use href="#ac-heart"/></svg>
+            </h1>
+            <p class="ac-hero__sub">Selecciona tu <b>mascota</b>, el día y el horario que mejor se adapte a ti.</p>
+        </div>
+    </header>
+
+    <section class="ac-panel">
+
+        {! ===== Pasos ===== !}
+        <ol class="ac-steps" id="ac-steps" aria-label="Progreso">
+            <li class="is-active" data-paso="1"><b>1</b><svg class="ac-ico" aria-hidden="true"><use href="#i-paw-solid"/></svg><span>Mascota y Servicio</span></li>
+            <li data-paso="2"><b>2</b><svg class="ac-ico" aria-hidden="true"><use href="#ac-cal"/></svg><span>Fecha y Hora</span></li>
+            <li data-paso="3"><b>3</b><svg class="ac-ico" aria-hidden="true"><use href="#ac-check"/></svg><span>Confirmar</span></li>
+        </ol>
+
+        <div class="ac-alert" id="ac-alert" role="alert" hidden>
+            <svg class="ac-ico" aria-hidden="true"><use href="#ac-alert"/></svg>
+            <span></span>
+        </div>
+
+        <div class="ac-grid">
+
+            {! ===== Columna izquierda: calendario + próximas citas ===== !}
+            <div class="ac-col ac-col--izq">
+
+                <section class="ac-card ac-cal" aria-labelledby="ac-cal-title">
+                    <header class="ac-cal__head">
+                        <h2 id="ac-cal-title"><svg class="ac-ico" aria-hidden="true"><use href="#ac-cal"/></svg> Calendario</h2>
+                        <button class="ac-cal__hoy" type="button" id="ac-hoy">Hoy</button>
+                    </header>
+                    <div class="ac-cal__nav">
+                        <button type="button" class="ac-cal__flecha" id="ac-mes-ant" aria-label="Mes anterior">
+                            <svg class="ac-ico" aria-hidden="true"><use href="#ac-left"/></svg>
+                        </button>
+                        <strong id="ac-mes"></strong>
+                        <button type="button" class="ac-cal__flecha" id="ac-mes-sig" aria-label="Mes siguiente">
+                            <svg class="ac-ico" aria-hidden="true"><use href="#ac-right"/></svg>
+                        </button>
+                    </div>
+                    <div class="ac-cal__semana" aria-hidden="true">
+                        <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+                    </div>
+                    <div class="ac-cal__dias" id="ac-dias" role="grid"></div>
+                    <p class="ac-cal__sel" id="ac-fecha-sel">
+                        <svg class="ac-ico" aria-hidden="true"><use href="#ac-cal"/></svg>
+                        <span>Selecciona un día</span>
+                    </p>
+                </section>
+
+                <section class="ac-card ac-prox" aria-labelledby="ac-prox-title">
+                    <h2 class="ac-card__title" id="ac-prox-title"><svg class="ac-ico" aria-hidden="true"><use href="#ac-clock"/></svg> Tus citas programadas</h2>
+                    {#if proximas.isEmpty}
+                        <div class="ac-vacio">
+                            <span class="ac-vacio__ico"><svg aria-hidden="true"><use href="#i-paw-solid"/></svg></span>
+                            <div>
+                                <b>Aún no tienes citas agendadas</b>
+                                <small>¡Agenda tu primera cita con nosotros!</small>
+                            </div>
+                        </div>
+                    {#else}
+                        <ul class="ac-prox__lista">
+                            {#for c in proximas}
+                                <li>
+                                    <span class="ac-prox__fecha"><svg class="ac-ico" aria-hidden="true"><use href="#ac-cal"/></svg></span>
+                                    <div>
+                                        <b>{c.mascotas}</b>
+                                        <small>{c.fecha} · {c.hora}</small>
+                                    </div>
+                                    <em class="ac-prox__estado">{c.estado}</em>
+                                </li>
+                            {/for}
+                        </ul>
+                    {/if}
+                </section>
+            </div>
+
+            {! ===== Columna derecha ===== !}
+            <div class="ac-col ac-col--der">
+
+                <section class="ac-card" aria-labelledby="ac-masc-title">
+                    <h2 class="ac-card__title" id="ac-masc-title">
+                        <svg class="ac-ico" aria-hidden="true"><use href="#i-paw-solid"/></svg> Selecciona tu mascota
+                        <small class="ac-card__hint">Puedes elegir hasta {maximoMascotas} para el mismo horario</small>
+                    </h2>
+                    <div class="ac-mascotas" id="ac-mascotas">
+                        {#for m in mascotas}
+                            <button type="button" class="ac-mascota" data-id="{m.id}" data-nombre="{m.nombre}" aria-pressed="false">
+                                <span class="ac-mascota__foto">
+                                    <span class="ac-mascota__ini">{m.inicial}</span>
+                                    {#if m.foto}<img src="{m.foto}" alt="" loading="lazy" onerror="this.remove()">{/if}
+                                </span>
+                                <b>{m.nombre}</b>
+                                <small>{m.raza}</small>
+                                <span class="ac-mascota__dur" data-dur></span>
+                                <i class="ac-check" aria-hidden="true"><svg><use href="#ac-check"/></svg></i>
+                            </button>
+                        {/for}
+                        <a class="ac-mascota ac-mascota--nueva" href="/mascotas/agregar">
+                            <svg class="ac-ico" aria-hidden="true"><use href="#ac-plus"/></svg>
+                            <b>Agregar mascota</b>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="ac-card" aria-labelledby="ac-serv-title">
+                    <h2 class="ac-card__title" id="ac-serv-title"><svg class="ac-ico" aria-hidden="true"><use href="#ac-scissors"/></svg> Servicio</h2>
+                    <div class="ac-servicio is-selected" aria-label="Servicio seleccionado: Baño y Peluquería">
+                        <span class="ac-servicio__ico">
+                            <svg aria-hidden="true"><use href="#ac-bath"/></svg>
+                            <svg aria-hidden="true"><use href="#ac-scissors"/></svg>
+                        </span>
+                        <span class="ac-servicio__txt">
+                            <b>Baño y Peluquería</b>
+                            <small>Baño, secado, corte y arreglo según la raza de tu mascota</small>
+                        </span>
+                        <i class="ac-check" aria-hidden="true"><svg><use href="#ac-check"/></svg></i>
+                    </div>
+                </section>
+
+                <section class="ac-card" aria-labelledby="ac-hor-title">
+                    <h2 class="ac-card__title" id="ac-hor-title">
+                        <svg class="ac-ico" aria-hidden="true"><use href="#ac-clock"/></svg> Horarios disponibles
+                        <small class="ac-card__hint" id="ac-hor-dia"></small>
+                    </h2>
+                    <p class="ac-ia" id="ac-ia" hidden>
+                        <svg class="ac-ico" aria-hidden="true"><use href="#ac-spark"/></svg>
+                        <span></span>
+                    </p>
+                    <div class="ac-horarios" id="ac-horarios">
+                        <p class="ac-horarios__vacio">Elige una mascota y un día para ver los horarios.</p>
+                    </div>
+                    <p class="ac-leyenda"><i class="ac-dot ac-dot--libre"></i> Disponible <i class="ac-dot ac-dot--lleno"></i> No disponible · Atendemos de 8:30 a.m. a 5:30 p.m.</p>
+                </section>
+
+                <div class="ac-final">
+                    <section class="ac-card ac-resumen" aria-labelledby="ac-res-title">
+                        <h2 class="ac-card__title" id="ac-res-title"><svg class="ac-ico" aria-hidden="true"><use href="#ac-list"/></svg> Resumen de tu cita</h2>
+                        <div class="ac-resumen__fila">
+                            <div class="ac-resumen__item ac-resumen__item--masc">
+                                <span class="ac-resumen__fotos" id="ac-res-fotos"></span>
+                                <span><small>Mascota</small><b id="ac-res-masc">—</b></span>
+                            </div>
+                            <div class="ac-resumen__item">
+                                <svg class="ac-ico" aria-hidden="true"><use href="#ac-scissors"/></svg>
+                                <span><small>Servicio</small><b>Baño y Peluquería</b></span>
+                            </div>
+                            <div class="ac-resumen__item">
+                                <svg class="ac-ico" aria-hidden="true"><use href="#ac-cal"/></svg>
+                                <span><small>Fecha y hora</small><b id="ac-res-fecha">—</b></span>
+                            </div>
+                        </div>
+                    </section>
+                    <button class="ac-confirmar" type="button" id="ac-confirmar" disabled>
+                        <svg class="ac-ico" aria-hidden="true"><use href="#ac-check"/></svg>
+                        <span>Confirmar cita</span>
+                        <svg class="ac-ico" aria-hidden="true"><use href="#ac-arrow"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+{! ===== Cita agendada ===== !}
+<div class="ac-modal" id="ac-exito" hidden>
+    <div class="ac-modal__caja" role="dialog" aria-modal="true" aria-labelledby="ac-exito-title">
+        <span class="ac-modal__ok"><svg aria-hidden="true"><use href="#ac-check"/></svg></span>
+        <h2 id="ac-exito-title">¡Cita agendada!</h2>
+        <p id="ac-exito-texto"></p>
+        <ul class="ac-modal__lista" id="ac-exito-lista"></ul>
+        <p class="ac-modal__nota">Te esperamos. Si necesitas cambiar la cita, comunícate con la peluquería.</p>
+        <div class="ac-modal__acciones">
+            <a class="ac-btn ac-btn--sec" href="/mascotas">Ver mis mascotas</a>
+            <button class="ac-btn ac-btn--pri" type="button" id="ac-exito-listo">Listo</button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/usuario/Navbar.js"></script>
+<script src="/js/usuario/agendar-cita.js" defer></script>
+</body>
+</html>

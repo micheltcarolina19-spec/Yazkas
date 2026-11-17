@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Historial de citas · Yazkas Peluquería Canina</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="/css/usuarios/Navbar.css" rel="stylesheet">
+    <link href="/css/usuarios/nav-cliente.css" rel="stylesheet">
+    <link href="/css/usuarios/historial.css" rel="stylesheet">
+</head>
+<body class="hc-body">
+
+{#include usuarios/components/nav-cliente active='historial' /}
+
+{! Iconos propios de esta vista (prefijo hc-) !}
+<svg class="pc-sprite" aria-hidden="true" focusable="false">
+    <symbol id="hc-history" viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4v4h4"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="hc-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></symbol>
+    <symbol id="hc-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="hc-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/><path d="M8 8l12 12M8 16 20 4"/></symbol>
+    <symbol id="hc-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5"/><path d="M5 19.5h14"/></symbol>
+    <symbol id="hc-doc" viewBox="0 0 24 24"><path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8z"/><path d="M14 3.5V8h4.5M9 12.5h6M9 16h4"/></symbol>
+    <symbol id="hc-paw" viewBox="0 0 24 24"><circle cx="7" cy="9" r="1.8"/><circle cx="11" cy="6" r="1.8"/><circle cx="15.5" cy="6.5" r="1.8"/><circle cx="18.5" cy="10.5" r="1.8"/><path d="M8.5 17.5c0-2.6 2-5 4.5-5s4 2 4 4.2c0 1.8-1.4 2.8-3 2.8-1 0-1.6-.5-2.5-.5s-1.4.5-2.2.5c-.5 0-.8-.8-.8-2Z"/></symbol>
+    <symbol id="hc-plus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></symbol>
+    <symbol id="hc-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="hc-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="hc-photo" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></symbol>
+    <symbol id="hc-shield" viewBox="0 0 24 24"><path d="M12 3.5 5 6.5v5c0 4.5 3 7.8 7 9 4-1.2 7-4.5 7-9v-5z"/><path d="m9 12 2 2 4-4"/></symbol>
+</svg>
+
+<main class="hc" id="contenido" data-seleccionada="{seleccionada ?: ''}">
+
+    <svg class="hc-deco hc-deco--1" aria-hidden="true"><use href="#hc-paw"/></svg>
+    <svg class="hc-deco hc-deco--2" aria-hidden="true"><use href="#hc-paw"/></svg>
+
+    <header class="hc-hero">
+        <span class="hc-hero__ico"><svg class="hc-ico" aria-hidden="true"><use href="#hc-history"/></svg></span>
+        <div>
+            <h1 class="hc-hero__title">Historial de <em>citas</em></h1>
+            <p class="hc-hero__sub">Consulta las citas de cada mascota y descarga la bitácora de su último servicio.</p>
+        </div>
+    </header>
+
+    {#if mascotas.isEmpty}
+        <section class="hc-panel hc-vacio">
+            <svg class="hc-ico hc-vacio__ico" aria-hidden="true"><use href="#hc-paw"/></svg>
+            <h2>Aún no tienes mascotas registradas</h2>
+            <p>Registra a tu mascota para poder agendar citas y ver aquí su historial.</p>
+            <a class="hc-btn hc-btn--pri" href="/mascotas/agregar">
+                <svg class="hc-ico" aria-hidden="true"><use href="#hc-plus"/></svg> Agregar mascota
+            </a>
+        </section>
+    {#else}
+
+        {! Selector de mascota !}
+        <nav class="hc-tabs" role="tablist" aria-label="Mascotas">
+            {#for m in mascotas}
+                <button class="hc-tab {#if m.id == seleccionada}is-active{/if}" type="button" role="tab"
+                        id="hc-tab-{m.id}" data-mascota="{m.id}"
+                        aria-controls="hc-mascota-{m.id}" aria-selected="{#if m.id == seleccionada}true{#else}false{/if}">
+                    <span class="hc-avatar">
+                        {#if m.foto}<img src="{m.foto}" alt="" loading="lazy">{#else}{m.inicial}{/if}
+                    </span>
+                    <span class="hc-tab__txt">
+                        <b>{m.nombre}</b>
+                        <small>{#if m.raza}{m.raza}{#else}{m.tipo}{/if}</small>
+                    </span>
+                    {#if m.proximas.size > 0}<span class="hc-tab__badge" title="Próximas citas">{m.proximas.size}</span>{/if}
+                </button>
+            {/for}
+        </nav>
+
+        {#for m in mascotas}
+        <section class="hc-mascota" id="hc-mascota-{m.id}" role="tabpanel" aria-labelledby="hc-tab-{m.id}"
+                 {#if m.id != seleccionada}hidden{/if}>
+
+            <div class="hc-top">
+                {! ---------- Última bitácora ---------- !}
+                <article class="hc-panel hc-ultima">
+                    <div class="hc-card-head">
+                        <span class="hc-card-ico"><svg class="hc-ico" aria-hidden="true"><use href="#hc-doc"/></svg></span>
+                        <div>
+                            <h2>Bitácora de la última cita</h2>
+                            <p>Lo que registramos al finalizar el servicio de {m.nombre}.</p>
+                        </div>
+                    </div>
+
+                    {#if m.ultima}
+                        <div class="hc-ultima__body">
+                            <div class="hc-ultima__foto {#if m.ultima.foto}con-foto{/if}">
+                                {#if m.ultima.foto}
+                                    <img src="{m.ultima.foto}" alt="Así quedó {m.nombre} después del servicio" loading="lazy">
+                                {#else}
+                                    <span><svg class="hc-ico" aria-hidden="true"><use href="#hc-photo"/></svg>Sin foto</span>
+                                {/if}
+                            </div>
+                            <dl class="hc-datos">
+                                <div><dt><svg class="hc-ico" aria-hidden="true"><use href="#hc-cal"/></svg>Fecha</dt><dd>{m.ultima.fecha}</dd></div>
+                                <div><dt><svg class="hc-ico" aria-hidden="true"><use href="#hc-clock"/></svg>Hora</dt><dd>{m.ultima.hora}</dd></div>
+                                <div><dt><svg class="hc-ico" aria-hidden="true"><use href="#hc-scissors"/></svg>Servicios</dt><dd>{m.ultima.servicios}</dd></div>
+                                {#if m.ultima.conVacuna || m.ultima.conDesparasitacion}
+                                <div class="hc-chips">
+                                    {#if m.ultima.conVacuna}<span class="hc-chip"><svg class="hc-ico" aria-hidden="true"><use href="#hc-shield"/></svg>Vacuna aplicada</span>{/if}
+                                    {#if m.ultima.conDesparasitacion}<span class="hc-chip"><svg class="hc-ico" aria-hidden="true"><use href="#hc-shield"/></svg>Desparasitación</span>{/if}
+                                </div>
+                                {/if}
+                            </dl>
+                        </div>
+                        <a class="hc-btn hc-btn--pri hc-descargar" href="/historial/mascotas/{m.id}/bitacora.pdf"
+                           download data-nombre="{m.nombre}">
+                            <svg class="hc-ico" aria-hidden="true"><use href="#hc-download"/></svg>
+                            <span>Descargar bitácora de {m.nombre}</span>
+                        </a>
+                        <p class="hc-nota">Incluye servicios, valor, foto de salida, observaciones y recomendaciones.</p>
+                    {#else}
+                        <div class="hc-sin">
+                            <svg class="hc-ico" aria-hidden="true"><use href="#hc-doc"/></svg>
+                            <p><b>{m.nombre} aún no tiene bitácora.</b>
+                               Cuando finalice su próxima cita podrás descargarla aquí.</p>
+                        </div>
+                        <button class="hc-btn hc-btn--pri" type="button" disabled>
+                            <svg class="hc-ico" aria-hidden="true"><use href="#hc-download"/></svg> Descargar bitácora
+                        </button>
+                    {/if}
+                </article>
+
+                {! ---------- Resumen ---------- !}
+                <aside class="hc-panel hc-resumen">
+                    <div class="hc-perfil">
+                        <span class="hc-avatar hc-avatar--lg">
+                            {#if m.foto}<img src="{m.foto}" alt="" loading="lazy">{#else}{m.inicial}{/if}
+                        </span>
+                        <div>
+                            <h2>{m.nombre}</h2>
+                            <p>{#if m.raza}{m.raza}{#else}{m.tipo}{/if}</p>
+                        </div>
+                    </div>
+                    <ul class="hc-stats">
+                        <li><b>{m.proximas.size}</b><span>Próximas</span></li>
+                        <li><b>{m.completadas}</b><span>Completadas</span></li>
+                        <li><b>{m.canceladas}</b><span>Canceladas</span></li>
+                    </ul>
+                    <a class="hc-btn hc-btn--sec" href="/citas">
+                        <svg class="hc-ico" aria-hidden="true"><use href="#hc-plus"/></svg> Agendar nueva cita
+                    </a>
+                    <a class="hc-link" href="/mascotas/{m.id}">Ver perfil de {m.nombre}
+                        <svg class="hc-ico" aria-hidden="true"><use href="#hc-arrow"/></svg></a>
+                </aside>
+            </div>
+
+            {! ---------- Próximas citas ---------- !}
+            <section class="hc-panel hc-seccion">
+                <div class="hc-seccion__head">
+                    <h2><svg class="hc-ico" aria-hidden="true"><use href="#hc-cal"/></svg> Citas programadas</h2>
+                    {#if m.proximas.size > 0}<a class="hc-link" href="/citas">Reprogramar o cancelar
+                        <svg class="hc-ico" aria-hidden="true"><use href="#hc-arrow"/></svg></a>{/if}
+                </div>
+                {#if m.proximas.isEmpty}
+                    <p class="hc-lista-vacia">{m.nombre} no tiene citas programadas. <a href="/citas">Agenda una aquí</a>.</p>
+                {#else}
+                    <ul class="hc-lista">
+                        {#for c in m.proximas}
+                            {#include usuarios/components/historial-fila c=c /}
+                        {/for}
+                    </ul>
+                {/if}
+            </section>
+
+            {! ---------- Historial ---------- !}
+            <section class="hc-panel hc-seccion" data-historial>
+                <div class="hc-seccion__head">
+                    <h2><svg class="hc-ico" aria-hidden="true"><use href="#hc-history"/></svg> Historial de citas</h2>
+                    {#if m.pasadas.size > 0}
+                    <div class="hc-filtros" role="group" aria-label="Filtrar historial">
+                        <button type="button" class="hc-filtro is-active" data-filtro="todas" aria-pressed="true">Todas</button>
+                        <button type="button" class="hc-filtro" data-filtro="completada" aria-pressed="false">Completadas</button>
+                        <button type="button" class="hc-filtro" data-filtro="cancelada" aria-pressed="false">Canceladas</button>
+                    </div>
+                    {/if}
+                </div>
+                {#if m.pasadas.isEmpty}
+                    <p class="hc-lista-vacia">Todavía no hay citas anteriores de {m.nombre}.</p>
+                {#else}
+                    <ul class="hc-lista">
+                        {#for c in m.pasadas}
+                            {#include usuarios/components/historial-fila c=c /}
+                        {/for}
+                    </ul>
+                    <p class="hc-lista-vacia" data-sin-resultados hidden>No hay citas con ese estado.</p>
+                {/if}
+            </section>
+        </section>
+        {/for}
+    {/if}
+</main>
+
+<script src="/js/usuario/Navbar.js"></script>
+<script src="/js/usuario/historial.js" defer></script>
+</body>
+</html>

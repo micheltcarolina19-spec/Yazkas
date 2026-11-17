@@ -1,0 +1,19 @@
+{! Fila de una cita en el historial del cliente. Parámetro: c (HistorialClienteResource.CitaFila) !}
+<li class="hc-fila hc-fila--{c.estadoClase}" data-estado="{c.estadoClase}">
+    <span class="hc-fecha" aria-hidden="true">
+        <b>{c.dia}</b><small>{c.mes}</small>
+    </span>
+    <div class="hc-fila__info">
+        <p class="hc-fila__titulo">{c.fecha}</p>
+        <p class="hc-fila__meta">
+            <span><svg class="hc-ico" aria-hidden="true"><use href="#hc-clock"/></svg>{c.hora}</span>
+            <span><svg class="hc-ico" aria-hidden="true"><use href="#hc-scissors"/></svg>{c.servicios}</span>
+            {#if c.duracion}<span class="hc-fila__dur">{c.duracion}</span>{/if}
+        </p>
+        {#if c.companeros}<p class="hc-fila__con">Junto con <b>{c.companeros}</b></p>{/if}
+    </div>
+    <div class="hc-fila__estado">
+        <span class="hc-estado hc-estado--{c.estadoClase}">{c.estado}</span>
+        {#if c.conBitacora}<span class="hc-bit"><svg class="hc-ico" aria-hidden="true"><use href="#hc-check"/></svg>Bitácora registrada</span>{/if}
+    </div>
+</li>
