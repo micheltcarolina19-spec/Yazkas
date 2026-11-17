@@ -6,7 +6,7 @@
      - Con sesión: botón "Mi perfil" (cliente → /mascotas, admin → /admin) y botón para cerrar sesión.
      - Sin sesión: botón "Iniciar sesión" (→ /login).
    Acción principal: botón "Agendar cita" (ruta /citas). !}
-{#let activo=active.or('')}
+{#let activo = active.or('')}
 
     {! Sprite de iconos: se define una sola vez y se usa con <use href="#i-..."> !}
     <svg class="pc-sprite" aria-hidden="true" focusable="false">
@@ -30,17 +30,20 @@
             <path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/>
         </symbol>
         <symbol id="i-scissors" viewBox="0 0 24 24">
-            <circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/>
+            <circle cx="6" cy="6" r="2.6"/>
+            <circle cx="6" cy="18" r="2.6"/>
             <path d="M8 8l12 12M8 16 20 4"/>
         </symbol>
         <symbol id="i-heart" viewBox="0 0 24 24">
             <path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/>
         </symbol>
         <symbol id="i-bag" viewBox="0 0 24 24">
-            <path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+            <path d="M5 8h14l-1 12H6L5 8Z"/>
+            <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
         </symbol>
         <symbol id="i-mail" viewBox="0 0 24 24">
-            <rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7.5 8 5.5 8-5.5"/>
+            <rect x="3" y="5" width="18" height="14" rx="3"/>
+            <path d="m4 7.5 8 5.5 8-5.5"/>
         </symbol>
         <symbol id="i-calendar" viewBox="0 0 24 24">
             <rect x="3.5" y="5" width="17" height="15.5" rx="3"/>
@@ -66,8 +69,8 @@
             {! ---- LOGO / MARCA ---- !}
             <a class="pc-brand" href="/" aria-label="Yazka's, ir al inicio">
                 <span class="pc-brand__logo">
-                    <img src="/img/usuario/logo.png" width="800" alt="Logo de Yazka's">
-                </span>
+    <img src="/img/logo-pequeno.png" width="44" height="44" alt="Logo de Yazka's">
+</span>
                 <span class="pc-brand__text">
                     <strong>Yazka's</strong>
                     <small>Peluquería canina y felina</small>
@@ -84,15 +87,30 @@
 
                     <ul class="pc-links">
                         <li><a class="pc-link" href="/" {#if activo == 'inicio'}aria-current="page"{/if}>
-                                <svg class="pc-ico" aria-hidden="true"><use href="#i-home"/></svg>Inicio</a></li>
+                                <svg class="pc-ico" aria-hidden="true">
+                                    <use href="#i-home"/>
+                                </svg>
+                                Inicio</a></li>
                         <li><a class="pc-link" href="/servicios" {#if activo == 'servicios'}aria-current="page"{/if}>
-                                <svg class="pc-ico" aria-hidden="true"><use href="#i-scissors"/></svg>Servicios</a></li>
+                                <svg class="pc-ico" aria-hidden="true">
+                                    <use href="#i-scissors"/>
+                                </svg>
+                                Servicios</a></li>
                         <li><a class="pc-link" href="/catalogo" {#if activo == 'catalogo'}aria-current="page"{/if}>
-                                <svg class="pc-ico" aria-hidden="true"><use href="#i-bag"/></svg>Catálogo</a></li>
+                                <svg class="pc-ico" aria-hidden="true">
+                                    <use href="#i-bag"/>
+                                </svg>
+                                Catálogo</a></li>
                         <li><a class="pc-link" href="/nosotros" {#if activo == 'nosotros'}aria-current="page"{/if}>
-                                <svg class="pc-ico" aria-hidden="true"><use href="#i-heart"/></svg>Nosotros</a></li>
+                                <svg class="pc-ico" aria-hidden="true">
+                                    <use href="#i-heart"/>
+                                </svg>
+                                Nosotros</a></li>
                         <li><a class="pc-link" href="/contacto" {#if activo == 'contacto'}aria-current="page"{/if}>
-                                <svg class="pc-ico" aria-hidden="true"><use href="#i-mail"/></svg>Contacto</a></li>
+                                <svg class="pc-ico" aria-hidden="true">
+                                    <use href="#i-mail"/>
+                                </svg>
+                                Contacto</a></li>
                     </ul>
 
                     <div class="pc-actions">
@@ -105,7 +123,9 @@
                                 {#if inject:sesion.admin}Panel admin{#else}Mi perfil{/if}
                             </a>
                             <a class="pc-logout" href="/logout" aria-label="Cerrar sesión" title="Cerrar sesión">
-                                <svg class="pc-ico" aria-hidden="true"><use href="#i-logout"/></svg>
+                                <svg class="pc-ico" aria-hidden="true">
+                                    <use href="#i-logout"/>
+                                </svg>
                                 <span class="pc-logout__text">Cerrar sesión</span>
                             </a>
                         {#else}
@@ -119,7 +139,9 @@
                         {/if}
 
                         <a class="pc-cta" href="/citas">
-                            <svg class="pc-ico" aria-hidden="true"><use href="#i-calendar"/></svg>
+                            <svg class="pc-ico" aria-hidden="true">
+                                <use href="#i-calendar"/>
+                            </svg>
                             Agendar cita
                         </a>
                     </div>

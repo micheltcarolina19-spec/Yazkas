@@ -67,8 +67,11 @@ public final class HistorialMascotaPdf {
     }
 
     // historia puede ser null (la mascota aún no tiene historia clínica)
+    // historia puede ser null (la mascota aún no tiene historia clínica)
+// fotoMascota puede ser null (sin foto en disco; se intenta data URI o ruta estática)
     public static byte[] generar(Mascota mascota, HistoriaClinica historia,
-                                 List<Vacunacion> vacunaciones, List<Desparasitacion> desparasitaciones) {
+                                 List<Vacunacion> vacunaciones, List<Desparasitacion> desparasitaciones,
+                                 byte[] fotoMascota) {
         Document document = new Document(PageSize.LETTER, 36, 36, 36, 64);
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
@@ -78,7 +81,7 @@ public final class HistorialMascotaPdf {
 
             document.add(encabezado());
             document.add(titulo("Historial Clínico"));
-            document.add(fichaMascota(mascota));
+            document.add(fichaMascota(mascota, fotoMascota));
             document.add(propietario(mascota.getUsuario()));
             document.add(historiaClinica(historia));
             document.add(tablaVacunaciones(vacunaciones));
@@ -136,7 +139,7 @@ public final class HistorialMascotaPdf {
     }
 
     // Datos de la mascota a la izquierda, foto a la derecha
-    private static PdfPTable fichaMascota(Mascota m) {
+    private static PdfPTable fichaMascota(Mascota m, byte[] fotoBytes) {
         PdfPTable datos = infoTable("Datos de la Mascota", new String[][]{
                 {"Nombre:", texto(m.getNombre())},
                 {"Tipo / Raza:", texto(m.getTipo()) + " / " + texto(m.getRaza())},
@@ -159,7 +162,8 @@ public final class HistorialMascotaPdf {
         izquierda.setBorder(Rectangle.NO_BORDER);
         ficha.addCell(izquierda);
 
-        Image foto = cargarFoto(m.getFotoMascota(), 120);
+        // Primero la foto guardada en disco; si no hay, data URI o ruta estática (fotos antiguas)
+        Image foto = fotoBytes != null ? imagenDesdeBytes(fotoBytes, 120) : cargarFoto(m.getFotoMascota(), 120);
         PdfPCell derecha = foto != null
                 ? celdaImagen(foto, Element.ALIGN_CENTER)
                 : celdaTexto("Sin foto", Element.ALIGN_CENTER);
@@ -403,6 +407,25 @@ public final class HistorialMascotaPdf {
         Image imagen = Image.getInstance(bytes);
         imagen.scaleToFit(maximo, maximo);
         return imagen;
+    }
+
+    // OpenPDF lee JPG/PNG/GIF; si el formato no lo reconoce (p. ej. WebP) se convierte a PNG con ImageIO
+    private static Image imagenDesdeBytes(byte[] bytes, float maximo) {
+        try {
+            return escalar(bytes, maximo);
+        } catch (Exception e) {
+            try {
+                java.awt.image.BufferedImage img = javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(bytes));
+                if (img == null) {
+                    return null;
+                }
+                ByteArrayOutputStream png = new ByteArrayOutputStream();
+                javax.imageio.ImageIO.write(img, "png", png);
+                return escalar(png.toByteArray(), maximo);
+            } catch (Exception ex) {
+                return null;
+            }
+        }
     }
 
     // Franja azul al pie de cada página

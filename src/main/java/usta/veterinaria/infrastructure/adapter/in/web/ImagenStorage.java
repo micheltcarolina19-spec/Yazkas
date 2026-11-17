@@ -114,6 +114,25 @@ public class ImagenStorage {
         });
     }
 
+    // Lee los bytes de una imagen propia (/uploads/{carpeta}/{nombre}); vacío si no existe o es externa
+    public Optional<byte[]> leer(String url) {
+        if (url == null || !url.startsWith(RAIZ_URL)) {
+            return Optional.empty();
+        }
+        String[] partes = url.substring(RAIZ_URL.length()).split("/");
+        if (partes.length != 2) {
+            return Optional.empty();
+        }
+        return ubicar(partes[0], partes[1]).map(ruta -> {
+            try {
+                return Files.readAllBytes(ruta);
+            } catch (IOException e) {
+                LOG.warn("No se pudo leer la imagen " + url, e);
+                return null;
+            }
+        });
+    }
+
     private String detectarExtension(Path ruta) {
         byte[] b;
         try (InputStream in = Files.newInputStream(ruta)) {

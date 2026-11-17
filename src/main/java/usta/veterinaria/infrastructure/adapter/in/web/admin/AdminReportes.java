@@ -30,7 +30,7 @@ import java.util.Locale;
 
 // import jakarta.annotation.security.RolesAllowed;   // <- descomentar cuando exista seguridad (login)
 
-// Adaptador de entrada web: página de reportes del admin y descarga del historial clínico en PDF
+import usta.veterinaria.infrastructure.adapter.in.web.ImagenStorage;
 @Path("/admin/reportes")
 // @RolesAllowed("ADMINISTRADOR")
 public class AdminReportes {
@@ -38,6 +38,10 @@ public class AdminReportes {
     @Inject
     @Location("admin/adminReportes.html")
     Template index;
+
+
+    @Inject
+    ImagenStorage imagenes;
 
     @Inject
     GestionarUsuariosUseCase usuarios;
@@ -80,7 +84,8 @@ public class AdminReportes {
                 mascota,
                 historiaOpcional(mascota.getId()),
                 salud.listarVacunaciones(mascota.getId()),
-                salud.listarDesparasitaciones(mascota.getId()));
+                salud.listarDesparasitaciones(mascota.getId()),
+                imagenes.leer(mascota.getFotoMascota()).orElse(null));
 
         return Response.ok(pdf)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
