@@ -2,7 +2,6 @@ package usta.veterinaria.infrastructure.adapter.in.web.usuario;
 
 import io.quarkus.qute.Location;
 import io.quarkus.qute.Template;
-import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -20,17 +19,18 @@ public class PaginaResource {
     @Location("usuarios/index.html")   // ruta dentro de src/main/resources/templates/
     Template index;
 
+    // Home (página pública). Al cerrar sesión, /logout borra la cookie y vuelve aquí como visitante.
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance inicio() {
-        return index.instance();
+    public Response inicio() {
+        return Response.ok(index.instance()).build();
     }
 
-    // "Agregar mascota" ahora lo atiende AgregarMascotaResource (GET /mascotas/agregar),
+    // "Agregar mascota" lo atiende AgregarMascotaResource (GET /mascotas/agregar),
     // que toma el dueño de la sesión en lugar de ?usuarioId=.
 
-    // Enlace antiguo /mascotas/perfil?id=5 (lo usa agregar-mascota.js):
-    // redirige a /mascotas/{id} de PerfilMascotaResource, que valida que la mascota sea del usuario en sesión.
+    // Enlace antiguo /mascotas/perfil?id=5: redirige a /mascotas/{id} de PerfilMascotaResource,
+    // que valida que la mascota sea del usuario en sesión.
     @GET
     @Path("mascotas/perfil")
     public Response perfilMascota(@QueryParam("id") Long id) {

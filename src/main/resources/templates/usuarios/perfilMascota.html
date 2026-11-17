@@ -267,6 +267,17 @@
                 </div>
             </section>
 
+            {! Cambiar de mascota: solo aparece si el dueño tiene más de una (lo llena perfil-mascota.js) !}
+            <section class="am-card pm-card pm-otras" id="pm-otras" aria-labelledby="pm-otras-title" hidden>
+                <h2 class="am-card__title pm-card__title" id="pm-otras-title">
+                    <span class="pm-circle pm-circle--sm"><svg class="am-ico am-ico--solid" aria-hidden="true"><use href="#i-paw-solid"/></svg></span>
+                    Mis Mascotas
+                    <span class="pm-otras__count" id="pm-otras-count"></span>
+                </h2>
+                <p class="pm-otras__hint">Toca una mascota para ver su perfil.</p>
+                <div class="pm-otras__lista" id="pm-otras-lista"></div>
+            </section>
+
             <a class="am-btn am-btn--outline pm-add" id="pm-agregar" href="/mascotas/agregar">
                 <svg class="am-ico" aria-hidden="true"><use href="#pm-plus"/></svg>
                 Agregar Otra Mascota

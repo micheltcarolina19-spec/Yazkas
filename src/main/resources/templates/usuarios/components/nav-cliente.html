@@ -1,8 +1,8 @@
 {! ===== Navbar del área de cliente (usuario con sesión) =====
-   Reutiliza las clases pc- de Navbar.css y añade las de nav-cliente.css.
    Uso:  {#include usuarios/components/nav-cliente active='mascotas' /}
-   Valores de "active": inicio | mascotas | citas | historial | configuracion
-   Parámetro opcional "nombre": nombre del cliente que se muestra junto al avatar. !}
+   Valores de "active": mascotas | citas | historial
+   Parámetro opcional "nombre": nombre del cliente que se muestra junto al avatar.
+   La bolita del perfil abre un menú (clic o mouse encima) con "Cerrar sesión" -> /logout -> home. !}
 {#let activo=(active or '') cliente=(nombre or 'Mi cuenta')}
 
     <svg class="pc-sprite" aria-hidden="true" focusable="false">
@@ -30,10 +30,6 @@
                 <ellipse cx="38.5" cy="22" rx="4.2" ry="5.6" transform="rotate(18 38.5 22)"/>
             </g>
         </symbol>
-        <symbol id="i-home" viewBox="0 0 24 24">
-            <path d="M3 10.5 12 3l9 7.5"/>
-            <path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/>
-        </symbol>
         <symbol id="i-calendar" viewBox="0 0 24 24">
             <rect x="3.5" y="5" width="17" height="15.5" rx="3"/>
             <path d="M8 3v4M16 3v4M3.5 10h17M8 14h2M14 14h2M8 17.5h2"/>
@@ -41,10 +37,6 @@
         <symbol id="i-history" viewBox="0 0 24 24">
             <path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/>
             <path d="M3 4v4h4M12 7.5V12l3 2"/>
-        </symbol>
-        <symbol id="i-gear" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>
         </symbol>
         <symbol id="i-bell" viewBox="0 0 24 24">
             <path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16Z"/>
@@ -54,12 +46,19 @@
             <circle cx="12" cy="8.5" r="4"/>
             <path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/>
         </symbol>
+        <symbol id="i-chevron" viewBox="0 0 24 24">
+            <path d="m6 9 6 6 6-6"/>
+        </symbol>
+        <symbol id="i-logout" viewBox="0 0 24 24">
+            <path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"/>
+            <path d="M15 8l4 4-4 4M19 12H9"/>
+        </symbol>
     </svg>
 
     <header class="pc-header">
         <nav class="pc-nav pc-nav--cliente" aria-label="Navegación del cliente">
 
-            <a class="pc-brand" href="/" aria-label="Ir al inicio">
+            <a class="pc-brand" href="/mascotas" aria-label="Ir a mis mascotas">
                 <span class="pc-brand__logo">
                     <img src="/img/usuario/logo.png" alt="Logo Yazkas Peluquería Canina">
                 </span>
@@ -78,28 +77,45 @@
                 <div class="pc-menu__inner">
 
                     <ul class="pc-links">
-                        <li><a class="pc-link" href="/" {#if activo == 'inicio'}aria-current="page"{/if}>
-                                <svg class="pc-ico" aria-hidden="true"><use href="#i-home"/></svg>Inicio</a></li>
                         <li><a class="pc-link" href="/mascotas" {#if activo == 'mascotas'}aria-current="page"{/if}>
                                 <svg class="pc-ico pc-ico--solid" aria-hidden="true"><use href="#i-paw-solid"/></svg>Mis Mascotas</a></li>
                         <li><a class="pc-link" href="/citas" {#if activo == 'citas'}aria-current="page"{/if}>
                                 <svg class="pc-ico" aria-hidden="true"><use href="#i-calendar"/></svg>Citas</a></li>
                         <li><a class="pc-link" href="/historial" {#if activo == 'historial'}aria-current="page"{/if}>
                                 <svg class="pc-ico" aria-hidden="true"><use href="#i-history"/></svg>Historial</a></li>
-                        <li><a class="pc-link" href="/configuracion" {#if activo == 'configuracion'}aria-current="page"{/if}>
-                                <svg class="pc-ico" aria-hidden="true"><use href="#i-gear"/></svg>Configuración</a></li>
                     </ul>
 
                     <div class="pc-actions pc-actions--cliente">
                         <button class="pc-bell" type="button" aria-label="Notificaciones">
                             <svg class="pc-ico" aria-hidden="true"><use href="#i-bell"/></svg>
                         </button>
-                        <span class="pc-user">
-                            <span class="pc-user__avatar" aria-hidden="true">
-                                <svg class="pc-ico"><use href="#i-user"/></svg>
-                            </span>
-                            <span class="pc-user__name">{cliente}</span>
-                        </span>
+
+                        <div class="pc-account" data-pc-account>
+                            <button class="pc-user pc-account__btn" type="button"
+                                    aria-haspopup="true" aria-expanded="false" aria-controls="pc-account-menu">
+                                <span class="pc-user__avatar" aria-hidden="true">
+                                    <svg class="pc-ico"><use href="#i-user"/></svg>
+                                </span>
+                                <span class="pc-user__name">{cliente}</span>
+                                <svg class="pc-ico pc-account__chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+                            </button>
+
+                            <div class="pc-account__menu" id="pc-account-menu">
+                                <div class="pc-account__head">
+                                    <span class="pc-user__avatar" aria-hidden="true">
+                                        <svg class="pc-ico"><use href="#i-user"/></svg>
+                                    </span>
+                                    <span>
+                                        <small>Sesión iniciada como</small>
+                                        <b>{cliente}</b>
+                                    </span>
+                                </div>
+                                <a class="pc-account__item pc-account__item--salir" href="/logout">
+                                    <svg class="pc-ico" aria-hidden="true"><use href="#i-logout"/></svg>
+                                    Cerrar sesión
+                                </a>
+                            </div>
+                        </div>
                     </div>
 
                 </div>

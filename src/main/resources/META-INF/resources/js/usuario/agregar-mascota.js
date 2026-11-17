@@ -1,14 +1,22 @@
-// Agregar mascota (cliente con sesión) — mismos pasos y validaciones de la mascota en /registro.
+// Agregar / Editar mascota (cliente con sesión) — mismos pasos y validaciones de la mascota en /registro.
+// La plantilla dice el modo en <form data-modo="agregar|editar" data-mascota-id="...">.
 // Endpoints existentes:
 //   POST /uploads/mascotas                            -> sube la foto y devuelve { url }
-//   POST /api/usuarios/{usuarioId}/mascotas           -> crea la mascota
-//   POST /api/mascotas/{mascotaId}/historia-clinica   -> historia clínica (solo si se llenó)
+//   POST /api/usuarios/{usuarioId}/mascotas           -> crea la mascota            (agregar)
+//   GET  /api/mascotas/{id}                           -> datos actuales             (editar)
+//   PUT  /api/mascotas/{id}                           -> guarda los cambios         (editar)
+//   GET|POST|PUT /api/mascotas/{id}/historia-clinica  -> historia clínica (404 en GET = aún no tiene)
 (() => {
     const $ = (s, r = document) => r.querySelector(s);
     const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     const MAX = 5 * 1024 * 1024;
     const PRIMERO = 1, ULTIMO = 3;
-    const S = { step: PRIMERO, usuarioId: ($('#form').dataset.usuarioId || '').trim(), foto: '', subiendo: false, nombres: [], ultimoId: null };
+    const form = $('#form');
+    const S = {
+        step: PRIMERO, usuarioId: (form.dataset.usuarioId || '').trim(), foto: '', subiendo: false, nombres: [], ultimoId: null,
+        editar: form.dataset.modo === 'editar', mascotaId: (form.dataset.mascotaId || '').trim(),
+        tieneHistoria: false, tempExtra: []   // tempExtra: temperamentos guardados que no están en los chips
+    };
 
     const RAZAS = {
         perro: ['Criollo', 'Golden Retriever', 'Labrador', 'Pastor Alemán', 'Bulldog Francés', 'Poodle', 'Schnauzer', 'Shih Tzu', 'Yorkshire Terrier', 'Chihuahua', 'Pug', 'Beagle', 'Husky Siberiano', 'Rottweiler', 'Pinscher', 'Cocker Spaniel', 'Maltés', 'Border Collie'],
@@ -80,9 +88,9 @@
         $$('#stepper li').forEach(li => { const k = +li.dataset.s; li.classList.toggle('active', k === n); li.classList.toggle('done', k < n); });
         $('#bar').style.width = ((n - PRIMERO) / (ULTIMO - PRIMERO) * 100) + '%';
         $('#atras').hidden = n === PRIMERO;
-        $('#omitir').hidden = n !== ULTIMO;
+        $('#omitir').hidden = n !== ULTIMO || S.editar;
         $('#siguiente').innerHTML = n === ULTIMO
-            ? '<i class="bi bi-check2-circle"></i> Guardar mascota'
+            ? '<i class="bi bi-check2-circle"></i> ' + (S.editar ? 'Guardar cambios' : 'Guardar mascota')
             : 'Continuar <i class="bi bi-arrow-right"></i>';
         $('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -132,6 +140,11 @@
         $('.cnt', a).textContent = n ? n + (n > 1 ? ' campos' : ' campo') : '';
     }));
     const tri = n => ({ si: true, no: false })[$(`input[name=${n}]:checked`).value] ?? null;
+    const historiaVacia = () => {
+        const h = { esterilizacion: tri('esterilizacion'), presenciaParasitos: tri('presenciaParasitos') };
+        $$('[data-h]').forEach(e => h[e.dataset.h] = null);
+        return h;
+    };
     function historia() {
         const h = { esterilizacion: tri('esterilizacion'), presenciaParasitos: tri('presenciaParasitos') };
         const det = $('input[name=hc]:checked').value === 'si';
@@ -155,7 +168,7 @@
             nombre: $('#mNombre').value.trim(), fechaNacimiento: $('#mFecha').value, tipo: tipoActual(),
             raza: $('#mRaza').value.trim(), sexo: $('#mSexo').value, tamano: num($('#mTamano').value), peso: num($('#mPeso').value),
             color: $('#mColor').value.trim(), pelaje: $('#mPelaje').value, observaciones: obs || null,
-            fotoMascota: S.foto || null, temperamento: $$('#temp .chip.on').map(c => c.dataset.v).join(', ') || null,
+            fotoMascota: S.foto || null, temperamento: [...$$('#temp .chip.on').map(c => c.dataset.v), ...S.tempExtra].join(', ') || null,
             nivelAgresividad: $('#mAgr').value, usaBozal: $('#mBozal').checked, fobias: fobias || null,
             sociable: $('#mSociable').checked, energia: $('#mEnergia').value
         };
@@ -170,21 +183,31 @@
         const hist = omitir ? null : historia();
         try {
             const body = mascota();
-            const r = await fetch(`/api/usuarios/${encodeURIComponent(S.usuarioId)}/mascotas`, {
-                method: 'POST', credentials: 'same-origin',
-                headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-            });
+            const r = S.editar
+                ? await fetch(`/api/mascotas/${encodeURIComponent(S.mascotaId)}`, {
+                    method: 'PUT', credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+                })
+                : await fetch(`/api/usuarios/${encodeURIComponent(S.usuarioId)}/mascotas`, {
+                    method: 'POST', credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+                });
             if (!r.ok) throw new Error(await msgError(r));
             const data = await r.json().catch(() => ({}));
+            if (S.editar && data.id == null) data.id = S.mascotaId;
 
+            // La historia va por su propio endpoint: POST si no tenía, PUT si ya existía.
+            // Al editar una historia existente se envía aunque quede vacía (así se pueden borrar datos).
             S.aviso = '';
-            if (hist && data.id != null) {   // la historia va por su propio endpoint
+            const historiaAEnviar = hist || (S.editar && S.tieneHistoria ? historiaVacia() : null);
+            if (historiaAEnviar && data.id != null) {
                 try {
                     const h = await fetch(`/api/mascotas/${data.id}/historia-clinica`, {
-                        method: 'POST', credentials: 'same-origin',
-                        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(hist)
+                        method: S.editar && S.tieneHistoria ? 'PUT' : 'POST', credentials: 'same-origin',
+                        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(historiaAEnviar)
                     });
                     if (!h.ok) throw 0;
+                    if (S.editar) S.tieneHistoria = true;
                 } catch { S.aviso = 'No pudimos guardar el historial clínico; podrás completarlo después.'; }
             }
             S.ultimoId = data.id ?? null;
@@ -198,10 +221,18 @@
     function exito(nombre) {
         $('#form').hidden = true; $('#stepper').hidden = true; $('#done').hidden = false;
         $('#titulo').textContent = '¡Listo!';
-        $('#subtitulo').textContent = `${nombre} ya hace parte de la familia Yazka’s`;
-        $('#doneTexto').textContent = S.nombres.length > 1 ? 'Mascotas registradas en esta sesión:' : 'Tu mascota ya está registrada. ¿Tienes más?';
-        if (S.aviso) $('#doneTexto').textContent += ' ' + S.aviso;
-        $('#added').innerHTML = S.nombres.map(n => `<li><i class="bi bi-balloon-heart-fill"></i> ${n.replace(/</g, '&lt;')}</li>`).join('');
+        if (S.editar) {
+            $('#doneTitulo').textContent = '¡Cambios guardados!';
+            $('#subtitulo').textContent = `Actualizamos la información de ${nombre}`;
+            $('#doneTexto').textContent = 'La información de tu mascota quedó al día.' + (S.aviso ? ' ' + S.aviso : '');
+            $('#added').innerHTML = '';
+            $('#otra').hidden = true;
+        } else {
+            $('#subtitulo').textContent = `${nombre} ya hace parte de la familia Yazka’s`;
+            $('#doneTexto').textContent = S.nombres.length > 1 ? 'Mascotas registradas en esta sesión:' : 'Tu mascota ya está registrada. ¿Tienes más?';
+            if (S.aviso) $('#doneTexto').textContent += ' ' + S.aviso;
+            $('#added').innerHTML = S.nombres.map(n => `<li><i class="bi bi-balloon-heart-fill"></i> ${n.replace(/</g, '&lt;')}</li>`).join('');
+        }
         const ver = $('#verPerfil');
         ver.href = S.ultimoId != null ? `/mascotas/${encodeURIComponent(S.ultimoId)}` : '/mascotas';
         ver.innerHTML = `Ver perfil de ${nombre.replace(/</g, '&lt;')} <i class="bi bi-arrow-right"></i>`;
@@ -224,5 +255,95 @@
         ir(PRIMERO);
     });
 
+    // ---------- modo edición: cargar los datos actuales en el formulario
+    const marcarRadio = (name, value) => { const r = $(`input[name="${name}"][value="${value}"]`); if (r) r.checked = true; };
+    const triValor = b => (b === true ? 'si' : b === false ? 'no' : 'ns');
+    const ponerSelect = (sel, v) => { if (v != null && [...$(sel).options].some(o => o.value === v)) $(sel).value = v; };
+    const numTexto = v => (v == null ? '' : String(v).replace('.', ','));
+
+    // Marca los chips que coinciden y devuelve lo que no está en los chips
+    function marcarChips(contenedor, texto) {
+        const valores = (texto || '').split(',').map(t => t.trim()).filter(Boolean);
+        const resto = [];
+        valores.forEach(v => {
+            const chip = $$(`${contenedor} .chip`).find(c => c.dataset.v.toLowerCase() === v.toLowerCase());
+            if (chip) chip.classList.add('on'); else resto.push(v);
+        });
+        return resto;
+    }
+
+    function llenarMascota(m) {
+        $('#mNombre').value = m.nombre || '';
+        $('#mFecha').value = m.fechaNacimiento || '';
+        if (m.tipo) { marcarRadio('tipo', m.tipo); pintarTipo(); }
+        $('#mRaza').value = m.raza || '';
+        ponerSelect('#mSexo', m.sexo);
+        $('#mColor').value = m.color || '';
+        $('#mTamano').value = numTexto(m.tamano);
+        $('#mPeso').value = numTexto(m.peso);
+        ponerSelect('#mPelaje', m.pelaje);
+        ponerSelect('#mEnergia', m.energia);
+        ponerSelect('#mAgr', m.nivelAgresividad);
+
+        S.tempExtra = marcarChips('#temp', m.temperamento);
+        $('#fobiaOtra').value = marcarChips('#fobias', m.fobias).join(', ');
+
+        $('#mSociable').checked = m.sociable !== false;
+        $('#mBozal').checked = m.usaBozal === true;
+        let obs = (m.observaciones || '').trim();
+        const ESPECIAL = 'Requiere cuidados especiales.';
+        $('#mEspecial').checked = obs.startsWith(ESPECIAL);
+        if (obs.startsWith(ESPECIAL)) obs = obs.slice(ESPECIAL.length).trim();
+        $('#mObs').value = obs;
+        $$('.switch input').forEach(i => i.dispatchEvent(new Event('change')));
+
+        if (m.fotoMascota) {
+            S.foto = m.fotoMascota;
+            $('#prevImg').src = m.fotoMascota;
+            $('#preview').hidden = false; $('#dropBody').hidden = true;
+            estado('Foto actual', 'ok');
+        }
+    }
+
+    function llenarHistoria(h) {
+        marcarRadio('esterilizacion', triValor(h.esterilizacion));
+        marcarRadio('presenciaParasitos', triValor(h.presenciaParasitos));
+        let hayTexto = false;
+        $$('[data-h]').forEach(e => { e.value = h[e.dataset.h] || ''; if (e.value) hayTexto = true; });
+        marcarRadio('hc', hayTexto ? 'si' : 'no');
+        $('#hcDetalle').hidden = !hayTexto;
+        $$('.acc').forEach(a => {
+            a.dispatchEvent(new Event('input'));
+            if ($$('[data-h]', a).some(i => i.value)) a.open = true;
+        });
+    }
+
+    async function iniciarEdicion() {
+        $('#titulo').textContent = 'Editar información';
+        $('#subtitulo').textContent = 'Actualiza los datos de tu mascota';
+        $('#volver').href = `/mascotas/${encodeURIComponent(S.mascotaId)}`;
+        $('#volver').innerHTML = '<i class="bi bi-arrow-left"></i> Volver al perfil';
+        $$('.step[data-step="1"] .step-head h2').forEach(h => h.textContent = 'Paso 1. Datos de tu mascota');
+        $$('.step[data-step="1"] .step-head p').forEach(p => p.textContent = 'Revisa y corrige la información de tu mascota');
+        $('#form').hidden = true; $('#cargando').hidden = false;
+        try {
+            const r = await fetch(`/api/mascotas/${encodeURIComponent(S.mascotaId)}`, { credentials: 'same-origin', headers: { Accept: 'application/json' } });
+            if (!r.ok) throw new Error(await msgError(r));
+            const m = await r.json();
+            llenarMascota(m);
+            $('#titulo').textContent = `Editar a ${m.nombre}`;
+            document.title = `Editar a ${m.nombre} · Yazkas Peluquería Canina`;
+
+            const h = await fetch(`/api/mascotas/${encodeURIComponent(S.mascotaId)}/historia-clinica`, { credentials: 'same-origin', headers: { Accept: 'application/json' } });
+            if (h.ok) { S.tieneHistoria = true; llenarHistoria(await h.json()); }
+            $('#form').hidden = false;
+        } catch (e) {
+            alerta('No pudimos cargar la información de tu mascota. ' + e.message);
+        } finally {
+            $('#cargando').hidden = true;
+        }
+    }
+
     ir(PRIMERO);
+    if (S.editar) iniciarEdicion();
 })();

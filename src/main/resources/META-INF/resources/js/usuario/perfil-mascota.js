@@ -2,6 +2,8 @@
 //   GET /api/mascotas/{id}
 //   GET /api/usuarios/{usuarioId}
 //   GET /api/mascotas/{id}/historia-clinica   (botón "Descargar Historia Clínica")
+//   GET /api/usuarios/{usuarioId}/mascotas    (tarjeta "Mis Mascotas" para cambiar de perfil)
+// "Editar Información" lleva a /mascotas/{id}/editar (mismo formulario de "Agregar Mascota").
 (() => {
     const main = document.getElementById('contenido');
     if (!main) return;
@@ -134,9 +136,8 @@
             img.src = m.fotoMascota;
         }
 
-        if (m.usuarioId != null) {
-            $('#pm-agregar').href = `/mascotas/agregar?usuarioId=${encodeURIComponent(m.usuarioId)}`;
-        }
+        // El dueño sale de la sesión: ya no hace falta ?usuarioId=
+        $('#pm-agregar').href = '/mascotas/agregar';
         document.title = `${m.nombre} · Perfil de Mascota · Yazkas`;
     };
 
@@ -228,11 +229,41 @@
     });
 
     /* ======================= Editar ======================= */
-    // Aún no existe una vista de edición; el API ya tiene PUT /api/mascotas/{id} para cuando se construya.
+    // Abre el formulario de edición (misma vista de "Agregar Mascota" en modo editar)
     $$('[data-pm-editar]').forEach((btn) => btn.addEventListener('click', () => {
-        mostrarAlerta('info', 'La edición de la información estará disponible muy pronto.',
-            'Mientras tanto, si necesitas corregir algún dato, comunícate con la peluquería.');
+        if (mascota && mascota.id != null) {
+            location.href = `/mascotas/${encodeURIComponent(mascota.id)}/editar`;
+        }
     }));
+
+    /* ======================= Mis Mascotas (cambiar de perfil) ======================= */
+    const pintarOtras = (lista, actualId) => {
+        const caja = $('#pm-otras');
+        if (!caja || !Array.isArray(lista) || lista.length < 2) return;   // con una sola mascota no se muestra
+
+        // Primero la que se está viendo, luego las demás por nombre
+        const ordenadas = [...lista].sort((a, b) =>
+            (String(b.id) === String(actualId)) - (String(a.id) === String(actualId))
+            || String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es'));
+
+        $('#pm-otras-count').textContent = String(lista.length);
+        $('#pm-otras-lista').innerHTML = ordenadas.map((m) => {
+            const actual = String(m.id) === String(actualId);
+            const nombre = escapar(m.nombre || 'Mascota');
+            const detalle = escapar([capitalizar(m.tipo), m.raza].filter(Boolean).join(' · '));
+            // Inicial de respaldo; si hay foto se pone encima y, si no carga, se quita y queda la inicial
+            const inicial = escapar(String(m.nombre || 'M').trim().charAt(0).toUpperCase());
+            const foto = `<span class="pm-otra__ini">${inicial}${m.fotoMascota
+                ? `<img src="${escapar(m.fotoMascota)}" alt="" loading="lazy" onerror="this.remove()">` : ''}</span>`;
+            const contenido = `${foto}
+                <span class="pm-otra__txt"><b>${nombre}</b><small>${detalle || '—'}</small></span>
+                ${actual ? '<span class="pm-otra__tag">Viendo</span>' : '<span class="pm-otra__ir" aria-hidden="true">›</span>'}`;
+            return actual
+                ? `<div class="pm-otra is-actual" aria-current="page">${contenido}</div>`
+                : `<a class="pm-otra" href="/mascotas/${encodeURIComponent(m.id)}" aria-label="Ver el perfil de ${nombre}">${contenido}</a>`;
+        }).join('');
+        caja.hidden = false;
+    };
 
     /* ======================= Carga inicial ======================= */
     const cargar = async () => {
@@ -262,6 +293,13 @@
             try { dueno = await getJson(`/api/usuarios/${encodeURIComponent(mascota.usuarioId)}`); } catch (_) { /* respaldo */ }
         }
         pintarDueno(dueno, mascota.nombrePropietario);
+
+        // Las demás mascotas del dueño (si falla, simplemente no se muestra la tarjeta)
+        if (mascota.usuarioId != null) {
+            try {
+                pintarOtras(await getJson(`/api/usuarios/${encodeURIComponent(mascota.usuarioId)}/mascotas`), mascota.id);
+            } catch (_) { /* opcional */ }
+        }
 
         status.hidden = true;
         layout.hidden = false;

@@ -1,30 +1,30 @@
-// PetCare · comportamiento del navbar (menú móvil + sombra al hacer scroll)
+// Menú de la cuenta del cliente (nav-cliente.html): se abre con clic o pasando el mouse
+// y tiene "Cerrar sesión" (/logout borra la cookie y lleva al home sin sesión).
 (() => {
-    const header = document.querySelector('.pc-header');
-    const toggle = document.querySelector('.pc-toggle');
-    const menu = document.getElementById('pc-menu');
-    if (!header || !toggle || !menu) return;
+    const cuenta = document.querySelector('[data-pc-account]');
+    if (!cuenta) return;
+    const btn = cuenta.querySelector('.pc-account__btn');
+    const conMouse = window.matchMedia('(hover: hover) and (min-width: 901px)');
+    let cerrarTimer = null;
 
-    const setOpen = (open) => {
-        toggle.setAttribute('aria-expanded', String(open));
-        toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
-        menu.classList.toggle('is-open', open);
+    const abrir = (open) => {
+        clearTimeout(cerrarTimer);
+        cuenta.classList.toggle('is-open', open);
+        btn.setAttribute('aria-expanded', String(open));
     };
 
-    // Abrir / cerrar con el botón
-    toggle.addEventListener('click', () =>
-        setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        abrir(!cuenta.classList.contains('is-open'));
+    });
 
-    // Cerrar al elegir un enlace o al pulsar Escape
-    menu.addEventListener('click', (e) => { if (e.target.closest('a')) setOpen(false); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+    cuenta.addEventListener('mouseenter', () => { if (conMouse.matches) abrir(true); });
+    cuenta.addEventListener('mouseleave', () => {
+        if (conMouse.matches) cerrarTimer = setTimeout(() => abrir(false), 180);
+    });
 
-    // Al pasar a pantalla ancha, dejar el menú cerrado y limpio
-    window.matchMedia('(min-width: 901px)')
-        .addEventListener('change', (e) => { if (e.matches) setOpen(false); });
-
-    // Refuerza la sombra cuando la página baja
-    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('click', (e) => { if (!cuenta.contains(e.target)) abrir(false); });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && cuenta.classList.contains('is-open')) { abrir(false); btn.focus(); }
+    });
 })();

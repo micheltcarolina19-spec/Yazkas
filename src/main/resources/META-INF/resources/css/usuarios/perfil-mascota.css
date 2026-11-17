@@ -225,3 +225,38 @@
     .pm-status__paw { animation: none; }
     .pm-photo__edit { transition: none; }
 }
+
+/* ===== Mis Mascotas: cambiar al perfil de otra mascota ===== */
+.pm-otras[hidden] { display: none; }
+.pm-otras__count {
+    margin-left: auto; min-width: 26px; height: 26px; padding: 0 8px; border-radius: 999px;
+    display: inline-grid; place-items: center; font-size: .8rem; font-weight: 700;
+    color: #fff; background: linear-gradient(135deg, #2f95e0, #1f64aa);
+}
+.pm-otras__hint { margin: .2rem 0 .8rem; font-size: .82rem; color: #6b829f; }
+.pm-otras__lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: .75rem; }
+.pm-otra {
+    display: flex; align-items: center; gap: .75rem; padding: .65rem .8rem; min-width: 0;
+    border: 1.5px solid #d6e8f8; border-radius: 16px; background: #fff;
+    color: inherit; text-decoration: none; transition: border-color .2s, box-shadow .2s, transform .2s;
+}
+a.pm-otra:hover, a.pm-otra:focus-visible {
+    border-color: #2f95e0; transform: translateY(-2px);
+    box-shadow: 0 10px 22px -12px rgba(31, 100, 170, .55); outline: none;
+}
+.pm-otra.is-actual { border-color: #2f95e0; background: linear-gradient(135deg, #eef7ff, #e3f1fd); cursor: default; }
+.pm-otra__ini {
+    position: relative; overflow: hidden; width: 48px; height: 48px; flex: none; border-radius: 50%;
+    display: grid; place-items: center; background: #d6ebfc; color: #1f64aa; font-weight: 700; font-size: 1.15rem;
+    border: 2px solid #fff; box-shadow: 0 4px 10px rgba(31, 100, 170, .2);
+}
+.pm-otra__ini img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pm-otra__txt { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.pm-otra__txt b { font-size: .95rem; color: #12335c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pm-otra__txt small { font-size: .78rem; color: #6b829f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pm-otra__tag { flex: none; font-size: .7rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; color: #1f64aa; background: #fff; border: 1px solid #b9d9f5; }
+.pm-otra__ir { flex: none; font-size: 1.5rem; line-height: 1; color: #2f95e0; transition: transform .2s; }
+a.pm-otra:hover .pm-otra__ir { transform: translateX(3px); }
+@media (max-width: 560px) {
+    .pm-otras__lista { grid-template-columns: 1fr; }
+}
