@@ -85,7 +85,7 @@
 /* Segmentos (tipo, sí/no/no sé) */
 .amw .seg { display: flex; gap: 8px; background: var(--b100); padding: 5px; border-radius: 999px; }
 .amw .seg label { flex: 1; cursor: pointer; }
-.amw .seg input { display: none; }
+
 .amw .seg span { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 9px; border-radius: 999px; font-weight: 600; font-size: .9rem; transition: .25s; color: var(--b700); }
 .amw .seg input:checked + span { background: var(--b700); color: #fff; box-shadow: 0 6px 14px rgba(11, 74, 158, .3); }
 .amw .seg em { font-style: normal; }
@@ -100,7 +100,7 @@
 /* Switches */
 .amw .switches { display: flex; flex-wrap: wrap; gap: 12px 24px; background: var(--b50); padding: 14px 16px; border-radius: var(--r); }
 .amw .switch { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: .88rem; }
-.amw .switch input { display: none; }
+
 .amw .slider { width: 44px; height: 24px; background: #c5d6ea; border-radius: 99px; position: relative; transition: .25s; flex: none; }
 .amw .slider::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: .25s; box-shadow: 0 1px 4px rgba(0, 0, 0, .25); }
 .amw .switch input:checked + .slider { background: var(--b500); }
@@ -123,7 +123,7 @@
 /* Historial clínico */
 .amw .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .amw .choice label { cursor: pointer; }
-.amw .choice input { display: none; }
+
 .amw .choice span { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; height: 100%; padding: 16px 12px; border: 2px solid #cfe4fb; border-radius: var(--r); background: #fff; transition: .2s; }
 .amw .choice span i { font-size: 1.8rem; color: var(--b500); }
 .amw .choice span small { color: var(--mut); font-size: .78rem; }
@@ -180,3 +180,16 @@
 @media (prefers-reduced-motion: reduce) {
     .amw *, .amw *::before, .amw *::after { animation: none !important; transition: none !important; }
 }
+
+/* Modo edición: aviso mientras se cargan los datos de la mascota */
+.amw .cargando { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 48px 12px; color: var(--b700); font-weight: 600; }
+.amw .cargando .spin { width: 22px; height: 22px; border: 3px solid var(--b100); border-top-color: var(--b500); border-radius: 50%; animation: am-rot .7s linear infinite; }
+
+/* Radios/checkbox ocultos SIN display:none: así Chrome repinta el estilo cuando el JS
+   los marca al cargar los datos (modo edición). Siguen funcionando con clic y teclado. */
+.amw .seg input, .amw .switch input, .amw .choice input {
+    position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none;
+}
+.amw .seg label, .amw .switch, .amw .choice label { position: relative; }
+.amw .seg input:focus-visible + span, .amw .choice input:focus-visible + span { outline: 3px solid rgba(42, 125, 225, .45); outline-offset: 2px; }
+.amw .switch input:focus-visible + .slider { outline: 3px solid rgba(42, 125, 225, .45); outline-offset: 2px; }

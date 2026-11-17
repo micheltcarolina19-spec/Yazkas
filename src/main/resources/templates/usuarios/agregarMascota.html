@@ -32,7 +32,7 @@
                 <h1 id="titulo">Agregar mascota</h1>
                 <p id="subtitulo">Cuéntanos sobre tu peludo para brindarle el mejor cuidado</p>
             </div>
-            <a class="ghost" href="/mascotas"><i class="bi bi-arrow-left"></i> Volver a mis mascotas</a>
+            <a class="ghost" id="volver" href="/mascotas"><i class="bi bi-arrow-left"></i> Volver a mis mascotas</a>
         </header>
 
         <ol class="stepper" id="stepper" style="--n:3">
@@ -42,9 +42,13 @@
             <div class="bar"><i id="bar"></i></div>
         </ol>
 
+        {! En modo edición se muestra mientras se cargan los datos de la mascota !}
+        <div class="cargando" id="cargando" hidden><span class="spin"></span> Cargando la información de tu mascota…</div>
+
         <div class="alert" id="alert" role="alert" hidden><i class="bi bi-exclamation-triangle-fill"></i><span></span></div>
 
-        <form id="form" novalidate autocomplete="off" data-usuario-id="{usuarioId ?: ''}">
+        <form id="form" novalidate autocomplete="off" data-usuario-id="{usuarioId ?: ''}"
+              data-modo="{modo ?: 'agregar'}" data-mascota-id="{mascotaId ?: ''}">
 
             <!-- PASO 1: datos de la mascota -->
             <div class="step active" data-step="1">

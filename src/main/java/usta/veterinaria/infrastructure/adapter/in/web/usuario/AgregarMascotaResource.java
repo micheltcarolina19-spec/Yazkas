@@ -19,6 +19,7 @@ import java.net.URI;
 
 /**
  * Vista "Agregar Mascota" del cliente (mismos pasos y validaciones de la mascota en /registro).
+ * La misma plantilla se usa en modo edición desde PerfilMascotaResource (GET /mascotas/{id}/editar).
  * Plantilla: src/main/resources/templates/usuarios/agregarMascota.html
  * El dueño sale de la sesión; el formulario guarda con POST /api/usuarios/{usuarioId}/mascotas
  * y, si se llenó, la historia con POST /api/mascotas/{mascotaId}/historia-clinica.
@@ -44,6 +45,8 @@ public class AgregarMascotaResource {
         }
         // Los mismos enums que usa RegistroResource para los selectores de la mascota
         return Response.ok(agregarMascota
+                .data("modo", "agregar")
+                .data("mascotaId", null)
                 .data("usuarioId", sesion.getUsuarioId())
                 .data("tipos", TipoMascota.values())
                 .data("sexos", Sexo.values())

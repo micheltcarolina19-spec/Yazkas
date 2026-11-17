@@ -62,3 +62,105 @@
     .pc-nav--cliente .pc-link { padding: .55rem .7rem; font-size: .85rem; }
     .pc-user__name { display: none; }
 }
+
+/* ==========================================================
+   Menú de la cuenta (bolita del perfil): "Cerrar sesión"
+   Escritorio: desplegable al hacer clic o pasar el mouse.
+   Móvil (menú hamburguesa): se muestra abierto debajo del usuario.
+   ========================================================== */
+.pc-account { position: relative; }
+
+.pc-account__btn {
+    border: 0;
+    background: transparent;
+    padding: .25rem .5rem .25rem .25rem;
+    border-radius: 999px;
+    cursor: pointer;
+    font: inherit;
+    transition: background .2s;
+}
+.pc-account__btn:hover,
+.pc-account.is-open .pc-account__btn { background: rgba(47, 149, 224, .1); }
+.pc-account__btn:focus-visible { outline: 3px solid rgba(47, 149, 224, .55); outline-offset: 2px; }
+
+.pc-account__chevron {
+    width: 16px; height: 16px;
+    color: var(--pc-navy);
+    stroke-width: 2.4;
+    transition: transform .2s var(--pc-ease);
+}
+.pc-account.is-open .pc-account__chevron { transform: rotate(180deg); }
+
+.pc-account__menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 60;
+    min-width: 230px;
+    padding: .5rem;
+    border-radius: 18px;
+    background: #fff;
+    border: 1px solid var(--pc-sky-200);
+    box-shadow: 0 18px 40px -14px rgba(11, 58, 99, .4);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity .18s, transform .18s var(--pc-ease), visibility .18s;
+}
+/* Puente invisible para que el mouse no "pierda" el menú al bajar */
+.pc-account__menu::before { content: ""; position: absolute; left: 0; right: 0; top: -12px; height: 12px; }
+.pc-account.is-open .pc-account__menu { opacity: 1; visibility: visible; transform: none; }
+
+.pc-account__head {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .45rem .55rem .7rem;
+    margin-bottom: .35rem;
+    border-bottom: 1px solid var(--pc-sky-100);
+    font-family: var(--pc-font);
+}
+.pc-account__head .pc-user__avatar { width: 36px; height: 36px; flex: none; }
+.pc-account__head small { display: block; font-size: .72rem; color: #6b829f; }
+.pc-account__head b { display: block; font-size: .9rem; color: var(--pc-ink); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.pc-account__item {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .65rem .7rem;
+    border-radius: 12px;
+    font-family: var(--pc-font);
+    font-size: .9rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--pc-ink);
+    transition: background .15s, color .15s;
+}
+.pc-account__item .pc-ico { width: 20px; height: 20px; }
+.pc-account__item--salir { color: #c23b4b; }
+.pc-account__item--salir .pc-ico { color: #c23b4b; }
+.pc-account__item--salir:hover,
+.pc-account__item--salir:focus-visible { background: #fff0f2; outline: none; }
+
+/* Móvil / tablet: dentro del menú hamburguesa el menú de cuenta va abierto y en línea */
+@media (max-width: 900px) {
+    .pc-actions--cliente { flex-wrap: wrap; align-items: flex-start; }
+    .pc-account { flex: 1; }
+    .pc-account__btn { pointer-events: none; padding-left: 0; }
+    .pc-account__chevron { display: none; }
+    .pc-account__menu {
+        position: static;
+        opacity: 1; visibility: visible; transform: none;
+        min-width: 0;
+        margin-top: .5rem;
+        padding: .25rem;
+        box-shadow: none;
+        border-radius: 14px;
+    }
+    .pc-account__menu::before, .pc-account__head { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pc-account__menu, .pc-account__chevron { transition: none; }
+}
