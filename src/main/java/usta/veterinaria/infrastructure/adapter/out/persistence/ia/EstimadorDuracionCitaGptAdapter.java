@@ -10,7 +10,6 @@ import usta.veterinaria.application.port.out.usuario.EstimadorDuracionCitaPort;
 import usta.veterinaria.infrastructure.adapter.out.persistence.ia.client.OpenAiClient;
 import usta.veterinaria.infrastructure.adapter.out.persistence.ia.client.dto.OpenAiRequest;
 import usta.veterinaria.infrastructure.adapter.out.persistence.ia.client.dto.OpenAiResponse;
-// AJUSTA estos dos imports a tus paquetes reales:
 import usta.veterinaria.domain.model.mascota.Mascota;
 import usta.veterinaria.domain.model.usuario.DuracionCita;
 
@@ -45,10 +44,7 @@ public class EstimadorDuracionCitaGptAdapter implements EstimadorDuracionCitaPor
             return DuracionCita.MEDIA;
         }
 
-        // Aquí continúa tu lógica de OpenAI
-
         try {
-            // AJUSTA los getters a los campos reales de Mascota
             String userPrompt = """
                     Raza: %s
                     Pelaje: %s

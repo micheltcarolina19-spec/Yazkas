@@ -31,6 +31,7 @@ import usta.veterinaria.infrastructure.adapter.in.web.admin.GastoVista.FiltroVis
 import usta.veterinaria.infrastructure.adapter.in.web.admin.GastoVista.PaginaItemVista;
 import usta.veterinaria.infrastructure.adapter.in.web.admin.GastoVista.PaginacionVista;
 import usta.veterinaria.infrastructure.adapter.in.web.admin.GastoVista.ResumenVista;
+import usta.veterinaria.infrastructure.adapter.in.web.sesion.SoloAdmin;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -47,12 +48,14 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import usta.veterinaria.infrastructure.adapter.in.web.sesion.SoloAdmin;
 
 // Adaptador de entrada WEB: gestión de gastos del administrador (renderizado en el servidor).
 //   - GET  /admin/gasto?desde=&hasta=&categoria=&pagina=        -> listado
 //   - GET  /admin/gasto?...&nuevo=1 | &editar=ID | &eliminar=ID -> listado con el diálogo abierto
 //   - POST /admin/gasto/guardar | /eliminar                     -> ejecuta la acción y redirige (303)
 // Usa el MISMO caso de uso que el adaptador REST (GestionarGastosUseCase).
+@SoloAdmin
 @Path(AdminGastoResource.BASE)
 @ApplicationScoped
 public class AdminGastoResource {

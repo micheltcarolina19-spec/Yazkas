@@ -4,17 +4,18 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import usta.veterinaria.application.exception.ResourceNotFoundException;
-import usta.veterinaria.application.port.in.usuario.GestionarCitasUseCase;
 import usta.veterinaria.application.port.in.mascota.GestionarMascotasUseCase;
-import usta.veterinaria.application.port.out.usuario.AgendamientoCitaRepository;
+import usta.veterinaria.application.port.in.usuario.GestionarCitasUseCase;
 import usta.veterinaria.application.port.out.admin.BitacoraServicioRepository;
-import usta.veterinaria.application.port.out.usuario.EstimadorDuracionCitaPort;
 import usta.veterinaria.application.port.out.mascota.MascotaCitaRepository;
+import usta.veterinaria.application.port.out.usuario.AgendamientoCitaRepository;
+import usta.veterinaria.application.port.out.usuario.EstimadorDuracionCitaPort;
 import usta.veterinaria.application.usecase.Validaciones;
 import usta.veterinaria.domain.exception.BusinessRuleException;
-import usta.veterinaria.domain.model.usuario.AgendamientoCita;
 import usta.veterinaria.domain.model.admin.BitacoraServicio;
 import usta.veterinaria.domain.model.mascota.Mascota;
+import usta.veterinaria.domain.model.usuario.AgendamientoCita;
+import usta.veterinaria.domain.model.usuario.DuracionCita;
 import usta.veterinaria.domain.model.usuario.MascotaCita;
 import usta.veterinaria.domain.service.usuario.CitaService;
 
@@ -22,7 +23,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @ApplicationScoped
 public class GestionarCitasService implements GestionarCitasUseCase {
@@ -60,6 +63,9 @@ public class GestionarCitasService implements GestionarCitasUseCase {
                 Mascota mascota = mascotas.buscarPorId(mascotaId);
                 validarPropietario(mascota, usuarioId);
                 citaService.validarDatosParaEstimacion(mascota);
+                // Puede tener otras citas programadas, pero máximo 2 en la semana
+                citaService.validarLimiteSemanal(mascota, fechaAgendamiento,
+                        mascotaCitaRepository.findByMascotaId(mascotaId), null);
 
                 nuevasCitas.add(MascotaCita.builder()
                         .mascota(mascota)
@@ -82,6 +88,14 @@ public class GestionarCitasService implements GestionarCitasUseCase {
     public List<MascotaCita> reprogramar(Long agendamientoId, LocalDate nuevaFecha, LocalTime nuevaHora) {
         AgendamientoCita agendamiento = buscarPorId(agendamientoId);
         List<MascotaCita> citas = mascotaCitaRepository.findByAgendamientoCitaId(agendamientoId);
+
+        // En la semana de la nueva fecha tampoco puede pasar de 2 citas (sin contar esta misma)
+        for (MascotaCita cita : citas) {
+            if (cita.getMascota() != null && cita.getMascota().getId() != null) {
+                citaService.validarLimiteSemanal(cita.getMascota(), nuevaFecha,
+                        mascotaCitaRepository.findByMascotaId(cita.getMascota().getId()), agendamiento);
+            }
+        }
 
         citaService.reprogramar(agendamiento, citas, nuevaFecha, nuevaHora, citasDesde(nuevaFecha));
 
@@ -114,6 +128,81 @@ public class GestionarCitasService implements GestionarCitasUseCase {
     }
 
     @Override
+    public Map<Long, DuracionCita> estimarDuraciones(Long usuarioId, List<Long> mascotaIds) {
+        Validaciones.requerirId(usuarioId, "id del usuario");
+        Map<Long, DuracionCita> duraciones = new LinkedHashMap<>();
+        if (mascotaIds != null) {
+            for (Long mascotaId : mascotaIds) {
+                Mascota mascota = mascotas.buscarPorId(mascotaId);
+                validarPropietario(mascota, usuarioId);
+                citaService.validarDatosParaEstimacion(mascota);
+                duraciones.put(mascotaId, estimador.estimar(mascota));
+            }
+        }
+        return duraciones;
+    }
+
+    @Override
+    public Map<LocalTime, String> disponibilidad(Long usuarioId, List<Long> mascotaIds, LocalDate fecha,
+                                                 Long reprogramarAgendamientoId) {
+        Validaciones.requerirId(usuarioId, "id del usuario");
+        if (fecha == null) {
+            throw new BusinessRuleException("La fecha es obligatoria");
+        }
+        if (mascotaIds == null || mascotaIds.isEmpty()) {
+            throw new BusinessRuleException("Debe seleccionar al menos una mascota");
+        }
+
+        // Al reprogramar se ignora el propio agendamiento y se conservan sus duraciones
+        AgendamientoCita ignorar = null;
+        Map<Long, DuracionCita> guardadas = new LinkedHashMap<>();
+        if (reprogramarAgendamientoId != null) {
+            ignorar = buscarPorId(reprogramarAgendamientoId);
+            for (MascotaCita c : mascotaCitaRepository.findByAgendamientoCitaId(reprogramarAgendamientoId)) {
+                if (c.getMascota() != null) {
+                    guardadas.put(c.getMascota().getId(), c.getDuracionCita());
+                }
+            }
+        }
+
+        List<Mascota> seleccionadas = new ArrayList<>();
+        List<DuracionCita> duraciones = new ArrayList<>();
+        boolean limiteSemanal = false;
+        for (Long mascotaId : mascotaIds) {
+            Mascota mascota = mascotas.buscarPorId(mascotaId);
+            validarPropietario(mascota, usuarioId);
+            citaService.validarDatosParaEstimacion(mascota);
+            seleccionadas.add(mascota);
+            DuracionCita guardada = guardadas.get(mascotaId);
+            duraciones.add(guardada != null ? guardada : estimador.estimar(mascota));
+            if (citaService.citasEnLaSemana(mascota, fecha, mascotaCitaRepository.findByMascotaId(mascotaId), ignorar)
+                    >= CitaService.MAXIMO_CITAS_POR_SEMANA) {
+                limiteSemanal = true;
+            }
+        }
+
+        List<MascotaCita> existentes = citasDesde(fecha);
+        Map<LocalTime, String> horarios = new LinkedHashMap<>();
+        for (LocalTime hora : citaService.horariosDelDia()) {
+            if (limiteSemanal) {
+                horarios.put(hora, CitaService.NO_DISPONIBLE_LIMITE);
+                continue;
+            }
+            List<MascotaCita> prueba = new ArrayList<>();
+            for (int i = 0; i < seleccionadas.size(); i++) {
+                prueba.add(MascotaCita.builder()
+                        .mascota(seleccionadas.get(i))
+                        .fechaAgendamiento(fecha)
+                        .horaAgendamiento(hora)
+                        .duracionCita(duraciones.get(i))
+                        .build());
+            }
+            horarios.put(hora, citaService.motivoNoDisponible(prueba, existentes, ignorar));
+        }
+        return horarios;
+    }
+
+    @Override
     public AgendamientoCita buscarPorId(Long agendamientoId) {
         return agendamientoRepository.findById(Validaciones.requerirId(agendamientoId, "id del agendamiento"))
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -137,8 +226,7 @@ public class GestionarCitasService implements GestionarCitasUseCase {
         return mascotaCitaRepository.findByFechaAgendamientoBetween(inicio, fin);
     }
 
-    // Una cita puede terminar después de medianoche, así que se consulta desde el día anterior.
-    // Si no hay fecha se devuelve una lista vacía y el dominio responde que la fecha es obligatoria.
+    // Una cita puede terminar después de medianoche, así que se consulta desde el día anterior
     private List<MascotaCita> citasDesde(LocalDate fecha) {
         return fecha == null ? List.of() : mascotaCitaRepository.findByFechaAgendamientoDesde(fecha.minusDays(1));
     }

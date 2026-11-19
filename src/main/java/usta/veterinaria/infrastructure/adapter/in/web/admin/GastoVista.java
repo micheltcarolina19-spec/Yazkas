@@ -1,10 +1,12 @@
 package usta.veterinaria.infrastructure.adapter.in.web.admin;
 
 import io.quarkus.qute.TemplateData;
+import usta.veterinaria.infrastructure.adapter.in.web.sesion.SoloAdmin;
 
 import java.util.List;
 
 // Modelos de solo lectura que consume la plantilla adminGastos.html
+@SoloAdmin
 public final class GastoVista {
 
     private GastoVista() {

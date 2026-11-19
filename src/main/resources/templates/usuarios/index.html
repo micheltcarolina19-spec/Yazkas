@@ -267,79 +267,153 @@
     </section>
 
     {! ============================== 4. INVITACIÓN A INICIAR SESIÓN ============================== !}
-    <section class="hm-section hm-agenda" id="agendar" aria-labelledby="agenda-titulo">
+    {! ============================== 4. TU ESPACIO PELUDITO (INICIAR SESIÓN) ==============================
+       Reemplaza la sección anterior .hm-agenda completa.
+       Imagen: META-INF/resources/img/nariz-mascota.png (PNG sin fondo). !}
+    <section class="ye" id="agendar" aria-labelledby="ye-titulo">
 
-        <div class="hm-agenda__deco" aria-hidden="true">
-            <span class="hm-agenda__trail"></span>
-            <svg class="hm-float hm-float--1"><use href="#h-paw"/></svg>
-            <svg class="hm-float hm-float--2"><use href="#h-bone"/></svg>
-            <svg class="hm-float hm-float--3"><use href="#h-heart"/></svg>
-            <svg class="hm-float hm-float--4"><use href="#h-sparkle"/></svg>
-            <svg class="hm-float hm-float--5"><use href="#h-paw"/></svg>
-            <svg class="hm-float hm-float--6"><use href="#h-heart"/></svg>
-            <svg class="hm-float hm-float--7"><use href="#h-sparkle"/></svg>
-            <svg class="hm-float hm-float--8"><use href="#h-paw"/></svg>
+        {! Iconos extra que no estaban en el sprite del home !}
+        <svg class="ye-sprite" aria-hidden="true" focusable="false">
+            <symbol id="ye-user" viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="3.8"/>
+                <path d="M4.5 20.5c1.2-4 4-6 7.5-6s6.3 2 7.5 6"/>
+            </symbol>
+            <symbol id="ye-download" viewBox="0 0 24 24">
+                <path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14"/>
+            </symbol>
+            <symbol id="ye-history" viewBox="0 0 24 24">
+                <path d="M6.5 3.5h7.5l4 4v13h-11.5Z"/>
+                <path d="M14 3.5v4h4M9 12h6M9 15.5h4"/>
+            </symbol>
+            <symbol id="ye-dog" viewBox="0 0 24 24">
+                <path d="M12 6.5c-3.8 0-6.3 2.9-6.3 6.6s2.7 6.4 6.3 6.4 6.3-2.7 6.3-6.4S15.8 6.5 12 6.5Z"/>
+                <path d="M6.3 10 3.8 5.2c-.6 2.1-.7 4.6.4 6.6M17.7 10l2.5-4.8c.6 2.1.7 4.6-.4 6.6"/>
+                <path d="M9.6 12.2h.01M14.4 12.2h.01M10.8 15h2.4L12 16.4Z"/>
+            </symbol>
+            <symbol id="ye-rays" viewBox="0 0 38 44">
+                <path d="M30 6 16 13M33 22H13M30 38l-14-7"/>
+            </symbol>
+        </svg>
+
+        {! Fondo: manchas suaves, huellitas y camino punteado !}
+        <div class="ye__bg" aria-hidden="true">
+            <span class="ye__blob ye__blob--a"></span>
+            <span class="ye__blob ye__blob--b"></span>
+            <span class="ye__blob ye__blob--c"></span>
+            <svg class="ye__trail" viewBox="0 0 1440 600" preserveAspectRatio="none">
+                <path d="M-20 520C180 470 260 560 420 540M1100 260c120-40 230-20 360 40"/>
+            </svg>
+            <svg class="ye__paw ye__paw--1"><use href="#h-paw"/></svg>
+            <svg class="ye__paw ye__paw--2"><use href="#h-paw"/></svg>
+            <svg class="ye__paw ye__paw--3"><use href="#h-paw"/></svg>
         </div>
 
-        <div class="hm-container hm-agenda__inner">
-            <header class="hm-agenda__head">
-                <h2 id="agenda-titulo" class="hm-h2 hm-agenda__title">
-                    Tu espacio <span class="hm-script">peludito</span>
+        <div class="hm-container ye__inner">
+
+            {! Encabezado !}
+            <header class="ye__head">
+                <span class="ye__chip">
+                    <svg class="ye-ico" aria-hidden="true"><use href="#h-scissors"/></svg>
+                    Tu espacio <span class="ye__script">peludito</span>
+                </span>
+
+                <h2 id="ye-titulo" class="ye__title">
+                    <span class="ye__title-line">Gestiona a tus peluditos</span>
+                    <span class="ye__mark">
+                        <svg class="ye__rays ye__rays--l" aria-hidden="true"><use href="#ye-rays"/></svg>
+                        de forma fácil y rápida
+                        <svg class="ye__rays ye__rays--r" aria-hidden="true"><use href="#ye-rays"/></svg>
+                    </span>
                 </h2>
-                <p class="hm-agenda__highlight">¡Inicia sesión y agenda en pocos pasos!</p>
-                <p class="hm-muted hm-agenda__lead">
-                    Con tu cuenta puedes gestionar a todas tus mascotas y agendar sus servicios
-                    en una misma solicitud, de manera fácil y rápida.
+
+                <p class="ye__lead">
+                    Inicia sesión, registra tus mascotas, agenda sus citas de peluquería
+                    y mantén todo organizado en un solo lugar.
                 </p>
             </header>
 
-            <div class="hm-booking hm-login">
-                <div class="hm-booking__ribbon" aria-hidden="true">
-                    <svg class="hm-ico hm-ico--fill"><use href="#h-paw"/></svg>
+            <div class="ye__grid">
+
+                {! Nariz asomándose + burbujas !}
+                <figure class="ye__visual" aria-hidden="true">
+                    <span class="ye__glow"></span>
+                    <img class="ye__nose" src="/img/nariz-mascota.png" alt="" width="640" height="640" loading="lazy">
+
+                    <span class="ye__bubble ye__bubble--1"></span>
+                    <span class="ye__bubble ye__bubble--2"></span>
+                    <span class="ye__bubble ye__bubble--3"></span>
+                    <span class="ye__bubble ye__bubble--4"></span>
+                    <span class="ye__bubble ye__bubble--5"></span>
+
+                    <svg class="ye__doodle" viewBox="0 0 90 70">
+                        <path d="M38 62S14 46 14 29a11 11 0 0 1 24-6 11 11 0 0 1 24 6c0 17-24 33-24 33Z"/>
+                        <path d="M70 18l8-6M72 30h10M4 44l-6 4"/>
+                    </svg>
+                </figure>
+
+                {! Tarjeta de acceso !}
+                <div class="ye__card">
+                    <span class="ye__badge" aria-hidden="true">
+                        <svg class="ye__badge-paw ye-ico--fill"><use href="#h-paw"/></svg>
+                        <svg class="ye__badge-heart ye-ico--fill"><use href="#h-heart"/></svg>
+                    </span>
+
+                    <h3 class="ye__card-title">
+                        ¿Ya eres parte de la familia
+                        <span class="ye__brand">Yazka's?
+                            <svg class="ye__brand-spark" viewBox="0 0 20 20" aria-hidden="true">
+                                <path d="M5 2 9 8M15 6l-5 4M17 15h-6"/>
+                            </svg>
+                        </span>
+                    </h3>
+                    <p class="ye__card-text">Ingresa a tu cuenta y desde tu panel podrás:</p>
+
+                    <ul class="ye__perks">
+                        <li class="ye__perk">
+                            <span class="ye__perk-icon"><svg class="ye-ico ye-ico--fill" aria-hidden="true"><use href="#h-paw"/></svg></span>
+                            <span>Registrar<br>tus mascotas</span>
+                        </li>
+                        <li class="ye__perk">
+                            <span class="ye__perk-icon"><svg class="ye-ico" aria-hidden="true"><use href="#h-calendar"/></svg></span>
+                            <span>Agendar<br>citas</span>
+                        </li>
+                        <li class="ye__perk">
+                            <span class="ye__perk-icon"><svg class="ye-ico" aria-hidden="true"><use href="#ye-history"/></svg></span>
+                            <span>Consultar<br>historial</span>
+                        </li>
+                        <li class="ye__perk">
+                            <span class="ye__perk-icon"><svg class="ye-ico" aria-hidden="true"><use href="#ye-download"/></svg></span>
+                            <span>Descargar<br>última cita (PDF)</span>
+                        </li>
+                    </ul>
+
+                    <div class="ye__actions">
+                        <a class="ye__btn ye__btn--primary" href="/login">
+                            <svg class="ye-ico" aria-hidden="true"><use href="#ye-user"/></svg>
+                            Iniciar sesión
+                            <svg class="ye-ico ye__btn-arrow" aria-hidden="true"><use href="#h-arrow"/></svg>
+                        </a>
+                        <a class="ye__btn ye__btn--soft" href="/registro">
+                            <svg class="ye-ico" aria-hidden="true"><use href="#h-plus"/></svg>
+                            Crear una cuenta
+                        </a>
+                    </div>
+                    <p class="ye__hint">¿Primera vez? Registrarte es gratis y toma menos de un minuto.</p>
                 </div>
-
-                <h3 class="hm-pane__title hm-login__title">¿Ya eres parte de la familia Yazka's?</h3>
-                <p class="hm-muted hm-login__text">Ingresa a tu cuenta y desde tu panel podrás:</p>
-
-                <ul class="hm-login__perks">
-                    <li>
-                        <span class="hm-login__icon"><svg class="hm-ico hm-ico--fill" aria-hidden="true"><use href="#h-paw"/></svg></span>
-                        <span><strong>Registrar tus mascotas</strong>y mantener sus datos al día.</span>
-                    </li>
-                    <li>
-                        <span class="hm-login__icon"><svg class="hm-ico" aria-hidden="true"><use href="#h-calendar"/></svg></span>
-                        <span><strong>Agendar citas</strong>para uno o varios peluditos a la vez.</span>
-                    </li>
-                    <li>
-                        <span class="hm-login__icon"><svg class="hm-ico" aria-hidden="true"><use href="#h-check"/></svg></span>
-                        <span><strong>Descargar tu última cita</strong>en PDF cuando la necesites.</span>
-                    </li>
-                </ul>
-
-                <div class="hm-login__actions">
-                    <a class="hm-btn hm-btn--sky" href="/login">
-                        Iniciar sesión
-                        <svg class="hm-ico" aria-hidden="true"><use href="#h-arrow"/></svg>
-                    </a>
-                    <a class="hm-btn hm-btn--soft" href="/registro">
-                        <svg class="hm-ico" aria-hidden="true"><use href="#h-plus"/></svg>
-                        Crear una cuenta
-                    </a>
-                </div>
-                <p class="hm-login__hint">¿Primera vez? Registrarte es gratis y toma menos de un minuto.</p>
             </div>
 
-            <ul class="hm-agenda__facts">
-                <li>
-                    <svg class="hm-ico" aria-hidden="true"><use href="#h-clock"/></svg>
+            {! Datos rápidos !}
+            <ul class="ye__facts">
+                <li class="ye__fact">
+                    <span class="ye__fact-icon"><svg class="ye-ico" aria-hidden="true"><use href="#h-clock"/></svg></span>
                     <span><strong>Lunes a sábado</strong> · 8:30 a. m. a 5:30 p. m.</span>
                 </li>
-                <li>
-                    <svg class="hm-ico" aria-hidden="true"><use href="#h-ai"/></svg>
-                    <span>Calculamos la <strong>duración</strong> según su raza y pelaje</span>
+                <li class="ye__fact">
+                    <span class="ye__fact-icon"><svg class="ye-ico" aria-hidden="true"><use href="#ye-dog"/></svg></span>
+                    <span>Calculamos la <strong>duración</strong> según su <em>raza</em> y pelaje</span>
                 </li>
-                <li>
-                    <svg class="hm-ico" aria-hidden="true"><use href="#h-heart"/></svg>
+                <li class="ye__fact">
+                    <span class="ye__fact-icon"><svg class="ye-ico" aria-hidden="true"><use href="#h-heart"/></svg></span>
                     <span>El valor se define en persona</span>
                 </li>
             </ul>

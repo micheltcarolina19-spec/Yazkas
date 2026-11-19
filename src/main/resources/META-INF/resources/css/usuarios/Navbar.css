@@ -478,3 +478,151 @@
 @media (max-width: 380px) {
     .pc-brand__text small { display: none; }
 }
+
+
+/* ==========================================================
+   Área de cliente: campana y menú de la cuenta (nav-cliente.html)
+   Pegar al FINAL de Navbar.css
+   ========================================================== */
+.pc-actions--cliente { justify-content: flex-end; }
+
+/* Campana de notificaciones */
+.pc-bell {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex: none;
+    padding: 0;
+    border: 1.5px solid var(--pc-sky-200);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--pc-navy);
+    cursor: pointer;
+    transition: background .2s, border-color .2s, transform .2s var(--pc-ease);
+}
+.pc-bell:hover { background: var(--pc-sky-100); border-color: var(--pc-sky); transform: translateY(-1px); }
+.pc-bell .pc-ico { width: 1.2rem; height: 1.2rem; }
+
+/* Contenedor del menú de cuenta */
+.pc-account { position: relative; }
+
+.pc-account__btn {
+    font-family: inherit;
+    cursor: pointer;
+}
+.pc-user__name {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.pc-account__chevron {
+    width: 1rem;
+    height: 1rem;
+    color: var(--pc-sky-600);
+    transition: transform .25s var(--pc-ease);
+}
+.pc-account.is-open .pc-account__chevron { transform: rotate(180deg); }
+
+/* Menú desplegable (escritorio): oculto hasta que .pc-account tenga .is-open */
+.pc-account__menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 110;
+    min-width: 240px;
+    padding: .5rem;
+    background: #fff;
+    border: 1px solid var(--pc-sky-200);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px -16px rgba(31, 100, 170, .45), 0 2px 8px rgba(31, 100, 170, .1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity .2s, transform .2s var(--pc-ease), visibility 0s .2s;
+}
+/* Puente invisible para que el mouse no "se caiga" entre el botón y el menú */
+.pc-account__menu::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    left: 0;
+    right: 0;
+    height: 12px;
+}
+.pc-account.is-open .pc-account__menu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+}
+
+.pc-account__head {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    margin-bottom: .35rem;
+    padding: .6rem .7rem .8rem;
+    border-bottom: 1px solid var(--pc-sky-100);
+}
+.pc-account__head small { display: block; font-size: .72rem; color: #5d7a90; }
+.pc-account__head b {
+    display: block;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .92rem;
+    font-weight: 600;
+    color: var(--pc-navy);
+}
+
+.pc-account__item {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .65rem .8rem;
+    border-radius: 14px;
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--pc-navy);
+    text-decoration: none;
+    transition: background .2s, color .2s;
+}
+.pc-account__item:hover { background: var(--pc-sky-100); color: var(--pc-navy); }
+.pc-account__item--salir,
+.pc-account__item--salir:hover { color: #c0392b; }
+.pc-account__item--salir:hover { background: #fdeceb; }
+
+.pc-account__btn:focus-visible,
+.pc-bell:focus-visible,
+.pc-account__item:focus-visible {
+    outline: 3px solid rgba(47, 149, 224, .55);
+    outline-offset: 2px;
+}
+
+/* Móvil: el menú de cuenta se abre dentro del panel, no flotando */
+@media (max-width: 900px) {
+    .pc-actions--cliente { flex-wrap: wrap; }
+    .pc-account { flex: 1 1 auto; }
+    .pc-account__btn { width: 100%; }
+    .pc-account__chevron { margin-left: auto; }
+    .pc-user__name { max-width: none; }
+
+    .pc-account__menu {
+        position: static;
+        display: none;
+        margin-top: .5rem;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        transition: none;
+        box-shadow: none;
+    }
+    .pc-account__menu::before { display: none; }
+    .pc-account.is-open .pc-account__menu { display: block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pc-account__menu, .pc-account__chevron, .pc-bell { transition: none; }
+}

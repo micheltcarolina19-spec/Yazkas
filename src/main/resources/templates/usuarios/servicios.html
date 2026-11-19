@@ -14,6 +14,7 @@
     <link href="/css/usuarios/home.css" rel="stylesheet">
     <link href="/css/usuarios/nosotros.css" rel="stylesheet">
     <link href="/css/usuarios/servicios.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/usuarios/home.css">
 </head>
 <body class="hm-body">
 
@@ -55,51 +56,101 @@
 <main class="hm-main">
 
     {! ============================== 1. ENCABEZADO ============================== !}
-    <section class="ns-hero sv-hero" aria-labelledby="sv-titulo">
-        <div class="ns-hero__deco" aria-hidden="true">
-            <svg class="ns-float ns-float--1"><use href="#s-paw"/></svg>
-            <svg class="ns-float ns-float--2"><use href="#s-sparkle"/></svg>
-            <svg class="ns-float ns-float--3"><use href="#s-heart"/></svg>
-            <svg class="ns-float ns-float--4"><use href="#s-bone"/></svg>
-            <svg class="ns-float ns-float--5"><use href="#s-sparkle"/></svg>
+    {! ============================== 1. ENCABEZADO ============================== !}
+    <section class="svh is-loading" aria-labelledby="sv-titulo">
+
+        {! Fondo: brillos, cuadrícula, iconos flotantes y partículas !}
+        <div class="svh__bg" aria-hidden="true">
+            <span class="svh__glow svh__glow--a" data-depth="0.15"></span>
+            <span class="svh__glow svh__glow--b" data-depth="0.25"></span>
+            <span class="svh__lines"></span>
+            <div class="svh__floats" data-depth="0.5">
+                <svg class="svh__float svh__float--1"><use href="#s-paw"/></svg>
+                <svg class="svh__float svh__float--2"><use href="#s-sparkle"/></svg>
+                <svg class="svh__float svh__float--3"><use href="#s-heart"/></svg>
+                <svg class="svh__float svh__float--4"><use href="#s-bone"/></svg>
+                <svg class="svh__float svh__float--5"><use href="#s-sparkle"/></svg>
+            </div>
+            <div class="svh__particles"></div>
         </div>
 
-        <div class="hm-container ns-hero__grid">
-            <div class="ns-hero__text">
-                <span class="ns-eyebrow">
-                    <svg class="hm-ico hm-ico--fill" aria-hidden="true"><use href="#s-paw"/></svg>
-                    Nuestros servicios
+        {! Panel azul diagonal con la marca en vertical !}
+        <div class="svh__panel" aria-hidden="true" data-svh>
+            <div class="svh__brand">
+                <span class="svh__brand-tag"><i></i>Pet care studio<i></i></span>
+                <span class="svh__brand-name">Servicios</span>
+            </div>
+        </div>
+
+        <div class="svh__grid">
+            <div class="svh__text">
+                <span class="svh__eyebrow" data-svh>
+                    <i class="svh__eyebrow-bar"></i>
+                    <span class="svh__eyebrow-txt">Cuidado que se siente</span>
                 </span>
-                <h1 id="sv-titulo" class="ns-hero__title">
-                    Todo el cuidado que tu peludito
-                    <span class="hm-script">merece</span>
+
+                <h1 id="sv-titulo" class="svh__title" aria-label="Más que un baño. Puro amor.">
+                    <span class="svh__line" aria-hidden="true">
+                        <span class="svh__w"><span>Más</span></span>
+                        <span class="svh__w"><span>que</span></span>
+                        <span class="svh__w"><span>un</span></span>
+                        <span class="svh__w"><span>baño.</span></span>
+                    </span>
+                    <span class="svh__line" aria-hidden="true">
+                        <span class="svh__w"><span>Puro</span></span>
+                        <span class="svh__script" data-svh>amor.
+                            <svg class="svh__underline" viewBox="0 0 220 24"><path d="M4 17C60 6 150 3 216 12" pathLength="1"/></svg>
+                        </span>
+                    </span>
                 </h1>
-                <p class="ns-hero__lead">
-                    En Yazka's lo bañamos, lo peluqueamos y cuidamos su salud con desparasitación
-                    y vacunación, todo en un mismo lugar y con el cariño de siempre.
+
+                <p class="svh__lead" data-svh>
+                    Baño, peluquería y desparasitación  para quienes más quieres,
+                    todo en un mismo lugar y con el cariño de siempre.
                 </p>
 
+                <div class="svh__actions">
+                    <a class="svh__btn svh__btn--primary" href="#bano" data-svh>
+                        <span class="svh__shine" aria-hidden="true"></span>
+                        <svg class="hm-ico" aria-hidden="true"><use href="#s-scissors"/></svg>
+                        <span>Explorar servicios</span>
+                        <svg class="hm-ico svh__arrow" aria-hidden="true"><use href="#s-arrow"/></svg>
+                    </a>
+                    <a class="svh__btn svh__btn--ghost" href="/login" data-svh>
+                        <svg class="hm-ico" aria-hidden="true"><use href="#s-calendar"/></svg>
+                        <span>Agendar cita</span>
+                    </a>
+                </div>
+
                 {! Accesos directos a cada servicio !}
-                <nav class="sv-jump" aria-label="Ir a un servicio">
-                    <a class="sv-jump__item sv-jump__item--bano" href="#bano">
-                        <svg class="hm-ico" aria-hidden="true"><use href="#s-drop"/></svg>Baño</a>
-                    <a class="sv-jump__item sv-jump__item--pelu" href="#peluqueria">
-                        <svg class="hm-ico" aria-hidden="true"><use href="#s-scissors"/></svg>Peluquería</a>
-                    <a class="sv-jump__item sv-jump__item--desp" href="#desparasitacion">
-                        <svg class="hm-ico" aria-hidden="true"><use href="#s-pill"/></svg>Desparasitación</a>
-                    <a class="sv-jump__item sv-jump__item--vac" href="#vacunacion">
-                        <svg class="hm-ico" aria-hidden="true"><use href="#s-syringe"/></svg>Vacunación</a>
+                {! Accesos directos a cada servicio !}
+                <nav class="svh__cards" aria-label="Ir a un servicio">
+                    <a class="svh-card svh-card--bano" href="#bano" data-svh>
+                        <span class="svh-card__ico"><svg class="hm-ico" aria-hidden="true"><use href="#s-drop"/></svg></span>
+                        <span class="svh-card__label">Baño</span>
+                    </a>
+                    <a class="svh-card svh-card--pelu" href="#peluqueria" data-svh>
+                        <span class="svh-card__ico"><svg class="hm-ico" aria-hidden="true"><use href="#s-scissors"/></svg></span>
+                        <span class="svh-card__label">Peluquería</span>
+                    </a>
+                    <a class="svh-card svh-card--desp" href="#desparasitacion" data-svh>
+                        <span class="svh-card__ico"><svg class="hm-ico" aria-hidden="true"><use href="#s-pill"/></svg></span>
+                        <span class="svh-card__label">Desparasitación</span>
+                    </a>
                 </nav>
             </div>
 
-            <div class="ns-hero__media" aria-hidden="true">
-                <span class="ns-hero__blob"></span>
-                <span class="ns-hero__ring"></span>
-                <img src="/img/usuario/PerritosJuntos.png" alt="" loading="eager">
-                <div class="ns-badge">
-                    <svg class="hm-ico hm-ico--fill"><use href="#s-heart"/></svg>
-                    <span>Perros y gatos<br>en buenas manos</span>
+            <div class="svh__media" aria-hidden="true">
+                <span class="svh__halo" data-depth="0.2" data-svh></span>
+                <span class="svh__ring" data-depth="0.35" data-svh></span>
+                <div class="svh__pet" data-depth="0.12">
+                    <img class="svh__pet-img" src="/img/mascota-services.png" alt="" loading="eager" fetchpriority="high" data-svh>
                 </div>
+                <div class="svh__badge svh__badge--a" data-svh>
+                    <span class="svh__badge-ico svh__badge-ico--pink"><svg class="hm-ico hm-ico--fill"><use href="#s-heart"/></svg></span>
+                    <span>Perros y gatos<br><b>en buenas manos</b></span>
+                </div>
+
             </div>
         </div>
     </section>
@@ -206,31 +257,7 @@
                     </div>
                 </article>
 
-                {! ---------- Vacunación ---------- !}
-                <article class="sv-servicio sv-servicio--vac sv-servicio--invertido" id="vacunacion" aria-labelledby="sv-vac-titulo">
-                    <div class="sv-servicio__media">
-                        <span class="sv-servicio__fondo" aria-hidden="true"></span>
-                        <svg class="sv-chispa sv-chispa--1" aria-hidden="true"><use href="#s-heart"/></svg>
-                        <svg class="sv-chispa sv-chispa--2" aria-hidden="true"><use href="#s-shield"/></svg>
-                        <img src="/img/usuario/beagle.png" alt="Beagle tranquilo listo para su vacuna" loading="lazy">
-                    </div>
-                    <div class="sv-servicio__body">
-                        <span class="sv-servicio__num">04</span>
-                        <h3 id="sv-vac-titulo" class="sv-servicio__titulo">
-                            <span class="sv-servicio__ico"><svg class="hm-ico" aria-hidden="true"><use href="#s-syringe"/></svg></span>
-                            Vacunación
-                        </h3>
-                        <p class="sv-servicio__texto">
-                            Atención responsable para mantener al día sus vacunas y prevenir enfermedades.
-                        </p>
-                        <h4 class="sv-subtitulo">Incluye</h4>
-                        <ul class="hm-checks sv-checks">
-                            <li><svg class="hm-ico" aria-hidden="true"><use href="#s-check"/></svg>Aplicación segura</li>
-                            <li><svg class="hm-ico" aria-hidden="true"><use href="#s-check"/></svg>Registro de la vacuna, el lote y la dosis en su historial</li>
-                            <li><svg class="hm-ico" aria-hidden="true"><use href="#s-check"/></svg>Fecha del próximo refuerzo</li>
-                        </ul>
-                    </div>
-                </article>
+
             </div>
         </div>
     </section>
@@ -341,7 +368,9 @@
 </footer>
 
 <script src="/js/usuario/Navbar.js"></script>
-{! Solo actualiza el año del pie de página !}
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
 <script src="/js/usuario/nosotros.js"></script>
+<script src="/js/usuario/home.js"></script>
 </body>
 </html>

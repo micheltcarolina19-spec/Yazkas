@@ -12,9 +12,11 @@ import usta.veterinaria.domain.service.RelojColombia;
 
 import java.math.BigDecimal;
 import java.time.Clock;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +27,7 @@ import java.util.TreeSet;
 // - En un mismo horario se atienden como máximo 2 mascotas al tiempo.
 // - La peluquería atiende de 8:30 a 17:30: la cita debe empezar desde las 8:30
 //   y TERMINAR a más tardar a las 17:30 (según su duración ALTA, MEDIA o BAJA).
+// - Una mascota puede tener varias citas programadas, pero máximo 2 por semana (lunes a domingo).
 // - Al terminar la cita (o al final del día) el administrador registra lo cobrado
 //   y ese valor pasa al panel de finanzas.
 public class CitaService {
@@ -38,6 +41,16 @@ public class CitaService {
 
     // Límite de días hacia adelante para buscar el siguiente espacio disponible
     private static final int MAXIMO_DIAS_BUSQUEDA = 365;
+
+    // Motivos por los que un horario no se puede elegir (pantalla "Agenda tu cita")
+    public static final String NO_DISPONIBLE_PASADO = "PASADO";            // la hora ya pasó
+    public static final String NO_DISPONIBLE_CIERRE = "CIERRE";            // no alcanza a terminar antes del cierre
+    public static final String NO_DISPONIBLE_LLENO = "LLENO";              // ya hay 2 mascotas en atención
+    public static final String NO_DISPONIBLE_MASCOTA = "MASCOTA_OCUPADA";  // la mascota ya tiene una cita que se cruza
+    public static final String NO_DISPONIBLE_LIMITE = "LIMITE_SEMANAL";    // la mascota ya tiene 2 citas esa semana
+
+    // Máximo de citas (no canceladas) que puede tener una misma mascota en una semana (lunes a domingo)
+    public static final int MAXIMO_CITAS_POR_SEMANA = 2;
 
     private final Clock clock;
 
@@ -155,7 +168,6 @@ public class CitaService {
 
     // Busca la primera hora (desde la deseada) en la que hay cupo para una mascota con esa duración,
     // dentro del horario de atención. Si ese día ya no cabe, sigue con el día siguiente desde las 8:30.
-    // Sirve para sugerirle al cliente "el siguiente espacio disponible".
     public LocalDateTime siguienteEspacioDisponible(LocalDateTime horaDeseada,
                                                     DuracionCita duracion,
                                                     List<MascotaCita> citasExistentes) {
@@ -165,7 +177,6 @@ public class CitaService {
         long minutos = minutosReservados(duracion);
         List<MascotaCita> ocupadas = citasActivas(citasExistentes);
 
-        // Si pidió antes de abrir, se empieza a buscar desde la apertura de ese mismo día
         LocalDate dia = horaDeseada.toLocalDate();
         LocalDateTime desde = horaDeseada.toLocalTime().isBefore(HORA_APERTURA)
                 ? dia.atTime(HORA_APERTURA)
@@ -174,7 +185,6 @@ public class CitaService {
         for (int i = 0; i < MAXIMO_DIAS_BUSQUEDA; i++) {
             LocalDateTime cierre = dia.atTime(HORA_CIERRE);
 
-            // Los candidatos son la hora desde la que se busca y cada momento en que termina una cita
             TreeSet<LocalDateTime> candidatos = new TreeSet<>();
             candidatos.add(desde);
             for (MascotaCita cita : ocupadas) {
@@ -185,7 +195,6 @@ public class CitaService {
             }
 
             for (LocalDateTime inicio : candidatos) {
-                // Los candidatos van en orden: si este ya no termina antes del cierre, los siguientes tampoco
                 if (inicio.plusMinutes(minutos).isAfter(cierre)) {
                     break;
                 }
@@ -202,34 +211,18 @@ public class CitaService {
     }
 
     // ============================================================================================
+    // ===      DURACIÓN DE LA CITA  (LA DECIDE LA IA EN EstimadorDuracionCitaPort)              ===
     // ============================================================================================
-    // ===                                                                                      ===
-    // ===      DURACIÓN DE LA CITA  (SE COMPLEMENTA CON LA IA DESDE INFRASTRUCTURE)            ===
-    // ===                                                                                      ===
-    // ============================================================================================
-    // ============================================================================================
-    //
-    // El dominio NO decide si la cita es ALTA, MEDIA o BAJA. Eso lo decide la inteligencia
-    // artificial en un adaptador de infrastructure (aún no creado) que implementa el puerto
-    // application/port/out/EstimadorDuracionCitaPort, con los prompts sobre razas y pelajes:
-    //
-    //     - BAJA  : perro pequeño y pelaje corto   -> máximo 2 horas
-    //     - MEDIA : perro mediano y pelaje corto   -> entre 2 y 4 horas
-    //     - ALTA  : perro grande y pelaje largo    -> más de 4 horas
-    //
-    // Aquí en el dominio solo queda:
-    //   1. Validar que la mascota tenga los datos que la IA necesita (antes de llamarla).
-    //   2. Convertir la duración a minutos para reservar el horario y validar los cupos.
-    //
-    // OJO: como ALTA es "más de 4 horas", se reservan 5 horas. Ajustar si el negocio lo pide.
+    //     - BAJA  : máximo 2 horas      (se reservan 120 min)
+    //     - MEDIA : entre 2 y 4 horas   (se reservan 240 min)
+    //     - ALTA  : más de 4 horas      (se reservan 300 min)
     // --------------------------------------------------------------------------------------------
 
-    private static final long MINUTOS_DURACION_BAJA = 120;   // máximo 2 horas
-    private static final long MINUTOS_DURACION_MEDIA = 240;  // de 2 a 4 horas
-    private static final long MINUTOS_DURACION_ALTA = 300;   // más de 4 horas (se reservan 5)
+    private static final long MINUTOS_DURACION_BAJA = 120;
+    private static final long MINUTOS_DURACION_MEDIA = 240;
+    private static final long MINUTOS_DURACION_ALTA = 300;
 
-    // Valida que la mascota tenga lo necesario para que la IA estime la duración.
-    // La capa de aplicación debe llamar este método ANTES de usar EstimadorDuracionCitaPort.
+    // Valida que la mascota tenga lo necesario para que la IA estime la duración
     public void validarDatosParaEstimacion(Mascota mascota) {
         if (mascota == null) {
             throw new BusinessRuleException("La mascota es obligatoria para estimar la duración de la cita");
@@ -262,10 +255,91 @@ public class CitaService {
     }
 
     // ============================================================================================
-    // ===                      FIN DE LA SECCIÓN DE DURACIÓN DE LA CITA                         ===
+    // ===                 DISPONIBILIDAD PARA EL CLIENTE (pantalla "Agenda tu cita")              ===
     // ============================================================================================
 
-    // Valida los datos mínimos de una cita y que sea en el futuro
+    // Cuenta las citas no canceladas de la mascota en la semana (lunes a domingo) de la fecha.
+    // "ignorar" es el agendamiento que se está reprogramando (no cuenta contra sí mismo).
+    public long citasEnLaSemana(Mascota mascota, LocalDate fecha, List<MascotaCita> citasDeLaMascota,
+                                AgendamientoCita ignorar) {
+        if (mascota == null || fecha == null || citasDeLaMascota == null) {
+            return 0;
+        }
+        LocalDate lunes = fecha.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate domingo = lunes.plusDays(6);
+        return citasDeLaMascota.stream()
+                .filter(c -> c != null && c.getFechaAgendamiento() != null)
+                .filter(c -> mismaMascota(c.getMascota(), mascota))
+                .filter(c -> !c.getFechaAgendamiento().isBefore(lunes) && !c.getFechaAgendamiento().isAfter(domingo))
+                .filter(c -> c.getAgendamientoCita() == null || c.getAgendamientoCita().getEstado() != EstadoCita.CANCELADA)
+                .filter(c -> ignorar == null || !mismoAgendamiento(c.getAgendamientoCita(), ignorar))
+                .map(c -> c.getAgendamientoCita() == null ? c : c.getAgendamientoCita().getId())
+                .distinct()
+                .count();
+    }
+
+    // Una mascota puede tener varias citas programadas (sin cruzarse), pero máximo 2 por semana
+    public void validarLimiteSemanal(Mascota mascota, LocalDate fecha, List<MascotaCita> citasDeLaMascota,
+                                     AgendamientoCita ignorar) {
+        if (citasEnLaSemana(mascota, fecha, citasDeLaMascota, ignorar) >= MAXIMO_CITAS_POR_SEMANA) {
+            LocalDate lunes = fecha.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            LocalDate domingo = lunes.plusDays(6);
+            throw new BusinessRuleException(nombre(mascota) + " ya tiene " + MAXIMO_CITAS_POR_SEMANA
+                    + " citas en la semana del " + lunes.getDayOfMonth() + "/" + lunes.getMonthValue()
+                    + " al " + domingo.getDayOfMonth() + "/" + domingo.getMonthValue()
+                    + ". Elige un día de otra semana.");
+        }
+    }
+
+    // Horas de inicio que se le ofrecen al cliente: cada hora desde la apertura (8:30, 9:30, ... 16:30)
+    public List<LocalTime> horariosDelDia() {
+        List<LocalTime> horas = new ArrayList<>();
+        for (LocalTime h = HORA_APERTURA; h.isBefore(HORA_CIERRE); h = h.plusHours(1)) {
+            horas.add(h);
+        }
+        return horas;
+    }
+
+    // Revisa SIN guardar nada si las citas nuevas (todas a la misma fecha y hora) se pueden agendar.
+    // Devuelve null si el horario está libre, o uno de los motivos NO_DISPONIBLE_*.
+    public String motivoNoDisponible(List<MascotaCita> nuevasCitas, List<MascotaCita> citasExistentes) {
+        return motivoNoDisponible(nuevasCitas, citasExistentes, null);
+    }
+
+    // Igual que el anterior, pero ignorando las citas del agendamiento que se está reprogramando
+    public String motivoNoDisponible(List<MascotaCita> nuevasCitas, List<MascotaCita> citasExistentes,
+                                     AgendamientoCita ignorar) {
+        List<MascotaCita> ocupadas = new ArrayList<>();
+        for (MascotaCita existente : citasActivas(citasExistentes)) {
+            if (ignorar == null || !mismoAgendamiento(existente.getAgendamientoCita(), ignorar)) {
+                ocupadas.add(existente);
+            }
+        }
+        for (MascotaCita cita : nuevasCitas) {
+            if (!inicio(cita).isAfter(LocalDateTime.now(clock))) {
+                return NO_DISPONIBLE_PASADO;
+            }
+            if (cita.getHoraAgendamiento().isBefore(HORA_APERTURA)
+                    || fin(cita).isAfter(cita.getFechaAgendamiento().atTime(HORA_CIERRE))) {
+                return NO_DISPONIBLE_CIERRE;
+            }
+            for (MascotaCita otra : ocupadas) {
+                if (mismaMascota(cita.getMascota(), otra.getMascota()) && seCruzan(cita, otra)) {
+                    return NO_DISPONIBLE_MASCOTA;
+                }
+            }
+            if (!hayCupo(inicio(cita), fin(cita), ocupadas)) {
+                return NO_DISPONIBLE_LLENO;
+            }
+            ocupadas.add(cita);   // la segunda mascota del mismo dueño también ocupa cupo
+        }
+        return null;
+    }
+
+    // ============================================================================================
+    // ===                                   VALIDACIONES                                        ===
+    // ============================================================================================
+
     private void validarDatosCita(MascotaCita cita) {
         if (cita == null || cita.getMascota() == null) {
             throw new BusinessRuleException("Cada cita debe tener una mascota");
@@ -273,7 +347,6 @@ public class CitaService {
         if (cita.getFechaAgendamiento() == null || cita.getHoraAgendamiento() == null) {
             throw new BusinessRuleException("La fecha y hora de la cita son obligatorias");
         }
-        // Lanza error si la IA todavía no estimó la duración
         minutosReservados(cita.getDuracionCita());
 
         if (!inicio(cita).isAfter(LocalDateTime.now(clock))) {
@@ -282,7 +355,6 @@ public class CitaService {
         validarHorarioAtencion(cita);
     }
 
-    // La cita debe empezar desde la apertura y terminar a más tardar al cierre del mismo día
     private void validarHorarioAtencion(MascotaCita cita) {
         if (cita.getHoraAgendamiento().isBefore(HORA_APERTURA)) {
             throw new BusinessRuleException("La cita de " + nombre(cita.getMascota())
@@ -299,7 +371,6 @@ public class CitaService {
         }
     }
 
-    // Una misma mascota no puede tener dos citas que se crucen
     private void validarMascotaSinCruce(MascotaCita nueva, List<MascotaCita> ocupadas) {
         for (MascotaCita otra : ocupadas) {
             if (mismaMascota(nueva.getMascota(), otra.getMascota()) && seCruzan(nueva, otra)) {
@@ -309,7 +380,6 @@ public class CitaService {
         }
     }
 
-    // Valida que en el horario de la nueva cita no se supere el cupo de mascotas simultáneas
     private void validarCupoDisponible(MascotaCita nueva, List<MascotaCita> ocupadas) {
         if (!hayCupo(inicio(nueva), fin(nueva), ocupadas)) {
             LocalDateTime sugerencia = siguienteEspacioDisponible(inicio(nueva), nueva.getDuracionCita(), ocupadas);
@@ -318,8 +388,7 @@ public class CitaService {
         }
     }
 
-    // Revisa que en ningún momento del intervalo [inicio, fin) haya ya el máximo de mascotas.
-    // Basta revisar el inicio del intervalo y los inicios de las citas que empiezan dentro de él.
+    // Revisa que en ningún momento del intervalo [inicio, fin) haya ya el máximo de mascotas
     private boolean hayCupo(LocalDateTime inicio, LocalDateTime fin, List<MascotaCita> ocupadas) {
         List<LocalDateTime> puntos = new ArrayList<>();
         puntos.add(inicio);
@@ -363,7 +432,6 @@ public class CitaService {
         return activas;
     }
 
-    // Solo se pueden modificar las citas que no se han cancelado ni completado
     private void validarAgendamientoModificable(AgendamientoCita agendamiento) {
         if (agendamiento == null) {
             throw new BusinessRuleException("La cita no existe");
@@ -388,7 +456,6 @@ public class CitaService {
         return inicio(cita).plusMinutes(minutosReservados(cita.getDuracionCita()));
     }
 
-    // Compara por id si ya están guardadas; si no, por referencia
     private boolean mismaMascota(Mascota a, Mascota b) {
         if (a == null || b == null) {
             return false;

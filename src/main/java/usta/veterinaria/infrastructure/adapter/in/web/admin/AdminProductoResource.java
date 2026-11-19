@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 import org.jboss.logging.Logger;   // ya lo tienes importado
+import usta.veterinaria.infrastructure.adapter.in.web.sesion.SoloAdmin;
 
 // Inventario de productos del administrador.
 //  - GET    /admin/productos         -> la página (tabla + panel lateral para crear/editar)
@@ -43,6 +44,7 @@ import org.jboss.logging.Logger;   // ya lo tienes importado
 // Crear, actualizar y eliminar productos NO se repite aquí: el front usa /api/productos (ProductoResource).
 @Path("/admin/productos")
 @Produces(MediaType.TEXT_HTML)
+@SoloAdmin
 public class AdminProductoResource {
 
     private static final int UMBRAL_STOCK_BAJO = 5;    // mismo umbral de las alertas del dashboard

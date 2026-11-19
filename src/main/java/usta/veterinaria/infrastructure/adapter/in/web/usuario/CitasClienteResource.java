@@ -8,6 +8,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
@@ -16,6 +17,7 @@ import usta.veterinaria.application.port.in.mascota.GestionarMascotasUseCase;
 import usta.veterinaria.application.port.in.usuario.GestionarCitasUseCase;
 import usta.veterinaria.domain.exception.BusinessRuleException;
 import usta.veterinaria.domain.model.mascota.Mascota;
+import usta.veterinaria.domain.model.usuario.AgendamientoCita;
 import usta.veterinaria.domain.model.usuario.DuracionCita;
 import usta.veterinaria.domain.model.usuario.EstadoCita;
 import usta.veterinaria.domain.model.usuario.MascotaCita;
@@ -35,6 +37,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * "Agenda tu cita" del cliente (navbar del cliente -> Citas).
@@ -42,10 +46,12 @@ import java.util.Objects;
  *
  * GET  /citas                                      -> la página (mascotas del usuario + sus próximas citas)
  * GET  /citas/disponibilidad?fecha=..&mascotas=..  -> duración estimada por la IA y horarios libres (JSON)
+ *      (&reprogramar=ID para buscar horario nuevo a una cita existente)
  * POST /citas                                      -> agenda la cita (JSON: mascotaIds, fecha, hora)
+ * POST /citas/{id}/reprogramar                     -> cambia fecha y hora (JSON: fecha, hora)
+ * POST /citas/{id}/cancelar                        -> cancela la cita
  *
  * El usuario sale de la sesión. Al cliente NO se le muestra precio.
- * Reglas (CitaService): atención 8:30-17:30 y máximo 2 mascotas al mismo tiempo, de uno o varios dueños.
  */
 @Path("/citas")
 public class CitasClienteResource {
@@ -73,8 +79,10 @@ public class CitasClienteResource {
     public record MascotaVista(Long id, String nombre, String raza, String tipo, String foto, String inicial) {
     }
 
+    // mascotaIds = "3,5" (para reprogramar con las mismas mascotas); fechaIso/horaIso = fecha y hora actuales
     @TemplateData
-    public record CitaVista(String mascotas, String fecha, String hora, String estado) {
+    public record CitaVista(Long agendamientoId, String mascotas, String mascotaIds, String fecha, String hora,
+                            String fechaIso, String horaIso, String estado) {
     }
 
     // ------------------------------------------------------------------ Página
@@ -99,6 +107,7 @@ public class CitasClienteResource {
                 .toList();
 
         return Response.ok(agendarCita
+                .data("maximoPorSemana", CitaService.MAXIMO_CITAS_POR_SEMANA)
                 .data("mascotas", vistas)
                 .data("proximas", proximasCitas(lista))
                 .data("hoy", LocalDate.now(RelojColombia.reloj()).toString())
@@ -110,16 +119,25 @@ public class CitasClienteResource {
     @GET
     @Path("/disponibilidad")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response disponibilidad(@QueryParam("fecha") String fecha, @QueryParam("mascotas") List<Long> mascotaIds) {
+    public Response disponibilidad(@QueryParam("fecha") String fecha, @QueryParam("mascotas") List<Long> mascotaIds,
+                                   @QueryParam("reprogramar") Long reprogramarId) {
         Response sinPermiso = validarClienteJson();
         if (sinPermiso != null) {
             return sinPermiso;
         }
         LocalDate dia = leerFecha(fecha);
-        List<Long> ids = validarMascotas(mascotaIds);
-
-        Map<Long, DuracionCita> duraciones = citas.estimarDuraciones(sesion.getUsuarioId(), ids);
-        Map<LocalTime, String> horarios = citas.disponibilidad(sesion.getUsuarioId(), ids, dia);
+        List<Long> ids;
+        Map<Long, DuracionCita> duraciones = new LinkedHashMap<>();
+        if (reprogramarId != null) {
+            // Se reprograma con las mismas mascotas y la duración que ya tenía la cita
+            List<MascotaCita> delAgendamiento = citasDelUsuario(reprogramarId);
+            delAgendamiento.forEach(c -> duraciones.put(c.getMascota().getId(), c.getDuracionCita()));
+            ids = new ArrayList<>(duraciones.keySet());
+        } else {
+            ids = validarMascotas(mascotaIds);
+            duraciones.putAll(citas.estimarDuraciones(sesion.getUsuarioId(), ids));
+        }
+        Map<LocalTime, String> horarios = citas.disponibilidad(sesion.getUsuarioId(), ids, dia, reprogramarId);
 
         List<Map<String, Object>> listaDuraciones = new ArrayList<>();
         duraciones.forEach((id, d) -> {
@@ -145,6 +163,8 @@ public class CitasClienteResource {
         respuesta.put("fechaTexto", fechaTexto(dia));
         respuesta.put("duraciones", listaDuraciones);
         respuesta.put("horarios", listaHorarios);
+        respuesta.put("limiteSemanal", horarios.containsValue(CitaService.NO_DISPONIBLE_LIMITE));
+        respuesta.put("maximoPorSemana", CitaService.MAXIMO_CITAS_POR_SEMANA);
         return Response.ok(respuesta).build();
     }
 
@@ -192,7 +212,69 @@ public class CitasClienteResource {
         return Response.status(Response.Status.CREATED).entity(respuesta).build();
     }
 
+    // ------------------------------------------------------------------ Reprogramar / cancelar (JSON)
+
+    @POST
+    @Path("/{id: \\d+}/reprogramar")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response reprogramar(@PathParam("id") Long agendamientoId, Map<String, Object> body) {
+        Response sinPermiso = validarClienteJson();
+        if (sinPermiso != null) {
+            return sinPermiso;
+        }
+        citasDelUsuario(agendamientoId);
+        if (body == null) {
+            throw new BusinessRuleException("Faltan la nueva fecha y hora");
+        }
+        LocalDate dia = leerFecha(body.get("fecha") == null ? null : body.get("fecha").toString());
+        LocalTime hora = leerHora(body.get("hora") == null ? null : body.get("hora").toString());
+
+        List<MascotaCita> movidas = citas.reprogramar(agendamientoId, dia, hora);
+
+        List<Map<String, Object>> detalle = new ArrayList<>();
+        for (MascotaCita c : movidas) {
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("mascota", c.getMascota() == null || c.getMascota().getNombre() == null
+                    ? "Tu mascota" : c.getMascota().getNombre());
+            item.put("duracion", textoDuracion(c.getDuracionCita()));
+            detalle.add(item);
+        }
+        Map<String, Object> respuesta = new LinkedHashMap<>();
+        respuesta.put("agendamientoId", agendamientoId);
+        respuesta.put("fechaTexto", fechaTexto(dia));
+        respuesta.put("hora", hora.format(HORA_12));
+        respuesta.put("citas", detalle);
+        return Response.ok(respuesta).build();
+    }
+
+    @POST
+    @Path("/{id: \\d+}/cancelar")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response cancelar(@PathParam("id") Long agendamientoId) {
+        Response sinPermiso = validarClienteJson();
+        if (sinPermiso != null) {
+            return sinPermiso;
+        }
+        citasDelUsuario(agendamientoId);
+        AgendamientoCita cancelado = citas.cancelar(agendamientoId);
+        return Response.ok(Map.of("agendamientoId", agendamientoId, "estado", cancelado.getEstado().name())).build();
+    }
+
     // ------------------------------------------------------------------ Apoyo
+
+    // Citas del agendamiento, verificando que TODAS sus mascotas sean del usuario en sesión
+    private List<MascotaCita> citasDelUsuario(Long agendamientoId) {
+        Set<Long> mias = mascotas.listarPorUsuario(sesion.getUsuarioId()).stream()
+                .map(Mascota::getId).collect(Collectors.toSet());
+        List<MascotaCita> delAgendamiento = citas.listarCitasDelAgendamiento(agendamientoId);
+        boolean esSuya = !delAgendamiento.isEmpty() && delAgendamiento.stream()
+                .allMatch(c -> c.getMascota() != null && mias.contains(c.getMascota().getId()));
+        if (!esSuya) {
+            throw new BusinessRuleException("Esta cita no pertenece a tu cuenta");
+        }
+        return delAgendamiento;
+    }
 
     // Próximas citas (programadas o reprogramadas) de las mascotas del usuario, una fila por agendamiento
     private List<CitaVista> proximasCitas(List<Mascota> lista) {
@@ -214,13 +296,20 @@ public class CitasClienteResource {
                 .map(grupo -> grupo.get(0))
                 .sorted(Comparator.comparing(MascotaCita::getFechaAgendamiento)
                         .thenComparing(MascotaCita::getHoraAgendamiento))
-                .limit(5)
+                .limit(6)
                 .map(primera -> {
-                    List<String> nombres = porAgendamiento.get(primera.getAgendamientoCita().getId()).stream()
+                    List<MascotaCita> grupo = porAgendamiento.get(primera.getAgendamientoCita().getId());
+                    List<String> nombres = grupo.stream()
                             .map(c -> c.getMascota().getNombre()).filter(Objects::nonNull).distinct().toList();
-                    return new CitaVista(String.join(" y ", nombres),
+                    String ids = grupo.stream().map(c -> String.valueOf(c.getMascota().getId()))
+                            .distinct().collect(Collectors.joining(","));
+                    return new CitaVista(primera.getAgendamientoCita().getId(),
+                            String.join(" y ", nombres),
+                            ids,
                             fechaTexto(primera.getFechaAgendamiento()),
                             primera.getHoraAgendamiento().format(HORA_12),
+                            primera.getFechaAgendamiento().toString(),
+                            primera.getHoraAgendamiento().toString(),
                             primera.getAgendamientoCita().getEstado() == EstadoCita.REPROGRAMADA ? "Reprogramada" : "Programada");
                 })
                 .toList();
@@ -253,7 +342,7 @@ public class CitasClienteResource {
         }
     }
 
-    // La duración se muestra sin precio
+    // La duración se muestra sin precio (también la usa HistorialClienteResource)
     static String textoDuracion(DuracionCita d) {
         if (d == null) {
             return "";
@@ -271,6 +360,7 @@ public class CitasClienteResource {
             case CitaService.NO_DISPONIBLE_CIERRE -> "No alcanza antes del cierre";
             case CitaService.NO_DISPONIBLE_LLENO -> "Sin cupo";
             case CitaService.NO_DISPONIBLE_MASCOTA -> "Tu mascota ya tiene cita";
+            case CitaService.NO_DISPONIBLE_LIMITE -> "Ya tiene " + CitaService.MAXIMO_CITAS_POR_SEMANA + " citas esa semana";
             default -> "No disponible";
         };
     }

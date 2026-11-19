@@ -43,6 +43,7 @@ import usta.veterinaria.infrastructure.adapter.in.web.admin.CalendarioVista.Masc
 import usta.veterinaria.infrastructure.adapter.in.web.admin.CalendarioVista.OpcionVista;
 import usta.veterinaria.infrastructure.adapter.in.web.admin.CalendarioVista.ResumenVista;
 import usta.veterinaria.infrastructure.adapter.in.web.admin.CalendarioVista.VacunaVista;
+import usta.veterinaria.infrastructure.adapter.in.web.sesion.SoloAdmin;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -76,6 +77,7 @@ import java.util.Set;
 // Usa el MISMO caso de uso que el adaptador REST (GestionarCitasUseCase).
 @Path("/admin/citas")
 @ApplicationScoped
+@SoloAdmin
 public class AdminCitasResource {
 
     private static final Logger LOG = Logger.getLogger(AdminCitasResource.class);

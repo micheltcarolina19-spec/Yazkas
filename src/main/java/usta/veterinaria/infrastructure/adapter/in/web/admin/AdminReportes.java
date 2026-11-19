@@ -31,8 +31,10 @@ import java.util.Locale;
 // import jakarta.annotation.security.RolesAllowed;   // <- descomentar cuando exista seguridad (login)
 
 import usta.veterinaria.infrastructure.adapter.in.web.ImagenStorage;
+import usta.veterinaria.infrastructure.adapter.in.web.sesion.SoloAdmin;
+
 @Path("/admin/reportes")
-// @RolesAllowed("ADMINISTRADOR")
+@SoloAdmin
 public class AdminReportes {
 
     @Inject

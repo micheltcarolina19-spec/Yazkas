@@ -1,10 +1,12 @@
 package usta.veterinaria.infrastructure.adapter.in.web.admin;
 
 import io.quarkus.qute.TemplateData;
+import usta.veterinaria.infrastructure.adapter.in.web.sesion.SoloAdmin;
 
 import java.util.List;
 
 // Objetos de solo lectura que el Resource le entrega a la plantilla adminCitas.html
+@SoloAdmin
 public final class CalendarioVista {
 
     private CalendarioVista() {

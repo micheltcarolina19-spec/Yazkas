@@ -24,6 +24,7 @@ import usta.veterinaria.domain.model.admin.CategoriaProducto;
 import usta.veterinaria.domain.model.admin.DetalleVenta;
 import usta.veterinaria.domain.model.admin.Producto;
 import usta.veterinaria.domain.model.admin.Venta;
+import usta.veterinaria.infrastructure.adapter.in.web.sesion.SoloAdmin;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 // (precio y stock reales), así que nadie puede alterar un precio editando la cookie.
 @Path("/admin/ventas")
 @Produces(MediaType.TEXT_HTML)
+@SoloAdmin
 public class AdminVentasResource {
 
     private static final String COOKIE_TICKET = "ticket_venta";      // ticket actual

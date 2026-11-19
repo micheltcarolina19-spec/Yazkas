@@ -10,17 +10,16 @@ import usta.veterinaria.application.port.in.admin.ConsultarFinanzasUseCase;
 import usta.veterinaria.domain.service.admin.FinanzasService;
 import usta.veterinaria.infrastructure.adapter.in.rest.dto.admin.DetalleVentaRequest;
 import usta.veterinaria.infrastructure.adapter.in.rest.mapper.admin.FinanzasRestMapper;
+import usta.veterinaria.infrastructure.adapter.in.web.sesion.SoloAdmin;
 
-// import jakarta.annotation.security.RolesAllowed;   // <- descomentar cuando exista seguridad (login)
 
 import java.time.LocalDate;
 import java.util.List;
 
-// Adaptador de entrada REST para el panel de finanzas (todo en pesos colombianos)
 @Path("/api/finanzas")
+@SoloAdmin
 @Produces(MediaType.APPLICATION_JSON)
 @Tag(name = "Finanzas", description = "Panel de ingresos, gastos y utilidad")
-// @RolesAllowed("ADMIN")   // <- protege TODOS los endpoints de esta clase
 public class FinanzasResource {
 
     @Inject

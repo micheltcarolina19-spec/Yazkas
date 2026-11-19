@@ -291,3 +291,93 @@
     const anio = $('#anio');
     if (anio) anio.textContent = String(new Date().getFullYear());
 })();
+
+
+
+/* ---------------------------------------------------------
+   Huellitas al hacer clic
+   - Una huella grande que aparece con rebote y se desvanece
+   - Huellitas pequeñas que salen disparadas alrededor
+   --------------------------------------------------------- */
+(() => {
+    'use strict';
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const HUELLA = '<svg viewBox="0 0 48 48" aria-hidden="true">'
+        + '<ellipse cx="24" cy="31" rx="10.5" ry="8.5"/>'
+        + '<ellipse cx="9.5" cy="22" rx="4.2" ry="5.6" transform="rotate(-18 9.5 22)"/>'
+        + '<ellipse cx="18" cy="12.5" rx="4.4" ry="6" transform="rotate(-6 18 12.5)"/>'
+        + '<ellipse cx="30" cy="12.5" rx="4.4" ry="6" transform="rotate(6 30 12.5)"/>'
+        + '<ellipse cx="38.5" cy="22" rx="4.2" ry="5.6" transform="rotate(18 38.5 22)"/>'
+        + '</svg>';
+
+    const COLORES = ['#2f95e0', '#4fb3f5', '#ff8fb1', '#3fcfdc', '#0b3a63'];
+    const MINIS = 5;
+    const azar = (min, max) => Math.random() * (max - min) + min;
+    const color = () => COLORES[Math.floor(Math.random() * COLORES.length)];
+
+    const crear = (clase, x, y) => {
+        const el = document.createElement('span');
+        el.className = clase;
+        el.innerHTML = HUELLA;
+        el.style.left = `${x}px`;
+        el.style.top = `${y}px`;
+        el.style.color = color();
+        el.style.setProperty('--giro', `${Math.round(azar(-35, 35))}deg`);
+        el.addEventListener('animationend', () => el.remove(), { once: true });
+        document.body.appendChild(el);
+        return el;
+    };
+
+    document.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0) return;                                // solo clic izquierdo / toque
+        if (e.target.closest('input, textarea, select')) return;   // no molestar al escribir
+
+        // Huella principal
+        crear('paw-click', e.clientX, e.clientY);
+
+        // Huellitas que salen alrededor
+        for (let i = 0; i < MINIS; i++) {
+            const angulo = (i / MINIS) * Math.PI * 2 + azar(-0.3, 0.3);
+            const distancia = azar(30, 55);
+            const mini = crear('paw-mini', e.clientX, e.clientY);
+            mini.style.setProperty('--dx', `${Math.cos(angulo) * distancia}px`);
+            mini.style.setProperty('--dy', `${Math.sin(angulo) * distancia}px`);
+        }
+    });
+})();
+
+
+
+/* ---------------------------------------------------------
+   Bloquear selección de texto y arrastre de imágenes
+   (los campos de formulario siguen funcionando normal)
+   --------------------------------------------------------- */
+(() => {
+    'use strict';
+
+    const esCampo = (el) => el instanceof Element
+        && el.closest('input, textarea, select, [contenteditable="true"]');
+
+    // Evita que se seleccione texto con el mouse o con doble clic
+    document.addEventListener('selectstart', (e) => {
+        if (!esCampo(e.target)) e.preventDefault();
+    });
+
+    // Evita arrastrar imágenes y enlaces
+    document.addEventListener('dragstart', (e) => {
+        if (!esCampo(e.target)) e.preventDefault();
+    });
+
+    // Evita Ctrl+A (seleccionar todo) fuera de los campos
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a' && !esCampo(e.target)) {
+            e.preventDefault();
+        }
+    });
+
+    // Menú del clic derecho sobre imágenes ("Guardar imagen como...")
+    document.addEventListener('contextmenu', (e) => {
+        if (e.target instanceof HTMLImageElement) e.preventDefault();
+    });
+})();

@@ -6,7 +6,7 @@
     const API_USUARIOS = '/api/usuarios';
     const API_PRODUCTOS = '/api/productos';
     const UMBRAL_STOCK_BAJO = 5;          // un producto con 5 unidades o menos genera alerta
-    const MAX_ALERTAS_CITAS = 3;          // cuántas citas próximas se muestran como alerta
+    const MAX_ALERTAS_CITAS = 4;          // cuántas citas próximas se muestran como alerta
     const ZONA = 'America/Bogota';        // la hora de las alertas siempre es la de Colombia
     const LIMITE_TOP = 5;
 
@@ -17,6 +17,11 @@
         { clave: 'gastos',   nombre: 'Gastos',   color: '#f59f2b', relleno: 0 },
         { clave: 'utilidad', nombre: 'Utilidad', color: '#1e9e5a', relleno: 0 }
     ];
+
+    if (typeof Chart !== 'undefined') {
+        Chart.defaults.font.family = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+        Chart.defaults.color = '#5d7a90';
+    }
 
     const COLORES = ['#1a5c82', '#2f9be0', '#5cbdf8', '#9bd8fb', '#cfeafd'];
     const NOMBRES_GASTO = {
@@ -171,48 +176,100 @@
         });
     }
 
+    let chartGastos = null;
+    let datosGastos = [];          // categorías que se están dibujando (para tooltip y centro)
+
+// Texto del centro: la categoría que se señala o, por defecto, la mayor
+    function centroGastos(i) {
+        const f = datosGastos[i];
+        $('dash-donut-pct').textContent = f ? `${f.pct}%` : '0%';
+        $('dash-donut-name').textContent = f ? f.nombre : 'Sin gastos';
+    }
+
+    function resaltarGasto(i) {
+        if (!chartGastos) return;
+        chartGastos.setActiveElements(i === null ? [] : [{ datasetIndex: 0, index: i }]);
+        chartGastos.update();
+        centroGastos(i === null ? 0 : i);
+    }
+
+    function crearGraficaGastos() {
+        const canvas = $('chart-gastos');
+        const grafica = new Chart(canvas, {
+            type: 'doughnut',
+            data: {
+                labels: [],
+                datasets: [{
+                    data: [], backgroundColor: [],
+                    borderColor: '#fff', borderWidth: 3, borderRadius: 4,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        ...TOOLTIP,
+                        displayColors: false,
+                        callbacks: {
+                            label: (c) => ` ${peso.format(c.parsed)} · ${datosGastos[c.dataIndex].pct}%`
+                        }
+                    }
+                },
+                // El centro sigue al mouse (o al dedo en el celular)
+                onHover: (e, els) => { if (els.length) centroGastos(els[0].index); }
+            }
+        });
+        canvas.addEventListener('mouseleave', () => centroGastos(0));
+        return grafica;
+    }
+
     function pintarGastos(porCategoria, total) {
         const filas = Object.entries(porCategoria || {})
             .map(([k, v]) => ({ clave: k, valor: num(v) }))
             .sort((a, b) => b.valor - a.valor);
         const suma = filas.reduce((acc, f) => acc + f.valor, 0);
+        const vacio = suma <= 0;
 
         $('dash-gastos-total').textContent = peso.format(num(total));
 
-        const donut = $('dash-donut');
+        datosGastos = vacio ? [] : filas.map((f, i) => ({
+            nombre: NOMBRES_GASTO[f.clave] || f.clave,
+            valor: f.valor,
+            color: COLORES[i % COLORES.length],
+            pct: Math.round((f.valor / suma) * 100)
+        }));
+
+        // Leyenda: al pasar el mouse resalta el trozo de la gráfica
         const legend = $('dash-legend');
         legend.replaceChildren();
-
-        if (suma <= 0) {
-            donut.style.background = 'conic-gradient(#e3f0f9 0 100%)';
-            $('dash-donut-pct').textContent = '0%';
-            $('dash-donut-name').textContent = 'Sin gastos';
-            return;
-        }
-
-        let acumulado = 0;
-        const tramos = [];
-        filas.forEach((f, i) => {
-            const color = COLORES[i % COLORES.length];
-            const desde = acumulado;
-            acumulado += (f.valor / suma) * 100;
-            if (f.valor > 0) tramos.push(`${color} ${desde}% ${acumulado}%`);
-
+        datosGastos.forEach((f, i) => {
             const li = document.createElement('li');
             const dot = document.createElement('i');
-            dot.style.background = color;
+            dot.style.background = f.color;
             const nombre = document.createElement('span');
-            nombre.textContent = NOMBRES_GASTO[f.clave] || f.clave;
+            nombre.textContent = f.nombre;
             const pct = document.createElement('b');
-            pct.textContent = `${Math.round((f.valor / suma) * 100)}%`;
+            pct.textContent = `${f.pct}%`;
             li.append(dot, nombre, pct);
+            li.addEventListener('mouseenter', () => resaltarGasto(i));
+            li.addEventListener('mouseleave', () => resaltarGasto(null));
             legend.append(li);
         });
-        donut.style.background = `conic-gradient(${tramos.join(', ')})`;
 
-        const top = filas[0];
-        $('dash-donut-pct').textContent = `${Math.round((top.valor / suma) * 100)}%`;
-        $('dash-donut-name').textContent = NOMBRES_GASTO[top.clave] || top.clave;
+        centroGastos(0);
+        if (typeof Chart === 'undefined') return;
+        if (!chartGastos) chartGastos = crearGraficaGastos();
+
+        // Sin gastos: anillo gris y sin tooltip
+        chartGastos.options.plugins.tooltip.enabled = !vacio;
+        chartGastos.data.labels = vacio ? ['Sin gastos'] : datosGastos.map((f) => f.nombre);
+        chartGastos.data.datasets[0].data = vacio ? [1] : datosGastos.map((f) => f.valor);
+        chartGastos.data.datasets[0].backgroundColor = vacio ? ['#e3f0f9'] : datosGastos.map((f) => f.color);
+        chartGastos.update();
     }
 
     /* ---------- Agenda de hoy ---------- */

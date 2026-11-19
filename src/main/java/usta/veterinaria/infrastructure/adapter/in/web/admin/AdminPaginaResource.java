@@ -9,10 +9,13 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import usta.veterinaria.application.port.in.admin.ConsultarFinanzasUseCase;
+import usta.veterinaria.infrastructure.adapter.in.web.sesion.SoloAdmin;
 
 import java.time.LocalDate;
+import usta.veterinaria.infrastructure.adapter.in.web.sesion.SoloAdmin;
 
 @Path("/admin")
+@SoloAdmin
 public class AdminPaginaResource {
 
     @Inject
