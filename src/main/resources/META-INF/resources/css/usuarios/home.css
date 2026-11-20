@@ -1683,3 +1683,30 @@
     -webkit-user-select: text;
     user-select: text;
 }
+
+
+/* ==========================================================
+   Barra de scroll con los colores de Yazka's
+   ========================================================== */
+:root {
+    --hm-scroll-track: #e6f3fe;                                  /* carril celeste claro */
+    --hm-scroll-thumb: linear-gradient(180deg, #2f95e0, #0b3a63); /* celeste → azul marino */
+    --hm-scroll-thumb-hover: linear-gradient(180deg, #45b0f2, #0a2f52);
+}
+
+/* Chrome, Edge, Safari, Opera */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--hm-scroll-track); }
+::-webkit-scrollbar-thumb {
+    background: var(--hm-scroll-thumb);
+    border-radius: 99px;
+    border: 3px solid var(--hm-scroll-track);   /* la deja flotando como una píldora */
+}
+::-webkit-scrollbar-thumb:hover { background: var(--hm-scroll-thumb-hover); }
+::-webkit-scrollbar-thumb:active { background: #0b3a63; }
+::-webkit-scrollbar-corner { background: var(--hm-scroll-track); }
+
+/* Firefox (no admite degradado: usa el azul marino sólido) */
+@supports not selector(::-webkit-scrollbar) {
+    html { scrollbar-color: #1f7fc8 #e6f3fe; scrollbar-width: thin; }
+}

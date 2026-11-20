@@ -13,11 +13,23 @@
     <link href="/css/usuarios/Navbar.css" rel="stylesheet">
     <link href="/css/usuarios/home.css" rel="stylesheet">
     <link href="/css/usuarios/nosotros.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="/img/logo-pequeno.png" type="png">
+
+
+    {! La foto del encabezado se pide primero para que aparezca rápido !}
+    <link rel="preload" as="image" href="/img/fondo-nosotros.png" fetchpriority="high">
+
+    {! Mejora progresiva: solo si hay JS y movimiento permitido, el encabezado espera a GSAP.
+       nosotros-hero.js lo libera de inmediato; si algo falla, se muestra solo a los 3 s. !}
+    <script>
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('yz-anim'), setTimeout(() => document.documentElement.classList.remove('yz-anim'), 3000);
+    </script>
 </head>
 <body class="hm-body">
 
 {! Navbar reutilizable: aquí se marca 'nosotros' como activo !}
-{#include usuarios/components/nav active='nosotros' /}
+    {#include usuarios/components/nav active='nosotros' /}
 
 {! Iconos de la página: se definen una sola vez y se usan con <use href="#n-..."> !}
 <svg class="hm-sprite" aria-hidden="true" focusable="false">
@@ -85,48 +97,97 @@
 
 <main class="hm-main">
 
-    {! ============================== 1. ENCABEZADO ============================== !}
-    <section class="ns-hero" aria-labelledby="ns-titulo">
-        <div class="ns-hero__deco" aria-hidden="true">
-            <svg class="ns-float ns-float--1"><use href="#n-paw"/></svg>
-            <svg class="ns-float ns-float--2"><use href="#n-sparkle"/></svg>
-            <svg class="ns-float ns-float--3"><use href="#n-heart"/></svg>
-            <svg class="ns-float ns-float--4"><use href="#n-bone"/></svg>
-            <svg class="ns-float ns-float--5"><use href="#n-sparkle"/></svg>
+    {! ============================== 1. ENCABEZADO · "EL SPA DE LOS CONSENTIDOS" ==============================
+       Todo el bloque vive dentro de .yz-about: sus estilos y su JS no tocan nada más de la página.
+       Si GSAP no carga, todo el contenido queda visible tal cual. !}
+    <section class="yz-about" id="nosotros" aria-labelledby="yz-about-title">
+
+        {! Nivel 1 · Fotografía (una sola capa; si luego hay capas separadas, se agregan dentro de .yz-about__media) !}
+        <div class="yz-about__stage">
+            <div class="yz-about__media" data-yz-layer="photo">
+                <img class="yz-about__photo"
+                     src="/img/fondo-nosotros.png"
+                     alt="Perrito blanco y café envuelto en una toalla azul cielo junto a un gatito naranja, recién bañados en Yazka's"
+                     fetchpriority="high" decoding="async" data-yz-reveal>
+            </div>
+            <div class="yz-about__glint" aria-hidden="true"><span></span></div>
+            <div class="yz-about__fx" aria-hidden="true">
+                <span class="yz-about__bubble" data-yz-reveal></span>
+                <svg class="yz-about__sparkle" data-yz-reveal><use href="#n-sparkle"/></svg>
+            </div>
         </div>
 
-        <div class="hm-container ns-hero__grid">
-            <div class="ns-hero__text">
-                <span class="ns-eyebrow">
+        <div class="yz-about__inner">
+
+            {! Nivel 2 · Narrativa editorial !}
+            <div class="yz-about__copy">
+                <p class="yz-about__eyebrow" data-yz-reveal>
                     <svg class="hm-ico hm-ico--fill" aria-hidden="true"><use href="#n-paw"/></svg>
                     Conócenos
-                </span>
-                <h1 id="ns-titulo" class="ns-hero__title">
-                    No peluqueamos,
-                    <span class="hm-script">embellecemos</span>
-                    a tu mascota.
+                </p>
+
+                <h1 id="yz-about-title" class="yz-about__title">
+                    <span class="yz-line"><span class="yz-line__in" data-yz-reveal>No peluqueamos,</span></span>
+                    <span class="yz-line yz-line--script">
+                        <span class="yz-about__script" data-yz-reveal>embellecemos</span>
+                        <svg class="yz-about__underline" viewBox="0 0 400 24" preserveAspectRatio="none" aria-hidden="true" data-yz-reveal>
+                            <defs>
+                                <linearGradient id="yz-underline-grad" x1="0" x2="1" y1="0" y2="0">
+                                    <stop offset="0" stop-color="#2e9bea"/>
+                                    <stop offset="1" stop-color="#55b6f5" stop-opacity=".45"/>
+                                </linearGradient>
+                            </defs>
+                            <path pathLength="1" d="M4 17C110 7 260 3 396 9"/>
+                        </svg>
+                    </span>
+                    <span class="yz-about__end">
+                        <span class="yz-line"><span class="yz-line__in" data-yz-reveal>a tu <br class="yz-about__br">mascota.</span></span>
+                        <svg class="yz-about__rays" viewBox="0 0 40 32" aria-hidden="true" data-yz-reveal>
+                            <path pathLength="1" d="M8 26 4 12"/>
+                            <path pathLength="1" d="M18 24 19 6"/>
+                            <path pathLength="1" d="M27 27 36 17"/>
+                        </svg>
+                    </span>
                 </h1>
-                <p class="ns-hero__lead">
+
+                <p class="yz-about__lead" data-yz-reveal>
                     Somos Yazka's, una peluquería canina y felina en Chiquinquirá donde cada baño
                     y cada corte se hacen con paciencia, cariño y cuidado profesional.
                 </p>
-
-                <ul class="ns-stats">
-                    <li><strong>+370</strong><span>familias nos confían a sus peluditos</span></li>
-                    <li><strong>2</strong><span>manos expertas que los consienten</span></li>
-                    <li><strong>1</strong><span>sede en el centro de Chiquinquirá</span></li>
-                </ul>
             </div>
 
-            <div class="ns-hero__media" aria-hidden="true">
-                <span class="ns-hero__blob"></span>
-                <span class="ns-hero__ring"></span>
-                <img src="/img/usuario/Golden.png" alt="" loading="eager">
-                <div class="ns-badge">
-                    <svg class="hm-ico hm-ico--fill"><use href="#n-heart"/></svg>
-                    <span>Embellecemos y hacemos<br>feliz a tu mascota</span>
-                </div>
-            </div>
+            {! Nota escrita a mano que señala a las mascotas !}
+            <p class="yz-about__note" data-yz-reveal>
+                <svg class="yz-about__arrow" viewBox="0 0 80 50" aria-hidden="true">
+                    <path pathLength="1" d="M76 44C58 40 34 30 12 10"/>
+                    <path pathLength="1" d="M10 24 11 9 26 8"/>
+                </svg>
+                <span class="yz-about__note-text">
+                    Cada mascota merece sentirse especial.
+                    <svg class="yz-about__note-heart" aria-hidden="true"><use href="#n-heart"/></svg>
+                </span>
+                <svg class="yz-about__note-line" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true">
+                    <path pathLength="1" d="M3 10C60 3 140 2 197 6"/>
+                </svg>
+            </p>
+
+            {! Nivel 3 · Estadísticas (el valor final ya está en el HTML: si no hay animación, se ve correcto) !}
+            <ul class="yz-about__stats" aria-label="Yazka's en números" data-yz-reveal>
+                <li class="yz-stat">
+                    <strong class="yz-stat__num" aria-hidden="true">+<span data-yz-count="370">370</span></strong>
+                    <span class="yz-stat__label"><span class="yz-sr">Más de 370 </span>familias nos confían a sus peluditos</span>
+                </li>
+                <li class="yz-stat">
+                    <span class="yz-stat__rule" aria-hidden="true"></span>
+                    <strong class="yz-stat__num" aria-hidden="true"><span data-yz-count="2">2</span></strong>
+                    <span class="yz-stat__label"><span class="yz-sr">2 </span>manos expertas que los consienten</span>
+                </li>
+                <li class="yz-stat">
+                    <span class="yz-stat__rule" aria-hidden="true"></span>
+                    <strong class="yz-stat__num" aria-hidden="true"><span data-yz-count="1">1</span></strong>
+                    <span class="yz-stat__label"><span class="yz-sr">1 </span>sede en el centro de Chiquinquirá</span>
+                </li>
+            </ul>
         </div>
     </section>
 
@@ -253,12 +314,12 @@
                 {! Mapa de Google (embed sin API key) !}
                 <div class="ns-map">
                     <iframe
-                        class="ns-map__frame"
-                        title="Mapa de ubicación de Yazka's en Carrera 9 # 2-37, Chiquinquirá, Boyacá"
-                        src="https://www.google.com/maps?q=Carrera+9+%232-37,+Chiquinquir%C3%A1,+Boyac%C3%A1,+Colombia&amp;z=17&amp;output=embed"
-                        loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"
-                        allowfullscreen></iframe>
+                            class="ns-map__frame"
+                            title="Mapa de ubicación de Yazka's en Carrera 9 # 2-37, Chiquinquirá, Boyacá"
+                            src="https://www.google.com/maps?q=Carrera+9+%232-37,+Chiquinquir%C3%A1,+Boyac%C3%A1,+Colombia&amp;z=17&amp;output=embed"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            allowfullscreen></iframe>
                     <div class="ns-map__tag" aria-hidden="true">
                         <span class="ns-map__pin"><svg class="hm-ico hm-ico--fill"><use href="#n-paw"/></svg></span>
                         <span><strong>Yazka's</strong>Cra. 9 # 2-37</span>
@@ -330,6 +391,11 @@
 <script src="/js/usuario/Navbar.js"></script>
 <script src="/js/usuario/nosotros.js"></script>
 <script src="/js/usuario/home.js"></script>
+
+{! GSAP 3.13.0 fijado (gratis, incluido ScrollTrigger) + animaciones del encabezado de Nosotros !}
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="/js/usuario/nosotros-hero.js"></script>
 
 </body>
 </html>

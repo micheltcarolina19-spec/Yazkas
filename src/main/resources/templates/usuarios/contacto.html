@@ -13,11 +13,19 @@
     <link href="/css/usuarios/Navbar.css" rel="stylesheet">
     <link href="/css/usuarios/home.css" rel="stylesheet">
     <link href="/css/usuarios/contacto.css" rel="stylesheet">
+
+    {! La foto del encabezado se pide primero para que aparezca rápido !}
+    <link rel="preload" as="image" href="/img/logo-pequeno.png.png" fetchpriority="high">
+    <link rel="shortcut icon" href="/img/logo-pequeno.png" type="png">
+    {! Oculta el encabezado solo mientras GSAP prepara la entrada (sin parpadeo). Si algo falla, se muestra a los 3.5 s !}
+    <script>
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('ct-anim'), setTimeout(() => document.documentElement.classList.remove('ct-anim'), 3500);
+    </script>
 </head>
 <body class="hm-body">
 
 {! Navbar reutilizable: aquí se marca 'contacto' como activo !}
-{#include usuarios/components/nav active='contacto' /}
+    {#include usuarios/components/nav active='contacto' /}
 
 {! Iconos de la página: se usan con <use href="#c-..."> !}
 <svg class="hm-sprite" aria-hidden="true" focusable="false">
@@ -69,65 +77,102 @@
 
 <main class="hm-main">
 
-    {! ============================== 1. ENCABEZADO + BOTONES RÁPIDOS ============================== !}
-    <section class="ct-hero" aria-labelledby="ct-titulo">
-        <div class="ct-hero__deco" aria-hidden="true">
-            <svg class="ct-float ct-float--1"><use href="#c-paw"/></svg>
-            <svg class="ct-float ct-float--2"><use href="#c-sparkle"/></svg>
-            <svg class="ct-float ct-float--3"><use href="#c-heart"/></svg>
-            <svg class="ct-float ct-float--4"><use href="#c-bone"/></svg>
-            <svg class="ct-float ct-float--5"><use href="#c-sparkle"/></svg>
-            <svg class="ct-float ct-float--6"><use href="#c-paw"/></svg>
+    {! ============================== 1. ENCABEZADO (foto del espejo) + BOTONES RÁPIDOS ============================== !}
+    <section class="ct-hero" aria-labelledby="ct-titulo" data-hero-root>
+
+        {! Foto completa de fondo: espejo, golden, gato y peluquería !}
+        <div class="ct-hero__bg" aria-hidden="true">
+            <img src="/img/fondo-contactanos.png" alt="" fetchpriority="high" decoding="async" data-hero-bg>
         </div>
 
-        <div class="hm-container ct-hero__inner">
-            <span class="ct-eyebrow">
-                <svg class="hm-ico hm-ico--fill" aria-hidden="true"><use href="#c-paw"/></svg>
-                Contáctanos
-            </span>
-            <h1 id="ct-titulo" class="ct-hero__title">
-                Estamos para <span class="hm-script">ayudarte</span>
-            </h1>
-            <p class="ct-hero__lead">
-                ¿Tienes dudas sobre un servicio, un producto o tu cita? Escríbenos o llámanos,
-                con gusto te atendemos a ti y a tu peludito.
-            </p>
+        {! Destello de luz que cruza el espejo !}
+        <div class="ct-hero__shine" aria-hidden="true"><span class="ct-hero__glint"></span></div>
 
-            {! Botones rápidos: cambia los números y el correo por los reales !}
-            <ul class="ct-quick">
-                <li>
-                    <a class="ct-quick__card ct-quick__card--wa"
-                       href="https://wa.me/573104567890?text=Hola%20Yazka%27s%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n"
-                       target="_blank" rel="noopener">
-                        <span class="ct-quick__icon"><svg class="hm-ico"><use href="#c-whatsapp"/></svg></span>
-                        <span class="ct-quick__text">
-                            <strong>WhatsApp</strong>
-                            <small>+57 310 456 7890</small>
-                        </span>
-                        <svg class="hm-ico ct-quick__go" aria-hidden="true"><use href="#c-arrow"/></svg>
-                    </a>
-                </li>
-                <li>
-                    <a class="ct-quick__card ct-quick__card--call" href="tel:+573104567890">
-                        <span class="ct-quick__icon"><svg class="hm-ico"><use href="#c-phone"/></svg></span>
-                        <span class="ct-quick__text">
-                            <strong>Llámanos</strong>
-                            <small>+57 310 456 7890</small>
-                        </span>
-                        <svg class="hm-ico ct-quick__go" aria-hidden="true"><use href="#c-arrow"/></svg>
-                    </a>
-                </li>
-                <li>
-                    <a class="ct-quick__card ct-quick__card--mail" href="mailto:contacto@yazkas.com.co">
-                        <span class="ct-quick__icon"><svg class="hm-ico"><use href="#c-mail"/></svg></span>
-                        <span class="ct-quick__text">
-                            <strong>Escríbenos</strong>
-                            <small>contacto@yazkas.com.co</small>
-                        </span>
-                        <svg class="hm-ico ct-quick__go" aria-hidden="true"><use href="#c-arrow"/></svg>
-                    </a>
-                </li>
-            </ul>
+        {! Brillos y huellita decorativos !}
+        <div class="ct-hero__fx" aria-hidden="true">
+            <svg class="ct-spark ct-spark--3" data-hero-spark><use href="#c-sparkle"/></svg>
+            <svg class="ct-spark ct-spark--4" data-hero-spark><use href="#c-sparkle"/></svg>
+            <svg class="ct-hero__paw" data-hero-paw><use href="#c-paw"/></svg>
+        </div>
+
+        <div class="ct-hero__inner">
+            <div class="ct-hero__content">
+                <svg class="ct-spark ct-spark--1" aria-hidden="true" data-hero-spark><use href="#c-sparkle"/></svg>
+                <svg class="ct-spark ct-spark--2" aria-hidden="true" data-hero-spark><use href="#c-sparkle"/></svg>
+
+                <h1 id="ct-titulo" class="ct-hero__title">
+                    <span class="ct-line"><span class="ct-line__in" data-hero>Estamos para</span></span>
+                    <span class="ct-line ct-line--script">
+                        <span class="ct-hero__script" data-hero>ayudarte</span>
+                        <svg class="ct-hero__swoosh" viewBox="0 0 420 22" preserveAspectRatio="none" aria-hidden="true" data-hero>
+                            <defs>
+                                <linearGradient id="ct-swoosh-grad" x1="0" x2="1" y1="0" y2="0">
+                                    <stop offset="0" stop-color="#1f8fe6"/>
+                                    <stop offset="1" stop-color="#7cc6ff" stop-opacity=".35"/>
+                                </linearGradient>
+                            </defs>
+                            <path pathLength="1" d="M4 14C120 5 280 4 416 10"/>
+                        </svg>
+                    </span>
+                    <span class="ct-line">
+                        <span class="ct-line__in" data-hero>a tu peludito.</span>
+                        <svg class="ct-hero__doodle" viewBox="0 0 52 42" aria-hidden="true" data-hero>
+                            <path pathLength="1" d="M21 36C10 28 4 20 8 13c3-5 10-5 13 1 2-6 10-8 14-3 5 7-2 16-14 25Z"/>
+                            <path pathLength="1" d="M38 9l4-6M42 14l7-3M35 5l0-4"/>
+                        </svg>
+                    </span>
+                </h1>
+
+                <p class="ct-hero__lead" data-hero>
+                    ¿Tienes dudas sobre un servicio, un producto o tu cita? Escríbenos o llámanos,
+                    con gusto te atendemos a ti y a tu peludito.
+                </p>
+
+                {! Botones rápidos: cambia los números y el correo por los reales !}
+                <ul class="ct-quick">
+                    <li data-hero>
+                        <a class="ct-quick__card ct-quick__card--wa"
+                           href="https://wa.me/573104567890?text=Hola%20Yazka%27s%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n"
+                           target="_blank" rel="noopener">
+                            <span class="ct-quick__icon"><svg class="hm-ico"><use href="#c-whatsapp"/></svg></span>
+                            <span class="ct-quick__text">
+                                <strong>WhatsApp</strong>
+                                <small>+57 310 456 7890</small>
+                            </span>
+                            <svg class="hm-ico ct-quick__go" aria-hidden="true"><use href="#c-arrow"/></svg>
+                        </a>
+                    </li>
+                    <li data-hero>
+                        <a class="ct-quick__card ct-quick__card--call" href="tel:+573104567890">
+                            <span class="ct-quick__icon"><svg class="hm-ico"><use href="#c-phone"/></svg></span>
+                            <span class="ct-quick__text">
+                                <strong>Llámanos</strong>
+                                <small>+57 310 456 7890</small>
+                            </span>
+                            <svg class="hm-ico ct-quick__go" aria-hidden="true"><use href="#c-arrow"/></svg>
+                        </a>
+                    </li>
+                    <li data-hero>
+                        <a class="ct-quick__card ct-quick__card--mail" href="mailto:contacto@yazkas.com.co">
+                            <span class="ct-quick__icon"><svg class="hm-ico"><use href="#c-mail"/></svg></span>
+                            <span class="ct-quick__text">
+                                <strong>Escríbenos</strong>
+                                <small>contacto@yazkas.com.co</small>
+                            </span>
+                            <svg class="hm-ico ct-quick__go" aria-hidden="true"><use href="#c-arrow"/></svg>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        {! Etiqueta flotante sobre la foto !}
+        <div class="ct-hero__badge" aria-hidden="true" data-hero>
+            <div class="ct-hero__badge-in">
+                <span class="ct-hero__badge-heart"><svg class="hm-ico hm-ico--fill"><use href="#c-heart"/></svg></span>
+                <span>Te atendemos con amor<br>y muchas caricias</span>
+                <svg class="ct-hero__badge-rays" viewBox="0 0 24 24"><path d="M6 8 3 3M12 6V1M17 9l4-4"/></svg>
+            </div>
         </div>
     </section>
 
@@ -253,11 +298,11 @@
 
                 <div class="ct-place__map">
                     <iframe
-                        title="Mapa de ubicación de Yazka's en Carrera 9 # 2-37, Chiquinquirá, Boyacá"
-                        src="https://www.google.com/maps?q=Carrera+9+%232-37,+Chiquinquir%C3%A1,+Boyac%C3%A1,+Colombia&amp;z=17&amp;output=embed"
-                        loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"
-                        allowfullscreen></iframe>
+                            title="Mapa de ubicación de Yazka's en Carrera 9 # 2-37, Chiquinquirá, Boyacá"
+                            src="https://www.google.com/maps?q=Carrera+9+%232-37,+Chiquinquir%C3%A1,+Boyac%C3%A1,+Colombia&amp;z=17&amp;output=embed"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            allowfullscreen></iframe>
                 </div>
             </div>
         </div>
@@ -305,6 +350,11 @@
 <script src="/js/usuario/Navbar.js"></script>
 <script src="/js/usuario/contacto.js"></script>
 <script src="/js/usuario/home.js"></script>
+
+{! GSAP (gratis desde la 3.13, incluido ScrollTrigger) + animaciones del encabezado !}
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="/js/usuario/contacto-hero.js"></script>
 
 </body>
 </html>

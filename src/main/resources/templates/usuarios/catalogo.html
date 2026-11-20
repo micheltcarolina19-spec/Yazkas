@@ -14,10 +14,20 @@
     {! home.css aporta los colores, botones, ventana de detalles y pie de página; catalogo.css lo propio de esta página !}
     <link href="/css/usuarios/home.css" rel="stylesheet">
     <link href="/css/usuarios/catalogo.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="/img/logo-pequeno.png" type="png">
+
+    {! La foto del hero se pide primero para que aparezca rápido !}
+    <link rel="preload" as="image" href="/img/fondo-gato-catalogo.png" fetchpriority="high">
+
+    {! Oculta el hero solo mientras GSAP prepara la entrada (sin parpadeo). Si algo falla, se muestra a los 3.5 s !}
+    <script>
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('ct-anim'), setTimeout(() => document.documentElement.classList.remove('ct-anim'), 3500);
+    </script>
 </head>
 <body class="hm-body">
 
-{#include usuarios/components/nav active='catalogo' /}
+    {#include usuarios/components/nav active='catalogo' /}
 
 {! Iconos de la página: se usan con <use href="#c-..."> !}
 <svg class="hm-sprite" aria-hidden="true" focusable="false">
@@ -33,6 +43,7 @@
     <symbol id="c-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.8"/></symbol>
     <symbol id="c-bowl" viewBox="0 0 24 24"><path d="M3.5 11.5h17a8.5 8.5 0 0 1-17 0Z"/><path d="M8 8.5c.6-1 1.8-1.6 3-1.3M13 7.6c1-.9 2.6-1 3.6 0"/></symbol>
     <symbol id="c-ball" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M5.2 7.5c3.6 1.2 4.8 5 3.6 9.3M18.8 7.5c-3.6 1.2-4.8 5-3.6 9.3"/></symbol>
+    <symbol id="c-bone" viewBox="0 0 24 24"><path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z"/></symbol>
     <symbol id="c-tag" viewBox="0 0 24 24"><path d="M3.5 12V4.8c0-.7.6-1.3 1.3-1.3H12l8.5 8.5-8.5 8.5L3.5 12Z"/><circle cx="8" cy="8" r="1.5"/></symbol>
     <symbol id="c-drop" viewBox="0 0 24 24"><path d="M12 3.5s6 6.4 6 10.8a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5Z"/><path d="M9.5 14.5a2.6 2.6 0 0 0 2.5 2.4"/></symbol>
     <symbol id="c-health" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/><path d="M12 10.5v5M9.5 13h5"/></symbol>
@@ -45,35 +56,74 @@
 
 <main class="hm-main ct-main">
 
-    {! ============================== CABECERA: TÍTULO + BÚSQUEDA ============================== !}
-    <section class="hm-container ct-hero" aria-labelledby="ct-titulo">
-        <div class="ct-hero__card">
-            <div class="ct-hero__text">
+    {! ============================== HERO: FOTO DE FONDO + TÍTULO + BÚSQUEDA ============================== !}
+    <section class="ct-hero" aria-labelledby="ct-titulo" data-hero-root>
+
+        {! Imagen completa de fondo (gato, huella y plantas ya vienen en la foto) !}
+        <div class="ct-hero__bg" aria-hidden="true">
+            <img src="/img/fondo-gato-catalogo.png" alt="" fetchpriority="high" decoding="async" data-hero-bg>
+        </div>
+
+        {! Brillos decorativos (los anima GSAP) !}
+        <div class="ct-hero__fx" aria-hidden="true">
+            <svg class="ct-spark ct-spark--1" data-hero-spark><use href="#c-sparkle"/></svg>
+            <svg class="ct-spark ct-spark--2" data-hero-spark><use href="#c-sparkle"/></svg>
+            <svg class="ct-spark ct-spark--3" data-hero-spark><use href="#c-sparkle"/></svg>
+            <svg class="ct-spark ct-spark--4" data-hero-spark><use href="#c-sparkle"/></svg>
+        </div>
+
+        <div class="hm-container ct-hero__inner">
+            <div class="ct-hero__content">
                 <h1 id="ct-titulo" class="ct-hero__title">
-                    Todo lo que necesitas para tu <span class="hm-script">mascota</span>
+                    <span class="ct-line"><span class="ct-line__in" data-hero>Su felicidad</span></span>
+                    <span class="ct-line"><span class="ct-line__in" data-hero>comienza aquí.</span></span>
                 </h1>
-                <p class="ct-hero__lead">
-                    Conoce los productos que encuentras en Yazka's. Pregunta por ellos en tu próxima visita.
+
+                {! Trazo azul bajo el título (se "dibuja" al cargar) !}
+                <svg class="ct-hero__swoosh" viewBox="0 0 420 22" preserveAspectRatio="none" aria-hidden="true" data-hero>
+                    <defs>
+                        <linearGradient id="ct-swoosh-grad" x1="0" x2="1" y1="0" y2="0">
+                            <stop offset="0" stop-color="#2f95e0"/>
+                            <stop offset="1" stop-color="#7cc6ff" stop-opacity=".35"/>
+                        </linearGradient>
+                    </defs>
+                    <path pathLength="1" d="M4 15C110 6 270 4 416 11"/>
+                </svg>
+
+                <p class="ct-hero__subtitle" data-hero>
+                    Todo lo que tu <span class="hm-script ct-hero__script">mascota</span> necesita,<br>
+                    en un solo lugar.
+                </p>
+                <p class="ct-hero__lead" data-hero>
+                    Descubre productos especiales para consentir a quienes llenan tu vida de alegría.
                 </p>
 
                 {! Búsqueda: filtra por nombre, marca, categoría o descripción mientras escribes !}
-                <form class="ct-search" role="search" data-busqueda>
+                <form class="ct-search" role="search" data-busqueda data-hero>
                     <label class="visually-hidden" for="ct-buscar">Buscar productos</label>
                     <svg class="hm-ico ct-search__ico" aria-hidden="true"><use href="#c-search"/></svg>
                     <input id="ct-buscar" class="ct-search__input" type="search" autocomplete="off"
-                           placeholder="¿Qué estás buscando para tu mascota?">
+                           placeholder="¿Qué necesita tu peludito hoy?">
                     <button type="button" class="ct-search__clear" data-limpiar-busqueda hidden aria-label="Borrar búsqueda">
                         <svg class="hm-ico"><use href="#c-close"/></svg>
                     </button>
                 </form>
-            </div>
 
-            {! Golden asomado, con brillos (decorativo) !}
-            <div class="ct-hero__pet" aria-hidden="true">
-                <img src="/META-INF/resources/img/usuario/Golden.png" alt="" loading="eager">
-                <svg class="ct-spark ct-spark--1"><use href="#c-sparkle"/></svg>
-                <svg class="ct-spark ct-spark--2"><use href="#c-sparkle"/></svg>
-                <svg class="ct-spark ct-spark--3"><use href="#c-sparkle"/></svg>
+                {! Accesos rápidos: activan el filtro de abajo y bajan al catálogo !}
+                <div class="ct-quick" role="group" aria-label="Ir a una categoría" data-hero>
+                    <button type="button" class="ct-quick__item" data-ir-grupo="alimentos">
+                        <svg class="hm-ico" aria-hidden="true"><use href="#c-bowl"/></svg>
+                        <span>Alimentos</span>
+                    </button>
+                    <button type="button" class="ct-quick__item" data-ir-grupo="juguetes">
+                        <svg class="hm-ico" aria-hidden="true"><use href="#c-bone"/></svg>
+                        <span>Juguetes</span>
+                    </button>
+                    <button type="button" class="ct-quick__item" data-ir-grupo="higiene">
+                        <svg class="hm-ico" aria-hidden="true"><use href="#c-drop"/></svg>
+                        <span>Higiene y cuidado</span>
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -209,5 +259,9 @@
 <script src="/js/usuario/catalogo.js"></script>
 <script src="/js/usuario/home.js"></script>
 
+{! GSAP (gratis desde la 3.13, incluido ScrollTrigger) + animaciones del hero !}
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="/js/usuario/catalogo-hero.js"></script>
 </body>
 </html>

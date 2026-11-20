@@ -25,138 +25,432 @@
 }
 .ns-head .hm-muted { margin: .5rem 0 0; }
 
-.ns-eyebrow {
+/* =====================================================================
+   1. ENCABEZADO · "EL SPA DE LOS CONSENTIDOS"  (.yz-about)
+   Todo encapsulado en .yz-about: no afecta ninguna otra sección.
+   ===================================================================== */
+.yz-about {
+    /* Identidad de Yazka's */
+    --yz-sky: #55b6f5;
+    --yz-sky-deep: #2e9bea;          /* versión con más contraste para texto */
+    --yz-pastel: #ddf1ff;
+    --yz-ice: #eaf7ff;
+    --yz-white: #ffffff;
+    --yz-navy: #102d56;
+    --yz-slate: #566b84;
+    --yz-pink: #f9c9df;
+    --yz-pink-ink: #ec6fa5;          /* acento rosado para trazos finos */
+
+    /* Composición */
+    --yz-gutter: clamp(1.25rem, 5vw, 4.5rem);
+    --yz-max: 1240px;
+    --yz-title: clamp(2.6rem, 1rem + 3.7vw, 4.7rem);
+    --yz-img-pos: 54% 30%;
+    --yz-ease-out: cubic-bezier(.23, 1, .32, 1);
+
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    min-height: clamp(680px, 100svh, 980px);
+    overflow: hidden;
+    overflow: clip;
+    color: var(--yz-navy);
+    font-family: var(--hm-font, "Poppins", system-ui, sans-serif);
+    background: var(--yz-ice);
+}
+.yz-about *, .yz-about *::before, .yz-about *::after { box-sizing: border-box; }
+
+/* Texto solo para lectores de pantalla */
+.yz-about .yz-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* ---------- Nivel 1 · Fotografía ---------- */
+.yz-about__stage {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    /* La espuma de abajo se funde con la página */
+    -webkit-mask-image: linear-gradient(to bottom, #000 90%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 90%, transparent 100%);
+}
+/* Capa de la foto con un poco de sangrado para el parallax (sin bordes vacíos) */
+.yz-about__media {
+    position: absolute;
+    inset: -6% -14px;
+}
+.yz-about__photo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--yz-img-pos);
+}
+/* Degradados solo donde va texto: izquierda, derecha y la banda inferior */
+.yz-about__stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+            linear-gradient(90deg, rgba(234, 247, 255, .86) 0%, rgba(234, 247, 255, .55) 22%, rgba(234, 247, 255, 0) 40%),
+            linear-gradient(270deg, rgba(234, 247, 255, .7) 0%, rgba(234, 247, 255, .35) 15%, rgba(234, 247, 255, 0) 28%),
+            linear-gradient(0deg, rgba(234, 247, 255, .55) 0%, rgba(234, 247, 255, 0) 22%);
+}
+
+/* Ambiente 1 · Reflejo de luz que cruza la escena de vez en cuando */
+.yz-about__glint { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+.yz-about__glint span {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg,
+    transparent 40%,
+    rgba(255, 255, 255, .38) 50%,
+    transparent 60%);
+    transform: translateX(-100%);
+}
+
+/* Ambiente 2 y 3 · Una burbuja y un destello, detrás del texto */
+.yz-about__fx { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.yz-about__bubble {
+    position: absolute;
+    left: 31%;
+    bottom: 27%;
+    width: clamp(34px, 3.4vw, 58px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+            radial-gradient(circle at 32% 28%, #fff 0 9%, rgba(255, 255, 255, .45) 20%, transparent 34%),
+            radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0) 55%, rgba(173, 224, 255, .45) 70%, rgba(249, 201, 223, .5) 84%, rgba(255, 255, 255, .85) 100%);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, .8);
+}
+.yz-about__sparkle {
+    position: absolute;
+    top: 17%;
+    left: 34%;
+    width: 22px;
+    height: 22px;
+    fill: var(--yz-white);
+    opacity: .9;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, .9));
+}
+
+/* ---------- Contenido ---------- */
+.yz-about__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: min(var(--yz-max), 100% - 2 * var(--yz-gutter));
+    margin-inline: auto;
+    padding-block: clamp(6.5rem, 13vh, 8.75rem) clamp(1.25rem, 3.5vh, 2.25rem);
+}
+.yz-about__copy { position: relative; }
+
+.yz-about__eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: .45rem;
-    padding: .4rem .95rem;
-    border-radius: 999px;
-    background: #fff;
-    color: var(--ns-blue);
-    font-weight: 600;
-    font-size: .85rem;
-    box-shadow: 0 6px 16px rgba(10, 116, 201, .12);
-}
-.ns-eyebrow .hm-ico { width: 16px; height: 16px; color: var(--ns-pink); }
-
-/* ============================== 1. ENCABEZADO ============================== */
-.ns-hero {
-    position: relative;
-    overflow: hidden;
-    padding: 7.5rem 0 4rem;
-    background:
-        radial-gradient(circle at 12% 20%, #ffffff 0, transparent 40%),
-        linear-gradient(180deg, #eaf6ff 0%, #d9eeff 100%);
-}
-.ns-hero__grid {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: 1.1fr .9fr;
-    align-items: center;
-    gap: 3rem;
-}
-.ns-hero__title {
-    margin: 1rem 0;
-    font-size: clamp(2.1rem, 4.4vw, 3.4rem);
-    font-weight: 800;
-    line-height: 1.12;
-    color: var(--ns-navy);
-}
-.ns-hero__lead {
-    max-width: 520px;
-    margin: 0 0 2rem;
-    font-size: 1.08rem;
-    line-height: 1.65;
-    color: var(--ns-text);
-}
-
-.ns-stats {
-    list-style: none;
+    gap: .5rem;
     margin: 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: .9rem;
+    padding: .55rem 1.15rem .55rem .95rem;
+    border-radius: 999px;
+    font-size: clamp(.86rem, .8rem + .2vw, 1rem);
+    font-weight: 700;
+    letter-spacing: .01em;
+    color: #1f86d6;
+    background: rgba(255, 255, 255, .92);
+    box-shadow: 0 10px 26px -14px rgba(16, 45, 86, .35);
 }
-.ns-stats li {
-    flex: 1 1 140px;
-    padding: 1rem 1.1rem;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, .85);
-    box-shadow: var(--ns-shadow);
-}
-.ns-stats strong {
-    display: block;
-    font-size: 1.7rem;
-    font-weight: 800;
-    color: var(--ns-blue);
-    line-height: 1.1;
-}
-.ns-stats span { font-size: .85rem; color: var(--ns-text); }
+.yz-about__eyebrow .hm-ico { width: 1.05em; height: 1.05em; color: var(--yz-pink-ink); }
 
-.ns-hero__media {
+/* Titular */
+.yz-about__title {
     position: relative;
+    margin: clamp(.8rem, 2vh, 1.2rem) 0 0;
+    font-size: var(--yz-title);
+    font-weight: 800;
+    line-height: 1.03;
+    letter-spacing: -.032em;
+    color: var(--yz-navy);
+}
+/* Cada línea es una máscara: el texto sube desde abajo sin saltos de altura */
+.yz-line {
+    display: block;
+    overflow: hidden;
+    padding-block: .08em .14em;
+    margin-block: -.08em -.14em;
+}
+.yz-line__in { display: inline-block; }
+
+/* "embellecemos" en manuscrita */
+.yz-line--script {
+    position: relative;
+    display: inline-block;
+    overflow: visible;
+    margin-left: .3em;
+}
+.yz-about__script {
+    display: inline-block;
+    padding: 0 .1em 0 .02em;
+    font-family: var(--hm-script, "Caveat", cursive);
+    font-size: 1.42em;
+    font-weight: 700;
+    line-height: .92;
+    letter-spacing: 0;
+    color: var(--yz-sky-deep);
+    background: linear-gradient(90deg, var(--yz-sky-deep) 0%, var(--yz-sky) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.yz-about__underline {
+    position: absolute;
+    left: .3em;
+    bottom: -.12em;
+    width: 86%;
+    height: .2em;
+    overflow: visible;
+}
+.yz-about__underline path {
+    fill: none;
+    stroke: url(#yz-underline-grad);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+}
+
+/* "a tu mascota." a la derecha del perrito */
+.yz-about__end {
+    position: absolute;
+    top: .52em;
+    right: 0;
+}
+.yz-about__rays {
+    position: absolute;
+    top: -.05em;
+    left: 2.45em;
+    width: .6em;
+    height: .48em;
+    overflow: visible;
+}
+.yz-about__rays path,
+.yz-about__arrow path,
+.yz-about__note-line path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+}
+.yz-about__rays path { stroke: var(--yz-pink-ink); stroke-width: 4; }
+
+.yz-about__lead {
+    max-width: 21rem;
+    margin: clamp(1.8rem, 5vh, 3rem) 0 0 .2rem;
+    font-size: clamp(.98rem, .9rem + .3vw, 1.14rem);
+    line-height: 1.72;
+    color: var(--yz-slate);
+}
+
+/* Nota escrita a mano */
+.yz-about__note {
+    position: absolute;
+    top: 45%;
+    right: 0;
+    width: clamp(11.5rem, 15vw, 14rem);
+    margin: 0;
+    font-family: var(--hm-script, "Caveat", cursive);
+    font-size: clamp(1.45rem, .9rem + 1vw, 2.05rem);
+    font-weight: 700;
+    line-height: 1.04;
+    color: var(--yz-navy);
+    transform: rotate(-6deg);
+    transform-origin: left center;
+}
+.yz-about__note-text { display: block; }
+.yz-about__note-heart {
+    display: inline-block;
+    width: .7em;
+    height: .7em;
+    margin-left: .1em;
+    vertical-align: -.02em;
+    fill: var(--yz-pink-ink);
+}
+.yz-about__arrow {
+    position: absolute;
+    top: -1.2em;
+    left: -2.9em;
+    width: 2.5em;
+    height: 1.6em;
+    overflow: visible;
+}
+.yz-about__arrow path { stroke: var(--yz-sky); stroke-width: 3.2; }
+.yz-about__note-line {
+    display: block;
+    width: 78%;
+    height: .32em;
+    margin: .1em 0 0 .1em;
+    overflow: visible;
+}
+.yz-about__note-line path { stroke: var(--yz-pink-ink); stroke-width: 3; }
+
+/* ---------- Nivel 3 · Banda de estadísticas ---------- */
+.yz-about__stats {
+    position: relative;
+    z-index: 2;
     display: grid;
-    place-items: center;
-    min-height: 380px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: min(100%, 1120px);
+    margin: auto auto 0;            /* empuja la banda al fondo de la escena */
+    padding: clamp(.9rem, 1.6vw, 1.25rem) clamp(1rem, 2.6vw, 2.4rem);
+    list-style: none;
+    border-radius: 40px;
+    background: rgba(255, 255, 255, .8);
+    border: 1px solid rgba(255, 255, 255, .95);
+    box-shadow: 0 24px 50px -34px rgba(16, 45, 86, .4);
 }
-.ns-hero__blob {
-    position: absolute;
-    width: min(380px, 90%);
-    aspect-ratio: 1;
-    border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%;
-    background: linear-gradient(160deg, #ffffff 0%, var(--ns-baby) 100%);
-    box-shadow: inset 0 -20px 40px rgba(41, 168, 236, .15), var(--ns-shadow);
-    animation: ns-morph 12s ease-in-out infinite;
-}
-.ns-hero__ring {
-    position: absolute;
-    width: min(440px, 100%);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    border: 2px dashed rgba(41, 168, 236, .35);
-    animation: ns-spin 40s linear infinite;
-}
-.ns-hero__media img {
+.yz-stat {
     position: relative;
-    width: min(340px, 85%);
-    height: auto;
-    filter: drop-shadow(0 18px 24px rgba(11, 42, 85, .18));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(.7rem, 1.4vw, 1.2rem);
+    padding: .3rem clamp(.6rem, 1.6vw, 1.6rem);
 }
-.ns-badge {
+.yz-stat__rule {
     position: absolute;
     left: 0;
-    bottom: 12%;
-    display: flex;
-    align-items: center;
-    gap: .7rem;
-    padding: .75rem 1.1rem;
-    border-radius: 18px;
-    background: #fff;
-    font-size: .85rem;
-    font-weight: 600;
-    color: var(--ns-navy);
-    box-shadow: var(--ns-shadow);
-    animation: ns-bob 5s ease-in-out infinite;
+    top: 18%;
+    width: 1px;
+    height: 64%;
+    background: linear-gradient(180deg, transparent, rgba(85, 182, 245, .55), transparent);
 }
-.ns-badge .hm-ico {
-    width: 34px;
-    height: 34px;
-    padding: 8px;
-    border-radius: 50%;
-    background: var(--ns-pink-soft);
-    color: var(--ns-pink);
+.yz-stat__num {
+    flex: none;
+    font-size: clamp(2.3rem, 1.3rem + 2.5vw, 3.8rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -.035em;
+    font-variant-numeric: tabular-nums;
+    color: var(--yz-sky-deep);
+    background: linear-gradient(180deg, var(--yz-sky-deep), #3aa7f0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.yz-stat__label {
+    max-width: 11.5rem;
+    font-size: clamp(.86rem, .8rem + .3vw, 1.05rem);
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--yz-navy);
 }
 
-/* Decoración flotante */
-.ns-hero__deco { position: absolute; inset: 0; pointer-events: none; }
-.ns-float { position: absolute; fill: currentColor; opacity: .55; animation: ns-bob 6s ease-in-out infinite; }
-.ns-float--1 { width: 46px; height: 46px; top: 22%; left: 4%;  color: #9fd3fb; }
-.ns-float--2 { width: 22px; height: 22px; top: 18%; right: 9%; color: var(--ns-sky); animation-delay: -2s; }
-.ns-float--3 { width: 24px; height: 24px; top: 58%; right: 4%; color: #ffa8cb; animation-delay: -1s; }
-.ns-float--4 { width: 60px; height: 26px; bottom: 10%; left: 42%; color: #b9e0fc; animation-delay: -3s; }
-.ns-float--5 { width: 18px; height: 18px; bottom: 22%; left: 8%; color: var(--ns-sky); animation-delay: -4s; }
+/* Mientras GSAP prepara la entrada (solo con JS y movimiento permitido) */
+.yz-anim .yz-about [data-yz-reveal] { visibility: hidden; }
+
+/* =====================================================================
+   RESPONSIVE DEL ENCABEZADO
+   ===================================================================== */
+
+/* Pantallas grandes (≥ 1440px) */
+@media (min-width: 1440px) {
+    .yz-about { --yz-max: 1320px; }
+}
+
+/* Laptop (1100px – 1279px): el perrito queda más cerca del texto */
+@media (max-width: 1279px) and (min-width: 1100px) {
+    .yz-about { --yz-title: clamp(2.5rem, .6rem + 3.6vw, 3.6rem); --yz-img-pos: 50% 30%; }
+    .yz-about__lead { max-width: 18.5rem; }
+    .yz-about__note { top: 50%; }
+}
+
+/* Tablet y celular (≤ 1099px): composición apilada pensada para pantallas angostas.
+   Texto arriba → fotografía → estadísticas */
+@media (max-width: 1099px) {
+    .yz-about {
+        --yz-title: clamp(2.4rem, 1.2rem + 4.2vw, 3.6rem);
+        --yz-img-pos: 52% 42%;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        min-height: 0;
+        background: linear-gradient(180deg, var(--yz-ice) 0%, var(--yz-pastel) 100%);
+    }
+    .yz-about__inner { display: contents; }
+
+    .yz-about__copy,
+    .yz-about__stats {
+        width: min(760px, 100% - 2 * var(--yz-gutter));
+        justify-self: center;
+    }
+    .yz-about__copy { grid-row: 1; padding-top: clamp(6rem, 14vw, 7.5rem); }
+
+    /* La foto entra al flujo, con proporción fija (sin saltos de altura) */
+    .yz-about__stage {
+        grid-row: 2;
+        position: relative;
+        inset: auto;
+        z-index: 0;
+        aspect-ratio: 16 / 10;
+        margin-top: -.5rem;
+        -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 82%, transparent 100%);
+        mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 82%, transparent 100%);
+    }
+    .yz-about__stage::after { display: none; }
+
+    .yz-about__stats { grid-row: 3; margin: -2.5rem auto clamp(1.5rem, 5vw, 2.5rem); }
+
+    .yz-about__end { position: relative; top: auto; right: auto; display: inline-block; }
+    .yz-about__br { display: none; }
+    .yz-about__rays { left: auto; right: -.55em; top: -.2em; }
+    .yz-about__lead { max-width: 34rem; margin-top: 1.4rem; }
+
+    .yz-about__note { display: none; }
+    .yz-about__sparkle { top: 12%; left: 70%; }
+    .yz-about__bubble { left: 8%; bottom: 22%; }
+}
+
+/* Celular (≤ 767px) */
+@media (max-width: 767px) {
+    .yz-about { --yz-gutter: 1.15rem; --yz-img-pos: 50% 42%; }
+    .yz-about__stage { aspect-ratio: 5 / 4; }
+    .yz-about__stats {
+        margin-top: -2rem;
+        padding: .9rem .5rem;
+        border-radius: 26px;
+    }
+    .yz-stat { flex-direction: column; gap: .35rem; padding: .3rem .4rem; text-align: center; }
+    .yz-stat__num { font-size: clamp(2rem, 8vw, 2.6rem); }
+    .yz-stat__label { font-size: .78rem; }
+    .yz-about__bubble { display: none; }
+}
+
+/* Celular angosto (≤ 380px): estadísticas en lista vertical */
+@media (max-width: 380px) {
+    .yz-about__stats { grid-template-columns: 1fr; padding: .4rem 1rem; }
+    .yz-stat { flex-direction: row; justify-content: flex-start; gap: .9rem; padding: .75rem .2rem; text-align: left; }
+    .yz-stat__rule { left: 0; right: 0; top: 0; width: auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(85, 182, 245, .5), transparent); }
+    .yz-stat__num { min-width: 3.4ch; }
+}
+
+/* Pantallas bajitas en horizontal */
+@media (max-height: 560px) and (orientation: landscape) and (min-width: 1100px) {
+    .yz-about { min-height: 0; }
+    .yz-about__inner { padding-block: 5.5rem 1.25rem; }
+    .yz-about__note { display: none; }
+}
+
+/* Movimiento reducido: los elementos ambientales quedan quietos */
+@media (prefers-reduced-motion: reduce) {
+    .yz-about__glint { display: none; }
+}
 
 /* ============================== 2. A QUÉ NOS DEDICAMOS ============================== */
 .ns-what {
@@ -403,24 +697,8 @@
 .ns-cta__paw--a { width: 120px; height: 120px; right: 28%; top: -30px; transform: rotate(20deg); }
 .ns-cta__paw--b { width: 80px; height: 80px; left: -14px; bottom: -20px; transform: rotate(-25deg); }
 
-/* ============================== ANIMACIONES ============================== */
-@keyframes ns-bob   { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-@keyframes ns-spin  { to { transform: rotate(360deg); } }
-@keyframes ns-morph {
-    0%, 100% { border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%; }
-    50%      { border-radius: 54% 46% 44% 56% / 45% 55% 45% 55%; }
-}
-@media (prefers-reduced-motion: reduce) {
-    .ns-float, .ns-badge, .ns-hero__blob, .ns-hero__ring { animation: none; }
-}
-
 /* ============================== RESPONSIVE ============================== */
 @media (max-width: 991px) {
-    .ns-hero { padding-top: 6.5rem; }
-    .ns-hero__grid { grid-template-columns: 1fr; text-align: center; }
-    .ns-hero__lead { margin-inline: auto; }
-    .ns-stats { justify-content: center; }
-    .ns-hero__media { min-height: 320px; }
     .ns-what { grid-template-columns: repeat(2, 1fr); }
     .ns-visit__grid { grid-template-columns: 1fr; }
     .ns-map { min-height: 360px; }
@@ -432,7 +710,6 @@
     .ns-mv__text { font-size: 1.05rem; }
     .ns-info { padding: 1.5rem; }
     .ns-hours__row { flex-direction: column; align-items: flex-start; gap: .2rem; }
-    .ns-badge { left: 50%; transform: translateX(-50%); bottom: 0; animation: none; }
     .ns-cta { padding: 2rem 1.5rem; }
     .ns-cta__actions { flex-direction: column; width: 100%; }
     .ns-cta__actions .hm-btn { width: 100%; justify-content: center; }
