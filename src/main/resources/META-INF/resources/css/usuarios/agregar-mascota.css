@@ -132,7 +132,7 @@
     border: 2px dashed #9fcdf2;
     border-radius: 14px;
     background: linear-gradient(180deg, #f3f9ff, #eaf5fe);
-    cursor: pointer;
+    cursor: var(--yz-cursor-pointer);
     overflow: hidden;
     transition: border-color .2s, background .2s, box-shadow .2s;
 }

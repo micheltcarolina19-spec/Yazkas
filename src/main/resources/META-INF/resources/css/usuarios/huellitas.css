@@ -1,0 +1,203 @@
+/* ==========================================================
+   huellitas.css · Cursor de huella + scrollbar "rastro de huellas"
+   Yazkas Peluquería Canina — reutilizable en cualquier vista.
+
+   Uso: <link href="/css/huellitas.css" rel="stylesheet">
+        (cárgalo ANTES de los CSS de cada vista)
+
+   - Cursor: solo con mouse (en táctil y alto contraste queda el nativo).
+   - Scroll: Chrome/Edge/Safari usan ::-webkit-scrollbar;
+             Firefox usa scrollbar-color (fallback limpio).
+   - Para un scroll más discreto (textarea, listas, modales):
+             class="yz-scroll-thin"
+   ========================================================== */
+
+:root {
+    /* ---- Cursores (32×32, el punto activo está en el dedito superior) ---- */
+    --yz-cursor:         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg transform='rotate(-30 16 16) translate(16 16) scale(1.0) translate(-16 -16)'%3E%3Cg transform='translate(.8 1.2)' opacity='0.18'%3E%3Cg fill='%230d2f6e'%3E%3Cpath d='M16 15.5c3.2 0 6.5 3.6 6.5 6.6 0 2.2-1.7 3.4-3.6 3.4-1.2 0-1.9-.6-2.9-.6s-1.7.6-2.9.6c-1.9 0-3.6-1.2-3.6-3.4 0-3 3.3-6.6 6.5-6.6z'/%3E%3Cellipse cx='9.5' cy='14' rx='2.1' ry='2.7' transform='rotate(-20 9.5 14)'/%3E%3Cellipse cx='13.3' cy='9.3' rx='2.2' ry='2.9' transform='rotate(-8 13.3 9.3)'/%3E%3Cellipse cx='18.7' cy='9.3' rx='2.2' ry='2.9' transform='rotate(8 18.7 9.3)'/%3E%3Cellipse cx='22.5' cy='14' rx='2.1' ry='2.7' transform='rotate(20 22.5 14)'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%230d2f6e' stroke='%23fff' stroke-width='1.7' stroke-linejoin='round'%3E%3Cpath d='M16 15.5c3.2 0 6.5 3.6 6.5 6.6 0 2.2-1.7 3.4-3.6 3.4-1.2 0-1.9-.6-2.9-.6s-1.7.6-2.9.6c-1.9 0-3.6-1.2-3.6-3.4 0-3 3.3-6.6 6.5-6.6z'/%3E%3Cellipse cx='9.5' cy='14' rx='2.1' ry='2.7' transform='rotate(-20 9.5 14)'/%3E%3Cellipse cx='13.3' cy='9.3' rx='2.2' ry='2.9' transform='rotate(-8 13.3 9.3)'/%3E%3Cellipse cx='18.7' cy='9.3' rx='2.2' ry='2.9' transform='rotate(8 18.7 9.3)'/%3E%3Cellipse cx='22.5' cy='14' rx='2.1' ry='2.7' transform='rotate(20 22.5 14)'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 9 8, auto;
+    --yz-cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%234fb3f2'/%3E%3Cstop offset='1' stop-color='%231b6fc2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg transform='rotate(-22 16 16) translate(16 16) scale(1.0) translate(-16 -16)'%3E%3Cg transform='translate(.8 1.2)' opacity='0.18'%3E%3Cg fill='%230d2f6e'%3E%3Cpath d='M16 15.5c3.2 0 6.5 3.6 6.5 6.6 0 2.2-1.7 3.4-3.6 3.4-1.2 0-1.9-.6-2.9-.6s-1.7.6-2.9.6c-1.9 0-3.6-1.2-3.6-3.4 0-3 3.3-6.6 6.5-6.6z'/%3E%3Cellipse cx='9.5' cy='14' rx='2.1' ry='2.7' transform='rotate(-20 9.5 14)'/%3E%3Cellipse cx='13.3' cy='9.3' rx='2.2' ry='2.9' transform='rotate(-8 13.3 9.3)'/%3E%3Cellipse cx='18.7' cy='9.3' rx='2.2' ry='2.9' transform='rotate(8 18.7 9.3)'/%3E%3Cellipse cx='22.5' cy='14' rx='2.1' ry='2.7' transform='rotate(20 22.5 14)'/%3E%3C/g%3E%3C/g%3E%3Cg fill='url(%23g)' stroke='%23fff' stroke-width='1.7' stroke-linejoin='round'%3E%3Cpath d='M16 15.5c3.2 0 6.5 3.6 6.5 6.6 0 2.2-1.7 3.4-3.6 3.4-1.2 0-1.9-.6-2.9-.6s-1.7.6-2.9.6c-1.9 0-3.6-1.2-3.6-3.4 0-3 3.3-6.6 6.5-6.6z'/%3E%3Cellipse cx='9.5' cy='14' rx='2.1' ry='2.7' transform='rotate(-20 9.5 14)'/%3E%3Cellipse cx='13.3' cy='9.3' rx='2.2' ry='2.9' transform='rotate(-8 13.3 9.3)'/%3E%3Cellipse cx='18.7' cy='9.3' rx='2.2' ry='2.9' transform='rotate(8 18.7 9.3)'/%3E%3Cellipse cx='22.5' cy='14' rx='2.1' ry='2.7' transform='rotate(20 22.5 14)'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 9 7, pointer;
+    --yz-cursor-active:  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%234fb3f2'/%3E%3Cstop offset='1' stop-color='%231b6fc2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg transform='rotate(-22 16 16) translate(16 16) scale(0.86) translate(-16 -16)'%3E%3Cg transform='translate(.8 1.2)' opacity='0.08'%3E%3Cg fill='%230d2f6e'%3E%3Cpath d='M16 15.5c3.2 0 6.5 3.6 6.5 6.6 0 2.2-1.7 3.4-3.6 3.4-1.2 0-1.9-.6-2.9-.6s-1.7.6-2.9.6c-1.9 0-3.6-1.2-3.6-3.4 0-3 3.3-6.6 6.5-6.6z'/%3E%3Cellipse cx='9.5' cy='14' rx='2.1' ry='2.7' transform='rotate(-20 9.5 14)'/%3E%3Cellipse cx='13.3' cy='9.3' rx='2.2' ry='2.9' transform='rotate(-8 13.3 9.3)'/%3E%3Cellipse cx='18.7' cy='9.3' rx='2.2' ry='2.9' transform='rotate(8 18.7 9.3)'/%3E%3Cellipse cx='22.5' cy='14' rx='2.1' ry='2.7' transform='rotate(20 22.5 14)'/%3E%3C/g%3E%3C/g%3E%3Cg fill='url(%23g)' stroke='%23fff' stroke-width='1.7' stroke-linejoin='round'%3E%3Cpath d='M16 15.5c3.2 0 6.5 3.6 6.5 6.6 0 2.2-1.7 3.4-3.6 3.4-1.2 0-1.9-.6-2.9-.6s-1.7.6-2.9.6c-1.9 0-3.6-1.2-3.6-3.4 0-3 3.3-6.6 6.5-6.6z'/%3E%3Cellipse cx='9.5' cy='14' rx='2.1' ry='2.7' transform='rotate(-20 9.5 14)'/%3E%3Cellipse cx='13.3' cy='9.3' rx='2.2' ry='2.9' transform='rotate(-8 13.3 9.3)'/%3E%3Cellipse cx='18.7' cy='9.3' rx='2.2' ry='2.9' transform='rotate(8 18.7 9.3)'/%3E%3Cellipse cx='22.5' cy='14' rx='2.1' ry='2.7' transform='rotate(20 22.5 14)'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 10 9, pointer;
+    --yz-cursor-off:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg transform='rotate(-30 16 16) translate(16 16) scale(1.0) translate(-16 -16)'%3E%3Cg fill='%239db3c8' stroke='%23fff' stroke-width='1.7' stroke-linejoin='round'%3E%3Cpath d='M16 15.5c3.2 0 6.5 3.6 6.5 6.6 0 2.2-1.7 3.4-3.6 3.4-1.2 0-1.9-.6-2.9-.6s-1.7.6-2.9.6c-1.9 0-3.6-1.2-3.6-3.4 0-3 3.3-6.6 6.5-6.6z'/%3E%3Cellipse cx='9.5' cy='14' rx='2.1' ry='2.7' transform='rotate(-20 9.5 14)'/%3E%3Cellipse cx='13.3' cy='9.3' rx='2.2' ry='2.9' transform='rotate(-8 13.3 9.3)'/%3E%3Cellipse cx='18.7' cy='9.3' rx='2.2' ry='2.9' transform='rotate(8 18.7 9.3)'/%3E%3Cellipse cx='22.5' cy='14' rx='2.1' ry='2.7' transform='rotate(20 22.5 14)'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 9 8, not-allowed;
+
+    /* ---- Scrollbar (los colores del thumb se pueden cambiar aquí) ---- */
+    --yz-sb-size:        16px;
+    --yz-sb-thumb-1:     #4fb3f2;
+    --yz-sb-thumb-2:     #1b6fc2;
+    --yz-sb-thumb-dark:  #0d2f6e;
+    --yz-sb-track:       rgba(214, 232, 247, .55);
+    --yz-sb-trail-v:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='48' viewBox='0 0 16 48'%3E%3Cg opacity='0.28' transform='translate(5.5 12) rotate(-12) scale(0.3) translate(-16 -16)'%3E%3Cg fill='%232f95e0'%3E%3Cpath d='M16 15.5c3.2 0 6.5 3.6 6.5 6.6 0 2.2-1.7 3.4-3.6 3.4-1.2 0-1.9-.6-2.9-.6s-1.7.6-2.9.6c-1.9 0-3.6-1.2-3.6-3.4 0-3 3.3-6.6 6.5-6.6z'/%3E%3Cellipse cx='9.5' cy='14' rx='2.1' ry='2.7' transform='rotate(-20 9.5 14)'/%3E%3Cellipse cx='13.3' cy='9.3' rx='2.2' ry='2.9' transform='rotate(-8 13.3 9.3)'/%3E%3Cellipse cx='18.7' cy='9.3' rx='2.2' ry='2.9' transform='rotate(8 18.7 9.3)'/%3E%3Cellipse cx='22.5' cy='14' rx='2.1' ry='2.7' transform='rotate(20 22.5 14)'/%3E%3C/g%3E%3C/g%3E%3Cg opacity='0.28' transform='translate(10.5 36) rotate(12) scale(0.3) translate(-16 -16)'%3E%3Cg fill='%232f95e0'%3E%3Cpath d='M16 15.5c3.2 0 6.5 3.6 6.5 6.6 0 2.2-1.7 3.4-3.6 3.4-1.2 0-1.9-.6-2.9-.6s-1.7.6-2.9.6c-1.9 0-3.6-1.2-3.6-3.4 0-3 3.3-6.6 6.5-6.6z'/%3E%3Cellipse cx='9.5' cy='14' rx='2.1' ry='2.7' transform='rotate(-20 9.5 14)'/%3E%3Cellipse cx='13.3' cy='9.3' rx='2.2' ry='2.9' transform='rotate(-8 13.3 9.3)'/%3E%3Cellipse cx='18.7' cy='9.3' rx='2.2' ry='2.9' transform='rotate(8 18.7 9.3)'/%3E%3Cellipse cx='22.5' cy='14' rx='2.1' ry='2.7' transform='rotate(20 22.5 14)'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    --yz-sb-trail-h:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='16' viewBox='0 0 48 16'%3E%3Cg opacity='0.28' transform='translate(12 10.5) rotate(78) scale(0.3) translate(-16 -16)'%3E%3Cg fill='%232f95e0'%3E%3Cpath d='M16 15.5c3.2 0 6.5 3.6 6.5 6.6 0 2.2-1.7 3.4-3.6 3.4-1.2 0-1.9-.6-2.9-.6s-1.7.6-2.9.6c-1.9 0-3.6-1.2-3.6-3.4 0-3 3.3-6.6 6.5-6.6z'/%3E%3Cellipse cx='9.5' cy='14' rx='2.1' ry='2.7' transform='rotate(-20 9.5 14)'/%3E%3Cellipse cx='13.3' cy='9.3' rx='2.2' ry='2.9' transform='rotate(-8 13.3 9.3)'/%3E%3Cellipse cx='18.7' cy='9.3' rx='2.2' ry='2.9' transform='rotate(8 18.7 9.3)'/%3E%3Cellipse cx='22.5' cy='14' rx='2.1' ry='2.7' transform='rotate(20 22.5 14)'/%3E%3C/g%3E%3C/g%3E%3Cg opacity='0.28' transform='translate(36 5.5) rotate(102) scale(0.3) translate(-16 -16)'%3E%3Cg fill='%232f95e0'%3E%3Cpath d='M16 15.5c3.2 0 6.5 3.6 6.5 6.6 0 2.2-1.7 3.4-3.6 3.4-1.2 0-1.9-.6-2.9-.6s-1.7.6-2.9.6c-1.9 0-3.6-1.2-3.6-3.4 0-3 3.3-6.6 6.5-6.6z'/%3E%3Cellipse cx='9.5' cy='14' rx='2.1' ry='2.7' transform='rotate(-20 9.5 14)'/%3E%3Cellipse cx='13.3' cy='9.3' rx='2.2' ry='2.9' transform='rotate(-8 13.3 9.3)'/%3E%3Cellipse cx='18.7' cy='9.3' rx='2.2' ry='2.9' transform='rotate(8 18.7 9.3)'/%3E%3Cellipse cx='22.5' cy='14' rx='2.1' ry='2.7' transform='rotate(20 22.5 14)'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    --yz-sb-paw-v:       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cg opacity='0.92' transform='translate(8 8) rotate(0) scale(0.42) translate(-16 -16)'%3E%3Cg fill='%23fff'%3E%3Cpath d='M16 15.5c3.2 0 6.5 3.6 6.5 6.6 0 2.2-1.7 3.4-3.6 3.4-1.2 0-1.9-.6-2.9-.6s-1.7.6-2.9.6c-1.9 0-3.6-1.2-3.6-3.4 0-3 3.3-6.6 6.5-6.6z'/%3E%3Cellipse cx='9.5' cy='14' rx='2.1' ry='2.7' transform='rotate(-20 9.5 14)'/%3E%3Cellipse cx='13.3' cy='9.3' rx='2.2' ry='2.9' transform='rotate(-8 13.3 9.3)'/%3E%3Cellipse cx='18.7' cy='9.3' rx='2.2' ry='2.9' transform='rotate(8 18.7 9.3)'/%3E%3Cellipse cx='22.5' cy='14' rx='2.1' ry='2.7' transform='rotate(20 22.5 14)'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    --yz-sb-paw-h:       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cg opacity='0.92' transform='translate(8 8) rotate(90) scale(0.42) translate(-16 -16)'%3E%3Cg fill='%23fff'%3E%3Cpath d='M16 15.5c3.2 0 6.5 3.6 6.5 6.6 0 2.2-1.7 3.4-3.6 3.4-1.2 0-1.9-.6-2.9-.6s-1.7.6-2.9.6c-1.9 0-3.6-1.2-3.6-3.4 0-3 3.3-6.6 6.5-6.6z'/%3E%3Cellipse cx='9.5' cy='14' rx='2.1' ry='2.7' transform='rotate(-20 9.5 14)'/%3E%3Cellipse cx='13.3' cy='9.3' rx='2.2' ry='2.9' transform='rotate(-8 13.3 9.3)'/%3E%3Cellipse cx='18.7' cy='9.3' rx='2.2' ry='2.9' transform='rotate(8 18.7 9.3)'/%3E%3Cellipse cx='22.5' cy='14' rx='2.1' ry='2.7' transform='rotate(20 22.5 14)'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ==========================================================
+   CURSOR DE HUELLA
+   :where() deja la especificidad en 0, así cualquier regla
+   de tus vistas puede sobrescribirlo sin pelear.
+   ========================================================== */
+@media (hover: hover) and (pointer: fine) and (forced-colors: none) {
+
+    :where(html) { cursor: var(--yz-cursor); }
+
+    /* Elementos clicables → huella azul */
+    :where(
+        a[href], button, summary, select, label[for], label:has(> input),
+        [role="button"], [role="tab"], [role="link"], [role="option"],
+        [tabindex]:not([tabindex="-1"]),
+        input[type="checkbox"], input[type="radio"], input[type="file"],
+        input[type="range"], input[type="color"],
+        input[type="submit"], input[type="button"], input[type="reset"],
+        .yz-clickable
+    ) { cursor: var(--yz-cursor-pointer); }
+
+    /* Al presionar → la huella se "aplasta" un poquito */
+    :where(
+        a[href], button, summary, select, label[for], label:has(> input),
+        [role="button"], [role="tab"], [tabindex]:not([tabindex="-1"]),
+        input[type="checkbox"], input[type="radio"], input[type="submit"],
+        input[type="button"], .yz-clickable
+    ):active { cursor: var(--yz-cursor-active); }
+
+    /* Donde se escribe se mantiene la I de texto (usabilidad ante todo) */
+    :where(
+        input:not([type="checkbox"], [type="radio"], [type="file"], [type="range"],
+                  [type="color"], [type="submit"], [type="button"], [type="reset"]),
+        textarea, [contenteditable=""], [contenteditable="true"]
+    ) { cursor: text; }
+
+    /* Deshabilitado → huella gris */
+    :where(:disabled, [aria-disabled="true"], .is-disabled),
+    :where(:disabled, [aria-disabled="true"], .is-disabled) * { cursor: var(--yz-cursor-off); }
+
+    /* Ocupado (ej. botón guardando) → se respeta el reloj nativo */
+    :where([aria-busy="true"], .is-loading) { cursor: progress; }
+}
+
+/* ==========================================================
+   SCROLLBAR · "Rastro de huellas"
+   Track con huellitas alternadas (como pisadas) y thumb en
+   píldora con degradado y una huella blanca al centro.
+   ========================================================== */
+
+/* Firefox (y cualquier navegador sin ::-webkit-scrollbar).
+   Va dentro de @supports porque Chrome 121+ ignora los estilos
+   -webkit- si encuentra scrollbar-color. */
+@supports not selector(::-webkit-scrollbar) {
+    html { scrollbar-width: auto; scrollbar-color: var(--yz-sb-thumb-2) var(--yz-sb-track); }
+    .yz-scroll-thin { scrollbar-width: thin; }
+}
+
+::-webkit-scrollbar {
+    width: var(--yz-sb-size);
+    height: var(--yz-sb-size);
+    background: transparent;
+}
+
+/* Sin flechitas arriba/abajo */
+::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* ---- Track: el rastro ---- */
+::-webkit-scrollbar-track {
+    border-radius: 999px;
+    background-color: var(--yz-sb-track);
+}
+::-webkit-scrollbar-track:vertical {
+    margin-block: 6px;
+    background-image: var(--yz-sb-trail-v);
+    background-size: 16px 48px;
+    background-repeat: repeat-y;
+    background-position: center top;
+}
+::-webkit-scrollbar-track:horizontal {
+    margin-inline: 6px;
+    background-image: var(--yz-sb-trail-h);
+    background-size: 48px 16px;
+    background-repeat: repeat-x;
+    background-position: left center;
+}
+
+/* ---- Thumb: píldora flotante ----
+   El borde transparente + background-clip lo "despega" del track.
+   En hover el borde se reduce y el thumb engorda (efecto de agarre). */
+::-webkit-scrollbar-thumb {
+    min-height: 56px;
+    min-width: 56px;
+    border: 3.5px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35);
+}
+::-webkit-scrollbar-thumb:vertical {
+    background-image:
+            var(--yz-sb-paw-v),
+            linear-gradient(180deg, var(--yz-sb-thumb-1), var(--yz-sb-thumb-2));
+    background-size: 13px 13px, 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+::-webkit-scrollbar-thumb:horizontal {
+    background-image:
+            var(--yz-sb-paw-h),
+            linear-gradient(90deg, var(--yz-sb-thumb-1), var(--yz-sb-thumb-2));
+    background-size: 13px 13px, 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+::-webkit-scrollbar-thumb:hover { border-width: 2px; }
+
+::-webkit-scrollbar-thumb:vertical:active {
+    border-width: 2px;
+    background-image:
+            var(--yz-sb-paw-v),
+            linear-gradient(180deg, var(--yz-sb-thumb-2), var(--yz-sb-thumb-dark));
+}
+::-webkit-scrollbar-thumb:horizontal:active {
+    border-width: 2px;
+    background-image:
+            var(--yz-sb-paw-h),
+            linear-gradient(90deg, var(--yz-sb-thumb-2), var(--yz-sb-thumb-dark));
+}
+
+/* Ventana sin foco → el thumb se apaga para no robar atención */
+::-webkit-scrollbar-thumb:window-inactive {
+    background-image: linear-gradient(180deg, #b9d6ee, #9fc4e4);
+    background-size: 100% 100%;
+}
+
+/* ---- Variante discreta para contenedores pequeños ---- */
+.yz-scroll-thin::-webkit-scrollbar { width: 10px; height: 10px; }
+.yz-scroll-thin::-webkit-scrollbar-track {
+    background-image: none;
+    background-color: transparent;
+    margin: 4px;
+}
+.yz-scroll-thin::-webkit-scrollbar-thumb {
+    min-height: 32px;
+    min-width: 32px;
+    border-width: 2.5px;
+    background-image: linear-gradient(180deg, #9fcdf2, var(--yz-sb-thumb-1));
+    background-size: 100% 100%;   /* sin la huellita: el thumb es muy angosto */
+}
+.yz-scroll-thin::-webkit-scrollbar-thumb:hover {
+    border-width: 1.5px;
+    background-image: linear-gradient(180deg, var(--yz-sb-thumb-1), var(--yz-sb-thumb-2));
+    background-size: 100% 100%;
+}
+.yz-scroll-thin::-webkit-scrollbar-thumb:active {
+    border-width: 1.5px;
+    background-image: linear-gradient(180deg, var(--yz-sb-thumb-2), var(--yz-sb-thumb-dark));
+    background-size: 100% 100%;
+}
+
+/* ==========================================================
+   DETALLES
+   ========================================================== */
+
+/* Selección de texto con la paleta de la marca */
+::selection { background: rgba(47, 149, 224, .22); color: #0d2f6e; }
+
+/* El cursor de escritura también azul */
+:where(input, textarea, [contenteditable]) { caret-color: #1b6fc2; }

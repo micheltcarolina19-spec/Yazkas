@@ -381,3 +381,109 @@
         if (e.target instanceof HTMLImageElement) e.preventDefault();
     });
 })();
+
+
+/* ---------------------------------------------------------
+   Rastro de huellitas al hacer scroll
+   - Junto a la barra van quedando pisadas alternadas (izq/der)
+   - Miran hacia donde se avanza: abajo al bajar, arriba al subir
+   - Quedan pegadas a la página, así se ven "atrás" como un rastro
+   --------------------------------------------------------- */
+(() => {
+    'use strict';
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const root = document.documentElement;
+    const PASO = 70;          // px de scroll entre pisada y pisada
+    const VIDA = 2300;        // ms que dura cada pisada
+    const TAMANO = 18;        // px
+    const MAX = 40;           // pisadas simultáneas como máximo
+    const COLOR = '#1b6fc2';
+
+    const HUELLA = '<svg viewBox="0 0 48 48" aria-hidden="true">'
+        + '<ellipse cx="24" cy="31" rx="10.5" ry="8.5"/>'
+        + '<ellipse cx="9.5" cy="22" rx="4.2" ry="5.6" transform="rotate(-18 9.5 22)"/>'
+        + '<ellipse cx="18" cy="12.5" rx="4.4" ry="6" transform="rotate(-6 18 12.5)"/>'
+        + '<ellipse cx="30" cy="12.5" rx="4.4" ry="6" transform="rotate(6 30 12.5)"/>'
+        + '<ellipse cx="38.5" cy="22" rx="4.2" ry="5.6" transform="rotate(18 38.5 22)"/>'
+        + '</svg>';
+
+    const azar = (min, max) => Math.random() * (max - min) + min;
+
+    // Estilos propios (no hace falta tocar el CSS)
+    const estilos = document.createElement('style');
+    estilos.textContent = `
+        .paw-trail-capa { position: absolute; left: 0; top: 0; width: 100%;
+            overflow: hidden; overflow: clip; pointer-events: none; z-index: 9999; }
+        .paw-trail { position: absolute; left: 0; top: 0; width: ${TAMANO}px; height: ${TAMANO}px;
+            color: ${COLOR}; pointer-events: none; will-change: transform, opacity; }
+        .paw-trail svg { display: block; width: 100%; height: 100%; fill: currentColor;
+            filter: drop-shadow(0 0 1px rgba(255, 255, 255, .9)); }
+        @media print { .paw-trail-capa { display: none; } }`;
+    document.head.appendChild(estilos);
+
+    // Capa del alto de la página: las pisadas se mueven con el contenido.
+    // overflow: clip evita que una pisada en el borde agrande la página.
+    const capa = document.createElement('div');
+    capa.className = 'paw-trail-capa';
+    capa.setAttribute('aria-hidden', 'true');
+    root.appendChild(capa);
+
+    const ajustarCapa = () => {
+        capa.style.height = '0px';
+        capa.style.height = `${Math.max(root.scrollHeight, document.body.scrollHeight)}px`;
+    };
+
+    const vivas = [];
+    let ultimo = window.scrollY;
+    let acumulado = 0;
+    let lado = 1;
+    let tiempo = 0;
+
+    const pisada = (dir) => {
+        lado *= -1;
+        ajustarCapa();
+
+        const el = document.createElement('span');
+        el.className = 'paw-trail';
+        el.innerHTML = HUELLA;
+
+        const x = root.clientWidth - 30 + lado * TAMANO * 0.38;
+        const y = window.scrollY + window.innerHeight * (dir > 0 ? 0.62 : 0.38);
+        el.style.translate = `${x - TAMANO / 2}px ${y - TAMANO / 2}px`;
+        el.style.rotate = `${(dir > 0 ? 180 : 0) + lado * dir * 9 + azar(-4, 4)}deg`;
+
+        capa.appendChild(el);
+        vivas.push(el);
+        while (vivas.length > MAX) vivas.shift().remove();
+
+        el.animate([
+            { opacity: 0,   scale: 0.55 },
+            { opacity: 0.6, scale: 1.06, offset: 0.08 },
+            { opacity: 0.55, scale: 1,   offset: 0.14 },
+            { opacity: 0.45, scale: 1,   offset: 0.6 },
+            { opacity: 0,   scale: 0.94 }
+        ], { duration: VIDA, easing: 'ease-out' }).finished.then(() => {
+            el.remove();
+            const i = vivas.indexOf(el);
+            if (i > -1) vivas.splice(i, 1);
+        }).catch(() => {});
+    };
+
+    window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        const dy = y - ultimo;
+        ultimo = y;
+        if (!dy) return;
+
+        if (Math.sign(dy) !== Math.sign(acumulado)) acumulado = 0;   // cambió de dirección
+        acumulado += dy;
+
+        const ahora = performance.now();
+        if (Math.abs(acumulado) < PASO || ahora - tiempo < 65) return;
+
+        acumulado = 0;
+        tiempo = ahora;
+        pisada(dy > 0 ? 1 : -1);
+    }, { passive: true });
+})();
