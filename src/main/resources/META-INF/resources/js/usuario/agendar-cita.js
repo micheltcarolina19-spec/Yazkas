@@ -2,7 +2,9 @@
 //   GET  /citas/disponibilidad?fecha=YYYY-MM-DD&mascotas=1&mascotas=2
 //        -> duración estimada por la IA (sin precio) y horarios con cupo
 //   POST /citas  { mascotaIds:[..], fecha:"YYYY-MM-DD", hora:"HH:mm" }
-// Reglas del backend: máximo 2 mascotas al mismo tiempo (de uno o varios dueños), atención 8:30 a 17:30.
+//   POST /citas/{id}/reprogramar  { fecha, hora }      POST /citas/{id}/cancelar
+// Reglas del backend: máximo 2 mascotas al mismo tiempo (de uno o varios dueños), atención 8:30 a 17:30,
+// y máximo 2 citas por mascota en la semana.
 (() => {
     const main = document.getElementById('contenido');
     if (!main) return;
@@ -21,7 +23,8 @@
         horaTexto: null,
         mes: null,             // Date del primer día del mes visible
         consulta: 0,           // para ignorar respuestas viejas
-        duraciones: {}         // mascotaId -> texto de duración
+        duraciones: {},        // mascotaId -> texto de duración
+        reprogramar: null      // { id, mascotas:[ids], nombres, texto } cuando se edita una cita existente
     };
 
     const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -95,6 +98,10 @@
 
     /* ======================= Mascotas ======================= */
     $$('.ac-mascota[data-id]').forEach(btn => btn.addEventListener('click', () => {
+        if (S.reprogramar) {
+            alerta('Al reprogramar se mantienen las mismas mascotas. Si quieres otra mascota, sal de la edición y agenda una cita nueva.');
+            return;
+        }
         const id = Number(btn.dataset.id);
         const i = S.mascotas.indexOf(id);
         if (i >= 0) {
@@ -107,16 +114,21 @@
             S.mascotas.push(id);
         }
         alerta('');
-        $$('.ac-mascota[data-id]').forEach(b => {
-            const on = S.mascotas.includes(Number(b.dataset.id));
-            b.classList.toggle('is-sel', on);
-            b.setAttribute('aria-pressed', String(on));
-            if (!on) $('[data-dur]', b).textContent = '';
-        });
+        marcarMascotas();
         S.hora = null; S.horaTexto = null;
         actualizar();
         cargarHorarios();
     }));
+
+    function marcarMascotas() {
+        $$('.ac-mascota[data-id]').forEach(b => {
+            const on = S.mascotas.includes(Number(b.dataset.id));
+            b.classList.toggle('is-sel', on);
+            b.classList.toggle('is-bloqueada', !!S.reprogramar && !on);
+            b.setAttribute('aria-pressed', String(on));
+            if (!on) $('[data-dur]', b).textContent = '';
+        });
+    }
 
     /* ======================= Horarios + IA ======================= */
     async function cargarHorarios() {
@@ -136,6 +148,7 @@
         try {
             const q = new URLSearchParams({ fecha: S.fecha });
             S.mascotas.forEach(id => q.append('mascotas', id));
+            if (S.reprogramar) q.append('reprogramar', S.reprogramar.id);
             const data = await json(`/citas/disponibilidad?${q}`);
             if (n !== S.consulta) return;    // llegó una respuesta más nueva
 
@@ -160,7 +173,9 @@
                     <span>${escapar(h.etiqueta)}</span>
                     ${h.disponible ? '<i class="ac-check" aria-hidden="true"><svg><use href="#ac-check"/></svg></i>' : `<small>${escapar(h.motivo || '')}</small>`}
                 </button>`).join('')
-                + (libres ? '' : '<p class="ac-horarios__vacio ac-horarios__vacio--full">No hay horarios disponibles este día. Prueba con otro día.</p>');
+                + (libres ? '' : `<p class="ac-horarios__vacio ac-horarios__vacio--full">${data.limiteSemanal
+                    ? `Cada mascota puede tener máximo ${data.maximoPorSemana} citas por semana y ya se completaron en esta semana. Elige un día de otra semana.`
+                    : 'No hay horarios disponibles este día. Prueba con otro día.'}</p>`);
         } catch (e) {
             if (n !== S.consulta) return;
             ia.hidden = true;
@@ -194,6 +209,7 @@
             li.classList.toggle('is-done', k < paso);
         });
         $('#ac-confirmar').disabled = paso !== 3;
+        $('#ac-confirmar span').textContent = S.reprogramar ? 'Guardar nuevo horario' : 'Confirmar cita';
     }
 
     /* ======================= Confirmar ======================= */
@@ -202,14 +218,21 @@
         if (btn.disabled) return;
         btn.disabled = true;
         btn.classList.add('is-cargando');
-        $('span', btn).textContent = 'Agendando…';
+        $('span', btn).textContent = S.reprogramar ? 'Guardando…' : 'Agendando…';
         alerta('');
         try {
-            const data = await json('/citas', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mascotaIds: S.mascotas, fecha: S.fecha, hora: S.hora })
-            });
+            const data = S.reprogramar
+                ? await json(`/citas/${S.reprogramar.id}/reprogramar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fecha: S.fecha, hora: S.hora })
+                })
+                : await json('/citas', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mascotaIds: S.mascotas, fecha: S.fecha, hora: S.hora })
+                });
+            $('#ac-exito-title').textContent = S.reprogramar ? '¡Cita reprogramada!' : '¡Cita agendada!';
             $('#ac-exito-texto').innerHTML = `Para el <b>${escapar(data.fechaTexto)}</b> a las <b>${escapar(data.hora)}</b>.`;
             $('#ac-exito-lista').innerHTML = (data.citas || []).map(c =>
                 `<li><svg aria-hidden="true"><use href="#i-paw-solid"/></svg><b>${escapar(c.mascota)}</b><small>Baño y Peluquería · ${escapar(c.duracion)}</small></li>`).join('');
@@ -223,10 +246,81 @@
             cargarHorarios();
         } finally {
             btn.classList.remove('is-cargando');
-            $('span', btn).textContent = 'Confirmar cita';
             actualizar();
         }
     });
+
+    /* ======================= Reprogramar una cita existente ======================= */
+    function entrarReprogramar(li) {
+        S.reprogramar = {
+            id: Number(li.dataset.agendamiento),
+            mascotas: li.dataset.mascotas.split(',').map(Number).filter(Boolean),
+            nombres: li.dataset.nombres,
+            texto: li.dataset.texto
+        };
+        S.mascotas = [...S.reprogramar.mascotas];
+        S.hora = null; S.horaTexto = null;
+        marcarMascotas();
+        $$('.ac-prox__lista li').forEach(x => x.classList.toggle('is-editando', x === li));
+        $('#ac-modo-nombres').textContent = S.reprogramar.nombres;
+        $('#ac-modo-actual').textContent = S.reprogramar.texto;
+        $('#ac-modo').hidden = false;
+        main.classList.add('is-reprogramando');
+        alerta('');
+        elegirFecha(li.dataset.fecha < HOY ? HOY : li.dataset.fecha);
+        $('#ac-modo').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function salirReprogramar() {
+        S.reprogramar = null;
+        S.mascotas = [];
+        S.hora = null; S.horaTexto = null;
+        marcarMascotas();
+        $$('.ac-prox__lista li').forEach(x => x.classList.remove('is-editando'));
+        $('#ac-modo').hidden = true;
+        main.classList.remove('is-reprogramando');
+        alerta('');
+        actualizar();
+        cargarHorarios();
+    }
+    $('#ac-modo-salir').addEventListener('click', salirReprogramar);
+
+    /* ======================= Cancelar una cita ======================= */
+    let porCancelar = null;
+    const cerrarCancelar = () => { $('#ac-cancelar').hidden = true; document.body.style.overflow = ''; porCancelar = null; };
+    $('#ac-cancelar-no').addEventListener('click', cerrarCancelar);
+    $('#ac-cancelar').addEventListener('click', e => { if (e.target.id === 'ac-cancelar') cerrarCancelar(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#ac-cancelar').hidden) cerrarCancelar(); });
+
+    $('#ac-cancelar-si').addEventListener('click', async () => {
+        if (!porCancelar) return;
+        const btn = $('#ac-cancelar-si');
+        btn.disabled = true; btn.textContent = 'Cancelando…';
+        try {
+            await json(`/citas/${porCancelar.dataset.agendamiento}/cancelar`, { method: 'POST' });
+            location.reload();   // se actualiza "Tus citas programadas" y se liberan los horarios
+        } catch (e) {
+            cerrarCancelar();
+            alerta(e.message);
+        } finally {
+            btn.disabled = false; btn.textContent = 'Sí, cancelar cita';
+        }
+    });
+
+    // Botones de cada cita programada
+    $$('.ac-prox__lista li').forEach(li => li.addEventListener('click', e => {
+        const b = e.target.closest('[data-accion]');
+        if (!b) return;
+        if (b.dataset.accion === 'reprogramar') {
+            entrarReprogramar(li);
+        } else {
+            porCancelar = li;
+            $('#ac-cancelar-texto').innerHTML = `Cita de <b>${escapar(li.dataset.nombres)}</b> para el <b>${escapar(li.dataset.texto)}</b>.`;
+            $('#ac-cancelar').hidden = false;
+            document.body.style.overflow = 'hidden';
+            $('#ac-cancelar-no').focus();
+        }
+    }));
     // Al cerrar, se recarga para ver la cita en "Tus citas programadas"
     $('#ac-exito-listo').addEventListener('click', () => location.reload());
 

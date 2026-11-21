@@ -16,7 +16,7 @@
 </head>
 <body class="ac-body">
 
-{#include usuarios/components/nav-cliente active='citas' /}
+    {#include usuarios/components/nav-cliente active='citas' /}
 
 {! Iconos propios de esta vista (prefijo ac-) !}
 <svg class="pc-sprite" aria-hidden="true" focusable="false">
@@ -32,6 +32,8 @@
     <symbol id="ac-list" viewBox="0 0 24 24"><rect x="4.5" y="3" width="15" height="18" rx="2.5"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4.5"/></symbol>
     <symbol id="ac-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></symbol>
     <symbol id="ac-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.4v.1"/></symbol>
+    <symbol id="ac-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></symbol>
+    <symbol id="ac-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
     <symbol id="ac-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/></symbol>
 </svg>
 
@@ -109,22 +111,44 @@
                     {#else}
                         <ul class="ac-prox__lista">
                             {#for c in proximas}
-                                <li>
-                                    <span class="ac-prox__fecha"><svg class="ac-ico" aria-hidden="true"><use href="#ac-cal"/></svg></span>
-                                    <div>
-                                        <b>{c.mascotas}</b>
-                                        <small>{c.fecha} · {c.hora}</small>
+                                <li data-agendamiento="{c.agendamientoId}" data-mascotas="{c.mascotaIds}" data-nombres="{c.mascotas}"
+                                    data-fecha="{c.fechaIso}" data-hora="{c.horaIso}" data-texto="{c.fecha} · {c.hora}">
+                                    <div class="ac-prox__fila">
+                                        <span class="ac-prox__fecha"><svg class="ac-ico" aria-hidden="true"><use href="#ac-cal"/></svg></span>
+                                        <div>
+                                            <b>{c.mascotas}</b>
+                                            <small>{c.fecha} · {c.hora}</small>
+                                        </div>
+                                        <em class="ac-prox__estado">{c.estado}</em>
                                     </div>
-                                    <em class="ac-prox__estado">{c.estado}</em>
+                                    <div class="ac-prox__acciones">
+                                        <button type="button" class="ac-prox__btn" data-accion="reprogramar">
+                                            <svg class="ac-ico" aria-hidden="true"><use href="#ac-edit"/></svg> Reprogramar
+                                        </button>
+                                        <button type="button" class="ac-prox__btn ac-prox__btn--peligro" data-accion="cancelar">
+                                            <svg class="ac-ico" aria-hidden="true"><use href="#ac-x"/></svg> Cancelar
+                                        </button>
+                                    </div>
                                 </li>
                             {/for}
                         </ul>
+                        <p class="ac-prox__nota">Cada mascota puede tener máximo {maximoPorSemana} citas por semana.</p>
                     {/if}
                 </section>
             </div>
 
             {! ===== Columna derecha ===== !}
             <div class="ac-col ac-col--der">
+
+                {! Aviso del modo reprogramar (lo muestra agendar-cita.js) !}
+                <div class="ac-modo" id="ac-modo" hidden>
+                    <svg class="ac-ico" aria-hidden="true"><use href="#ac-edit"/></svg>
+                    <div>
+                        <b>Reprogramando la cita de <span id="ac-modo-nombres"></span></b>
+                        <small>Cita actual: <span id="ac-modo-actual"></span>. Elige el nuevo día y horario.</small>
+                    </div>
+                    <button type="button" class="ac-modo__salir" id="ac-modo-salir">Salir sin cambios</button>
+                </div>
 
                 <section class="ac-card" aria-labelledby="ac-masc-title">
                     <h2 class="ac-card__title" id="ac-masc-title">
@@ -221,6 +245,20 @@
         <div class="ac-modal__acciones">
             <a class="ac-btn ac-btn--sec" href="/mascotas">Ver mis mascotas</a>
             <button class="ac-btn ac-btn--pri" type="button" id="ac-exito-listo">Listo</button>
+        </div>
+    </div>
+</div>
+
+{! ===== Confirmar cancelación ===== !}
+<div class="ac-modal" id="ac-cancelar" hidden>
+    <div class="ac-modal__caja" role="dialog" aria-modal="true" aria-labelledby="ac-cancelar-title">
+        <span class="ac-modal__ok ac-modal__ok--peligro"><svg aria-hidden="true"><use href="#ac-x"/></svg></span>
+        <h2 id="ac-cancelar-title">¿Cancelar esta cita?</h2>
+        <p id="ac-cancelar-texto"></p>
+        <p class="ac-modal__nota">El horario quedará libre para otras mascotas. Esta acción no se puede deshacer.</p>
+        <div class="ac-modal__acciones">
+            <button class="ac-btn ac-btn--sec" type="button" id="ac-cancelar-no">No, volver</button>
+            <button class="ac-btn ac-btn--peligro" type="button" id="ac-cancelar-si">Sí, cancelar cita</button>
         </div>
     </div>
 </div>

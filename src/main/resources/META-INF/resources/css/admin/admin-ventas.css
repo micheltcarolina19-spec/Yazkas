@@ -430,6 +430,40 @@ button:disabled { cursor: not-allowed; }
 .dlg__actions { display: flex; gap: 12px; }
 .dlg__actions .btn { height: 50px; flex: 1; }
 
+/* ===== Diálogo de venta centrado ===== */
+#dlg {
+    position: fixed;
+    inset: 0;
+    margin: auto;                 /* devuelve el centrado nativo del <dialog> */
+    width: min(420px, calc(100vw - 32px));
+    height: fit-content;
+    max-height: calc(100dvh - 32px);
+}
+
+/* Contenido centrado: icono, título, texto, total y botones */
+#dlg-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+#dlg-body .dlg__icon {
+    margin: 0 auto 14px;
+}
+
+#dlg-body .dlg__total {
+    width: 100%;
+    text-align: center;
+}
+
+#dlg-body .dlg__actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
 /* ---------- Avisos ---------- */
 .toasts { position: fixed; z-index: 100; left: 50%; bottom: 24px; transform: translateX(-50%); display: grid; gap: 10px; width: min(460px, calc(100vw - 32px)); pointer-events: none; }
 .toast {
