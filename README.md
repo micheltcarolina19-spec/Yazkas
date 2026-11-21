@@ -1389,6 +1389,6 @@ C:.
 
 Proyecto — **Universidad Santo Tomás (USTA)**.
 
-<!-- Javier Esteban López Fonseca  -->
-<!-- Michelt Carolina Camargo Cobo  -->
-<!-- Hisabella Gomez Cortéz -->
+Javier Esteban López Fonseca 
+Michelt Carolina Camargo Cobo 
+Hisabella Gomez Cortéz
